@@ -127,11 +127,15 @@ main{padding-bottom:70px;position:relative;z-index:3}
 
 #player{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column}
 #player.on{display:flex}
-.p-bar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0c0c11;border-bottom:1px solid #1d1d26;flex-wrap:wrap}
-.p-bar .ttl{font-size:.78rem;font-weight:700;max-width:30vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-bar{display:flex;align-items:center;gap:7px;padding:8px 10px;background:#0c0c11;border-bottom:1px solid #1d1d26;flex-wrap:wrap}
+.p-bar .ttl{font-size:.78rem;font-weight:700;max-width:28vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p-bar .grp{display:flex;align-items:center;gap:5px;margin-left:auto;flex-wrap:wrap}
 select{background:#16161e;color:#e6e8ee;border:1px solid #2b2b38;border-radius:6px;padding:6px 8px;font-size:.72rem;cursor:pointer}
 select:focus{outline:none;border-color:var(--red)}
+.hin{background:#1b3a1f;border:1px solid #2f6b36;color:#b8f2c0;border-radius:6px;padding:6px 11px;font-size:.74rem;font-weight:800}
+.hin.on{background:#1f7a2c;color:#fff;border-color:#2fbe45}
+.nxt{background:#20202a;border:1px solid #3a3a4a;color:#dfe2e8;border-radius:6px;padding:6px 10px;font-size:.72rem}
+.nxt:hover{background:#2a2a36}
 .p-frame{flex:1;position:relative;background:#000}
 .p-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .p-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:.85rem;pointer-events:none;z-index:1}
@@ -199,6 +203,8 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
     <button class="iconbtn" id="pClose" aria-label="Close">&#10005;</button>
     <div class="ttl" id="pTitleTxt">—</div>
     <div class="grp">
+      <button class="hin" id="pHindi">हिंदी</button>
+      <button class="nxt" id="pNextSrv">next server</button>
       <select id="pServer" aria-label="Server"></select>
       <select id="pQuality" aria-label="Quality"></select>
       <select id="pAudio" aria-label="Audio"></select>
@@ -211,7 +217,7 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
   <div class="p-frame"><div class="p-load" id="pLoad"><div class="spin"></div></div>
     <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe></div>
   <div class="p-foot">
-    <span>Audio Hindi na lage to <b>Server 1 / 2</b> rakho, ya player ke andar <b>&#9881;</b> se track chuno.</span>
+    <span>Hindi na lage to <b>हिंदी</b> dabao, phir <b>next server</b>. Player ke andar <b>&#9881;</b> se bhi audio track milta hai.</span>
     <span class="spacer"></span>
     <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 14px;font-size:.74rem">Next episode &#8250;</button>
   </div>
@@ -244,22 +250,22 @@ const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["
 const QUALS = ["auto","2160p","1080p","720p","480p","360p"];
 const SPEEDS = ["1","1.25","1.5","0.75","2"];
 
-/* lk = audio lang param, sk = subtitle param, qp = quality param
-   lang = language support, tmdb = sirf TMDB id */
+/* lk = audio param support, sk = subtitle param, qp = quality param
+   tmdb = sirf TMDB id se chalta hai */
 const SERVERS = [
-  { n:"Server 1 · Videasy", tmdb:true, lang:true, lk:"lang", sk:"sub", qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 1 · Videasy", tmdb:true, lang:true, sk:"sub", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
       return base + qs(o);
   }},
-  { n:"Server 2 · VidFast", tmdb:true, lang:true, lk:"lang", sk:"sub", qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 2 · VidFast", tmdb:true, lang:true, sk:"sub", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
       return base + qs(o);
   }},
-  { n:"Server 3 · VidSrc", lang:true, lk:"ds_lang", sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 3 · VidSrc", lang:true, sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
       return base + qs(o);
   }},
-  { n:"Server 4 · VidSrc XYZ", lang:true, lk:"ds_lang", sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 4 · VidSrc XYZ", lang:true, sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.xyz/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.xyz/embed/movie?imdb=${it.imdb}`;
       return base + qs(o, true);
   }},
@@ -267,7 +273,7 @@ const SERVERS = [
       const base = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
       return base + qs(o);
   }},
-  { n:"Server 6 · VidSrc ME", lang:true, lk:"ds_lang", sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 6 · VidSrc ME", lang:true, sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
       return base + qs(o, true);
   }},
@@ -279,10 +285,15 @@ const SERVERS = [
   }}
 ];
 
+/* language 3 naam se bhejte hain — jo bhi server padhta ho, padh lega */
 function qs(o, hasQuery){
   const p = [];
   if(o.qp && o.q && o.q !== "auto") p.push(o.qp + "=" + (o.numeric ? o.q.replace("p","") : o.q));
-  if(o.lk && o.a) p.push(o.lk + "=" + o.a);
+  if(o.lang && o.a){
+    p.push("lang=" + o.a);
+    if(o.a !== "en") p.push("ds_lang=" + o.a);
+    p.push("audio=" + o.a);
+  }
   if(o.sk && o.s) p.push(o.sk + "=" + o.s);
   if(o.sp && o.sp !== "1") p.push("speed=" + o.sp);
   if(!p.length) return "";
@@ -308,9 +319,10 @@ const ROWS = [
 
 const DEF = {audio:"hi", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:true, server:0};
 let S = load("set", DEF);
+if(!S.audio && S.audio !== "") S.audio = "hi";
 let list = load("list", []);
 let prog = load("prog", []);
-const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null};
+const state = {audio:"hi", sub:"hi", season:1, episode:1, item:null, heroItem:null, browse:null};
 
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -504,7 +516,8 @@ async function openDetail(it){
   }catch{}
 
   const langs = audioSet(full);
-  state.audio = langs.some(l=>l.c === S.audio) ? S.audio : "";
+  state.audio = langs.some(l=>l.c === S.audio) ? S.audio : "hi";
+  if(!langs.some(l=>l.c === state.audio)) state.audio = "";
   state.sub = S.sub || "hi";
 
   d.innerHTML = `
@@ -603,9 +616,9 @@ function buildURL(it, si, s, e){
   const srv = SERVERS[idx] || SERVERS[0];
   return srv.u(it, s, e, {
     q: S.quality, numeric: !!srv.tmdb, qp: srv.qp,
-    a: srv.lk ? (state.audio || "") : "",
+    a: srv.lang ? (state.audio || "") : "",
     s: srv.sk ? (state.sub === "off" ? "" : (state.sub || "")) : "",
-    lk: srv.lk, sk: srv.sk, sp: S.speed
+    lang: srv.lang, sk: srv.sk, sp: S.speed
   });
 }
 
@@ -618,6 +631,7 @@ async function play(it, s=1, e=1){
     }catch{}
   }
   state.item = item; state.season = s; state.episode = e;
+  if(!state.audio) state.audio = S.audio || "hi";
   if(!state.sub) state.sub = S.sub || "hi";
 
   const active = safeServer(item, S.server);
@@ -631,6 +645,7 @@ async function play(it, s=1, e=1){
     LANGS.slice(0,10).map(([c,n])=>`<option value="${c}" ${c===state.sub?"selected":""}>${esc(n)} subs</option>`).join("");
   $("#pSpeed").innerHTML = SPEEDS.map(v=>`<option value="${v}" ${v===S.speed?"selected":""}>${v}×</option>`).join("");
   $("#pNext").style.display = item.t === "tv" ? "" : "none";
+  $("#pHindi").classList.toggle("on", state.audio === "hi");
   $("#player").classList.add("on"); document.body.classList.add("lock");
   loadFrame(); addProg(item, s, e);
 }
@@ -649,7 +664,7 @@ function forceLangServer(){
   const cur = SERVERS[S.server];
   if(cur && cur.lang) return;
   const idx = langServers()[0];
-  if(idx !== undefined){ S.server = idx; save("set", S); $("#pServer").value = idx; toast("Audio server pe switch kiya") }
+  if(idx !== undefined){ S.server = idx; save("set", S); $("#pServer").value = idx }
 }
 
 /* ---------- list ---------- */
@@ -741,11 +756,13 @@ $("#q").addEventListener("keydown", e=>{ if(e.key==="Enter"){ clearTimeout(timer
 $("#settingsBtn").onclick = openSettings;
 $("#sSave").onclick = ()=>{
   S.audio = $("#sAudio").value; S.sub = $("#sSub").value; S.quality = $("#sQuality").value;
+  state.audio = S.audio; state.sub = S.sub;
   save("set", S); $("#settings").classList.remove("on"); toast("Settings saved");
   $("#hero").style.display = S.hero ? "" : "none";
 };
 $("#sReset").onclick = ()=>{
-  S = {...DEF}; list = []; prog = []; save("set",S); save("list",[]); save("prog",[]);
+  S = {...DEF}; state.audio = "hi"; state.sub = "hi";
+  list = []; prog = []; save("set",S); save("list",[]); save("prog",[]);
   $("#settings").classList.remove("on"); toast("Reset ho gaya"); buildHome();
 };
 $("#sAuto").onclick = e=>{ S.auto=!S.auto; e.currentTarget.classList.toggle("on", S.auto); save("set",S) };
@@ -754,10 +771,33 @@ $("#sHero").onclick = e=>{ S.hero=!S.hero; e.currentTarget.classList.toggle("on"
 $("#pClose").onclick = ()=>{ $("#player").classList.remove("on"); $("#pFrame").src="about:blank"; document.body.classList.remove("lock") };
 $("#pServer").onchange = e=>{ S.server=+e.target.value; save("set",S); loadFrame() };
 $("#pQuality").onchange = e=>{ S.quality=e.target.value; save("set",S); loadFrame(); toast("Quality: "+S.quality) };
-$("#pAudio").onchange = e=>{ state.audio=e.target.value; forceLangServer(); loadFrame() };
+$("#pAudio").onchange = e=>{ state.audio=e.target.value; $("#pHindi").classList.toggle("on", state.audio==="hi"); forceLangServer(); loadFrame() };
 $("#pSub").onchange = e=>{ state.sub=e.target.value; forceLangServer(); loadFrame() };
 $("#pSpeed").onchange = e=>{ S.speed=e.target.value; save("set",S); loadFrame() };
 $("#pReload").onclick = loadFrame;
+
+/* HINDI button — audio hi + language server */
+$("#pHindi").onclick = ()=>{
+  state.audio = "hi";
+  $("#pHindi").classList.add("on");
+  $("#pAudio").value = "hi";
+  const idx = langServers()[0];
+  if(idx !== undefined){ S.server = idx; save("set", S); $("#pServer").value = idx }
+  toast("Hindi audio try ho raha hai — na chale to next server");
+  loadFrame();
+};
+
+/* next server — language wale pehle */
+$("#pNextSrv").onclick = ()=>{
+  const order = [...langServers(), ...SERVERS.map((s,i)=>i).filter(i=>!SERVERS[i].lang)];
+  const pos = order.indexOf(S.server);
+  const nxt = order[(pos + 1) % order.length];
+  S.server = nxt; save("set", S);
+  $("#pServer").value = nxt;
+  toast(SERVERS[nxt].n);
+  loadFrame();
+};
+
 $("#pOpen").onclick = ()=> window.open(buildURL(state.item, S.server, state.season, state.episode), "_blank", "noopener");
 $("#pNext").onclick = ()=>{ state.episode++; play(state.item, state.season, state.episode) };
 $("#detail").addEventListener("click", e=>{ if(e.target.id === "detail") closeDetail() });
