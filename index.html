@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVAFLIX — Movies, Web Series & TV Shows</title>
+<meta name="description" content="Ad-free streaming UI. Movies, web series, TV shows, 4K quality, multi-language audio & subtitles.">
+<meta name="theme-color" content="#08080b">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08080b;--bg2:#0f0f14;--card:#16161d;--fg:#f3f3f6;--mut:#9aa0ad;
+  --red:#e50914;--rad:10px;--hdr:64px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--fg);font-family:"Segoe UI",Inter,system-ui,-apple-system,sans-serif;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+body.lock{overflow:hidden}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#2c2c36;border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img{display:block;max-width:100%}
+
+/* ---------- header ---------- */
+header{
+  position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;
+  display:flex;align-items:center;gap:18px;padding:0 18px;
+  background:linear-gradient(180deg,rgba(8,8,11,.96),rgba(8,8,11,.55) 70%,transparent);
+  transition:background .3s;
+}
+header.solid{background:rgba(8,8,11,.97);box-shadow:0 1px 0 #1c1c24}
+.logo{font-size:1.55rem;font-weight:900;letter-spacing:-1.2px;color:var(--red);flex-shrink:0}
+.logo span{color:#fff}
+nav{display:flex;gap:16px;font-size:.86rem;color:#c9ccd4;overflow:hidden}
+nav button{padding:6px 2px;border-bottom:2px solid transparent;white-space:nowrap}
+nav button.on,nav button:hover{color:#fff;border-color:var(--red)}
+.spacer{flex:1}
+.searchwrap{position:relative;display:flex;align-items:center}
+.searchwrap input{
+  width:0;padding:0;opacity:0;border:1px solid #2a2a34;background:#14141a;color:#fff;
+  border-radius:24px;height:36px;transition:.28s;font-size:.85rem;
+}
+.searchwrap.open input{width:230px;padding:0 36px 0 14px;opacity:1}
+.searchwrap input:focus{outline:none;border-color:var(--red)}
+.iconbtn{
+  width:36px;height:36px;display:grid;place-items:center;border-radius:50%;
+  color:#dfe2e8;transition:.2s;font-size:1.05rem;
+}
+.iconbtn:hover{background:#20202a;color:#fff}
+.searchwrap .iconbtn{position:absolute;right:0}
+.searchwrap.open .iconbtn{pointer-events:auto}
+.avatar{
+  width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#e50914,#7a0510);
+  display:grid;place-items:center;font-weight:800;font-size:.8rem;flex-shrink:0;
+}
+
+/* ---------- hero ---------- */
+.hero{position:relative;height:min(78vh,620px);display:flex;align-items:flex-end;padding:0 18px 46px}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 22%;z-index:0}
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg,rgba(8,8,11,.97) 0%,rgba(8,8,11,.72) 42%,rgba(8,8,11,.15) 72%),
+             linear-gradient(0deg,var(--bg) 2%,transparent 46%);
+}
+.hero-in{position:relative;z-index:2;max-width:600px}
+.tag{display:inline-flex;gap:7px;align-items:center;font-size:.7rem;font-weight:700;letter-spacing:1.4px;color:#ffd7da;text-transform:uppercase;margin-bottom:10px}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red);font-style:normal}
+.hero h1{font-size:clamp(1.9rem,5.4vw,3.4rem);line-height:1.04;letter-spacing:-1.6px;font-weight:900;margin-bottom:12px;text-shadow:0 4px 30px #000}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.8rem;color:#cfd3da;margin-bottom:12px}
+.chip-mini{padding:2px 8px;border:1px solid #3a3a46;border-radius:4px;font-size:.72rem;color:#dfe2e8}
+.hero p{font-size:.92rem;color:#c3c7d0;line-height:1.55;margin-bottom:18px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:6px;
+  font-weight:700;font-size:.9rem;transition:.18s;white-space:nowrap;
+}
+.btn-play{background:#fff;color:#000}
+.btn-play:hover{background:#d9d9de}
+.btn-ghost{background:rgba(109,109,125,.55);color:#fff}
+.btn-ghost:hover{background:rgba(109,109,125,.85)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:#ff1a26}
+
+/* ---------- rows ---------- */
+main{padding-bottom:70px;position:relative;z-index:3}
+.row{margin:26px 0}
+.row-hd{display:flex;align-items:center;gap:10px;padding:0 18px;margin-bottom:11px}
+.row-hd h2{font-size:1.02rem;font-weight:700;letter-spacing:-.2px}
+.row-hd .cnt{font-size:.72rem;color:var(--mut)}
+.row-hd .more{margin-left:auto;font-size:.76rem;color:var(--mut)}
+.row-hd .more:hover{color:#fff}
+.track{
+  display:flex;gap:9px;overflow-x:auto;padding:4px 18px 12px;scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+.track::-webkit-scrollbar{display:none}
+.track.grid-mode{flex-wrap:wrap;overflow:visible}
+
+/* ---------- card ---------- */
+.card{
+  width:164px;flex:0 0 auto;position:relative;border-radius:var(--rad);overflow:hidden;
+  background:var(--card);transition:transform .22s,box-shadow .22s;
+}
+.card:hover{transform:scale(1.045);box-shadow:0 12px 34px rgba(0,0,0,.7);z-index:5}
+.poster{aspect-ratio:2/3;position:relative;overflow:hidden;background:#101018}
+.poster img{width:100%;height:100%;object-fit:cover}
+.ph{
+  width:100%;height:100%;display:grid;place-items:center;padding:10px;text-align:center;
+  background:linear-gradient(150deg,hsl(var(--h) 55% 24%),hsl(calc(var(--h) + 55) 65% 8%));
+}
+.ph b{font-size:.8rem;font-weight:800;line-height:1.2;text-shadow:0 2px 10px #000;color:#fff}
+.card-top{position:absolute;top:6px;left:6px;right:6px;display:flex;gap:5px;align-items:flex-start}
+.badge{
+  font-size:.6rem;font-weight:800;padding:3px 6px;border-radius:4px;letter-spacing:.5px;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);text-transform:uppercase;
+}
+.badge.q{background:rgba(229,9,20,.92);color:#fff}
+.badge.r{background:rgba(20,20,26,.85);color:#ffd166}
+.badge.t{background:rgba(20,20,26,.85);color:#8ec5ff}
+.card-body{padding:8px 9px 10px}
+.card-body h3{font-size:.78rem;font-weight:600;line-height:1.28;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.05em}
+.card-body small{display:block;font-size:.66rem;color:var(--mut);margin-top:4px}
+.card-ov{
+  position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.94) 0%,rgba(0,0,0,.55) 45%,transparent 72%);
+  opacity:0;transition:.22s;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:9px;
+}
+.card:hover .card-ov{opacity:1}
+.mini{display:flex;gap:6px}
+.mini button{
+  width:29px;height:29px;border-radius:50%;display:grid;place-items:center;font-size:.78rem;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px);
+}
+.mini button:hover{background:#fff;color:#000}
+.mini .p{background:#fff;color:#000;border-color:#fff}
+
+/* ---------- skeleton ---------- */
+.sk{width:164px;flex:0 0 auto;border-radius:var(--rad);overflow:hidden}
+.sk .a{aspect-ratio:2/3;background:linear-gradient(100deg,#14141c 30%,#1e1e29 50%,#14141c 70%);background-size:220% 100%;animation:sh 1.3s infinite}
+.sk .b{height:9px;margin:9px;border-radius:4px;background:#191922;animation:sh 1.3s infinite}
+.sk .c{height:9px;margin:0 9px 12px;width:55%;border-radius:4px;background:#191922;animation:sh 1.3s infinite}
+@keyframes sh{0%{background-position:180% 0}100%{background-position:-80% 0}}
+
+/* ---------- search page ---------- */
+#searchPage{display:none;padding:calc(var(--hdr) + 20px) 18px 80px;min-height:100vh}
+#searchPage.on{display:block}
+#searchPage h1{font-size:1.3rem;margin-bottom:4px;letter-spacing:-.4px}
+#searchPage .sub{color:var(--mut);font-size:.82rem;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
+.grid .card{width:auto}
+.empty{padding:52px 10px;text-align:center;color:var(--mut);font-size:.9rem;line-height:1.7}
+.empty b{display:block;color:#fff;font-size:1.05rem;margin-bottom:6px}
+
+/* ---------- modal ---------- */
+.overlay{
+  position:fixed;inset:0;z-index:200;display:none;align-items:flex-start;justify-content:center;
+  background:rgba(0,0,0,.82);backdrop-filter:blur(5px);overflow-y:auto;padding:34px 14px;
+}
+.overlay.on{display:flex}
+.sheet{
+  width:100%;max-width:880px;background:var(--bg2);border:1px solid #23232e;border-radius:14px;
+  overflow:hidden;box-shadow:0 30px 80px #000;animation:pop .22s ease;
+}
+@keyframes pop{from{transform:translateY(16px) scale(.985);opacity:0}to{transform:none;opacity:1}}
+.sheet-hero{position:relative;height:270px;background-size:cover;background-position:center 20%}
+.sheet-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,var(--bg2) 3%,rgba(15,15,20,.35) 60%,transparent)}
+.sheet-hero .x{position:absolute;top:12px;right:12px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.7);display:grid;place-items:center}
+.sheet-hero .x:hover{background:#000}
+.sheet-hero .inner{position:absolute;bottom:14px;left:18px;right:18px;z-index:2}
+.sheet-hero h2{font-size:1.7rem;font-weight:900;letter-spacing:-.9px;line-height:1.1;margin-bottom:8px}
+.sheet-body{padding:16px 18px 22px}
+.sheet-body .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;color:#c5c9d1;margin-bottom:14px;align-items:center}
+.ovw{font-size:.88rem;line-height:1.62;color:#c8ccd4;margin-bottom:16px}
+.lbl{font-size:.68rem;letter-spacing:1.3px;text-transform:uppercase;color:var(--mut);margin:14px 0 7px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chips button{
+  padding:6px 13px;border:1px solid #2e2e3a;border-radius:20px;font-size:.76rem;color:#d3d6dd;transition:.16s;
+}
+.chips button:hover{border-color:#5a5a6c;color:#fff}
+.chips button.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+.seasons{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.seasons::-webkit-scrollbar{display:none}
+.seasons button{padding:7px 14px;border-radius:20px;background:#1b1b24;font-size:.78rem;white-space:nowrap;border:1px solid transparent}
+.seasons button.on{background:var(--red);font-weight:700}
+.eps{display:flex;flex-direction:column;gap:8px;margin-top:10px;max-height:330px;overflow-y:auto}
+.ep{
+  display:flex;gap:11px;align-items:center;padding:8px;border-radius:8px;background:#14141c;
+  border:1px solid #20202a;text-align:left;transition:.16s;
+}
+.ep:hover{background:#1d1d27;border-color:#3a3a4a}
+.ep .n{width:26px;flex-shrink:0;text-align:center;font-weight:800;color:var(--mut);font-size:.8rem}
+.ep .tx{flex:1;min-width:0}
+.ep .tx b{display:block;font-size:.79rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep .tx small{font-size:.68rem;color:var(--mut)}
+.ep .pl{width:30px;height:30px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;flex-shrink:0;font-size:.72rem}
+
+/* ---------- player ---------- */
+#player{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column}
+#player.on{display:flex}
+.p-bar{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;background:#0c0c11;border-bottom:1px solid #1d1d26;
+  flex-wrap:wrap;
+}
+.p-bar .ttl{font-size:.82rem;font-weight:700;max-width:34vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-bar .grp{display:flex;align-items:center;gap:5px;margin-left:auto;flex-wrap:wrap}
+select{
+  background:#16161e;color:#e6e8ee;border:1px solid #2b2b38;border-radius:6px;
+  padding:6px 9px;font-size:.74rem;cursor:pointer;
+}
+select:focus{outline:none;border-color:var(--red)}
+.p-frame{flex:1;position:relative;background:#000}
+.p-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.p-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:.85rem;pointer-events:none;z-index:1}
+.spin{width:34px;height:34px;border:3px solid #2a2a36;border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.p-foot{padding:8px 12px;background:#0c0c11;border-top:1px solid #1d1d26;display:flex;gap:8px;flex-wrap:wrap;font-size:.72rem;color:var(--mut);align-items:center}
+
+/* ---------- settings ---------- */
+#settings{
+  position:fixed;top:0;right:0;bottom:0;width:min(390px,92vw);z-index:250;background:#0d0d13;
+  border-left:1px solid #23232e;transform:translateX(102%);transition:transform .3s;overflow-y:auto;padding:20px;
+}
+#settings.on{transform:none}
+#settings h2{font-size:1.05rem;margin-bottom:4px}
+#settings .hint{font-size:.74rem;color:var(--mut);line-height:1.55;margin-bottom:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:6px;font-weight:700}
+.field select,.field input[type=text]{width:100%;padding:9px 11px;border-radius:7px;font-size:.82rem;background:#15151d;border:1px solid #2b2b38;color:#fff}
+.field input:focus{outline:none;border-color:var(--red)}
+.field .note{font-size:.7rem;color:var(--mut);margin-top:5px;line-height:1.5}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #1b1b24;font-size:.83rem}
+.sw{width:42px;height:23px;border-radius:20px;background:#2b2b38;position:relative;flex-shrink:0;transition:.2s}
+.sw::after{content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.sw.on{background:var(--red)}
+.sw.on::after{transform:translateX(19px)}
+.srow{display:flex;gap:8px;margin-top:18px}
+.srow button{flex:1;padding:10px;border-radius:7px;font-size:.8rem;font-weight:700}
+
+/* ---------- misc ---------- */
+#toast{
+  position:fixed;bottom:22px;left:50%;transform:translate(-50%,90px);z-index:400;
+  background:#fff;color:#000;padding:10px 20px;border-radius:24px;font-size:.82rem;font-weight:700;
+  transition:transform .28s;box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none;
+}
+#toast.on{transform:translate(-50%,0)}
+footer{padding:34px 18px 60px;border-top:1px solid #1a1a22;color:var(--mut);font-size:.74rem;line-height:1.8;text-align:center}
+footer b{color:#c9ccd4}
+
+@media(max-width:760px){
+  nav{display:none}
+  .hero{height:72vh;padding-bottom:30px}
+  .hero p{-webkit-line-clamp:2}
+  .card,.sk{width:126px}
+  .searchwrap.open input{width:150px}
+  .p-bar .ttl{max-width:100%;order:-1;width:100%}
+  .p-bar .grp{margin-left:0;width:100%}
+  .p-bar select{flex:1}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:9px}
+  .sheet-hero{height:200px}
+  .sheet-hero h2{font-size:1.28rem}
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="logo">NOVA<span>FLIX</span></div>
+  <nav id="nav"></nav>
+  <div class="spacer"></div>
+  <div class="searchwrap" id="searchwrap">
+    <input id="q" type="search" placeholder="Movies, web series, TV shows..." autocomplete="off" aria-label="Search">
+    <button class="iconbtn" id="searchBtn" aria-label="Search">&#128269;</button>
+  </div>
+  <button class="iconbtn" id="settingsBtn" aria-label="Settings">&#9881;</button>
+  <div class="avatar">NF</div>
+</header>
+
+<section class="hero" id="hero"></section>
+<main id="main"></main>
+
+<section id="searchPage">
+  <h1 id="spTitle">Search</h1>
+  <div class="sub" id="spSub">Kuch bhi type karo — movie, web series, TV show.</div>
+  <div class="grid" id="spGrid"></div>
+</section>
+
+<div class="overlay" id="detail"><div class="sheet" id="detailSheet"></div></div>
+
+<div id="player">
+  <div class="p-bar">
+    <button class="iconbtn" id="pClose" aria-label="Close">&#10005;</button>
+    <div class="ttl" id="pTitle">—</div>
+    <div class="grp">
+      <select id="pServer" aria-label="Server"></select>
+      <select id="pQuality" aria-label="Quality"></select>
+      <select id="pAudio" aria-label="Audio language"></select>
+      <select id="pSub" aria-label="Subtitles"></select>
+      <button class="iconbtn" id="pOpen" title="New tab" aria-label="Open in new tab">&#8599;</button>
+    </div>
+  </div>
+  <div class="p-frame">
+    <div class="p-load" id="pLoad"><div class="spin"></div></div>
+    <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe>
+  </div>
+  <div class="p-foot">
+    <span id="pNote">Server slow ho to doosra server try karo.</span>
+    <span class="spacer"></span>
+    <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 14px;font-size:.75rem">Next episode &#8250;</button>
+  </div>
+</div>
+
+<aside id="settings">
+  <h2>Settings</h2>
+  <div class="hint">Preferences isi device pe save hoti hain. Koi account, koi ad nahi.</div>
+
+  <div class="field">
+    <label>TMDB API key</label>
+    <input type="text" id="sKey" placeholder="paste free API key">
+    <div class="note">Free key: themoviedb.org/settings/api — key ke bina sirf demo catalog chalega.</div>
+  </div>
+
+  <div class="field">
+    <label>Default audio</label>
+    <select id="sAudio"></select>
+  </div>
+
+  <div class="field">
+    <label>Default subtitles</label>
+    <select id="sSub"></select>
+  </div>
+
+  <div class="field">
+    <label>Default quality</label>
+    <select id="sQuality">
+      <option value="auto">Auto</option>
+      <option value="2160p">4K (2160p)</option>
+      <option value="1080p">1080p</option>
+      <option value="720p">720p</option>
+      <option value="480p">480p</option>
+      <option value="360p">360p</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Metadata language</label>
+    <select id="sMeta">
+      <option value="en-US">English</option>
+      <option value="hi-IN">Hindi</option>
+      <option value="ta-IN">Tamil</option>
+      <option value="te-IN">Telugu</option>
+      <option value="es-ES">Spanish</option>
+      <option value="fr-FR">French</option>
+      <option value="ja-JP">Japanese</option>
+      <option value="ko-KR">Korean</option>
+    </select>
+  </div>
+
+  <div class="toggle"><span>Autoplay next episode</span><div class="sw" id="sAuto"></div></div>
+  <div class="toggle"><span>Hero banner dikhao</span><div class="sw" id="sHero"></div></div>
+
+  <div class="srow">
+    <button class="btn btn-red" id="sSave">Save</button>
+    <button class="btn btn-ghost" id="sReset">Reset</button>
+  </div>
+  <div style="height:30px"></div>
+</aside>
+
+<div id="toast"></div>
+
+<footer>
+  <b>NOVAFLIX</b> — personal streaming front-end.<br>
+  Metadata: TMDB · Playback: public embed servers · UI: ad-free · Hosted on GitHub Pages.
+</footer>
+
+<noscript><p style="padding:90px 20px;text-align:center">JavaScript chahiye bhai.</p></noscript>
+
+<script>
+"use strict";
+
+/* ============ constants ============ */
+const API = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p/";
+
+const LANGS = [
+  ["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["ml","Malayalam"],
+  ["kn","Kannada"],["bn","Bengali"],["mr","Marathi"],["pa","Punjabi"],["gu","Gujarati"],
+  ["ur","Urdu"],["es","Spanish"],["fr","French"],["de","German"],["ja","Japanese"],
+  ["ko","Korean"],["zh","Chinese"],["ru","Russian"],["ar","Arabic"],["pt","Portuguese"],
+  ["tr","Turkish"],["it","Italian"]
+];
+
+const QUALITIES = ["auto","2160p","1080p","720p","480p","360p"];
+
+const SERVERS = [
+  { n:"Server 1 · VidLink",   m:id=>`https://vidlink.pro/movie/${id}`,              t:(id,s,e)=>`https://vidlink.pro/tv/${id}/${s}/${e}` },
+  { n:"Server 2 · VidSrc",    m:id=>`https://vidsrc.to/embed/movie/${id}`,         t:(id,s,e)=>`https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
+  { n:"Server 3 · VidSrc Pro",m:id=>`https://vidsrc.pro/embed/movie/${id}`,        t:(id,s,e)=>`https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
+  { n:"Server 4 · VidSrc XYZ",m:id=>`https://vidsrc.xyz/embed/movie?tmdb=${id}`,   t:(id,s,e)=>`https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}` },
+  { n:"Server 5 · 2Embed",    m:id=>`https://www.2embed.cc/embed/${id}`,           t:(id,s,e)=>`https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+  { n:"Server 6 · SuperEmbed",m:id=>`https://multiembed.mov/?video_id=${id}&tmdb=1`, t:(id,s,e)=>`https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` }
+];
+
+/* ============ demo catalog (key ke bina) ============ */
+const DEMO = [
+  {id:27205,t:"movie",n:"Inception",y:2010,r:8.4,g:["Action","Sci-Fi"],l:["English","Hindi"],o:"Ek chor jo sapno me ghus kar secrets churata hai, ek aisa kaam le raha hai jo reverse hai."},
+  {id:157336,t:"movie",n:"Interstellar",y:2014,r:8.4,g:["Sci-Fi","Drama"],l:["English","Hindi"],o:"Insaan ki nayi ghar dhoondhne ki aakhri koshish, space ke paar."},
+  {id:155,t:"movie",n:"The Dark Knight",y:2008,r:8.5,g:["Action","Crime"],l:["English","Hindi"],o:"Batman ka sabse bada imtihaan — Joker."},
+  {id:603,t:"movie",n:"The Matrix",y:1999,r:8.2,g:["Action","Sci-Fi"],l:["English","Hindi"],o:"Ek hacker ko pata chalta hai ki duniya ek simulation hai."},
+  {id:438631,t:"movie",n:"Dune",y:2021,r:7.8,g:["Sci-Fi","Adventure"],l:["English","Hindi"],o:"Registan planet Arrakis pe power ka sangharsh."},
+  {id:693134,t:"movie",n:"Dune: Part Two",y:2024,r:8.2,g:["Sci-Fi","Adventure"],l:["English","Hindi"],o:"Paul Atreides apni taqdeer ki taraf badhta hai."},
+  {id:872585,t:"movie",n:"Oppenheimer",y:2023,r:8.1,g:["Drama","History"],l:["English","Hindi"],o:"Atom bomb banane wale scientist ki kahani."},
+  {id:496243,t:"movie",n:"Parasite",y:2019,r:8.5,g:["Thriller","Drama"],l:["Korean","English","Hindi"],o:"Ek garib parivaar ameer ghar me ghus kar apni jagah bana leta hai."},
+  {id:475557,t:"movie",n:"Joker",y:2019,r:8.2,g:["Drama","Crime"],l:["English","Hindi"],o:"Gotham ka ek comedian dheere dheere villain ban jata hai."},
+  {id:19995,t:"movie",n:"Avatar",y:2009,r:7.6,g:["Sci-Fi","Adventure"],l:["English","Hindi"],o:"Pandora planet aur Na'vi ka jeevan."},
+  {id:76600,t:"movie",n:"Avatar: The Way of Water",y:2022,r:7.6,g:["Sci-Fi","Adventure"],l:["English","Hindi"],o:"Sully parivaar samundar ke Na'vi ke saath rehne lagta hai."},
+  {id:361743,t:"movie",n:"Top Gun: Maverick",y:2022,r:8.2,g:["Action"],l:["English","Hindi"],o:"Maverick wapas aata hai, is baar sikhane ke liye."},
+  {id:245891,t:"movie",n:"John Wick",y:2014,r:7.4,g:["Action","Thriller"],l:["English","Hindi"],o:"Kutte ki maut ne ek retired hitman ko wapas khada kar diya."},
+  {id:76341,t:"movie",n:"Mad Max: Fury Road",y:2015,r:7.7,g:["Action","Adventure"],l:["English","Hindi"],o:"Desert me ek lambi bhaag-daud."},
+  {id:634649,t:"movie",n:"Spider-Man: No Way Home",y:2021,r:8.0,g:["Action","Adventure"],l:["English","Hindi"],o:"Multiverse khul jata hai aur purane villain wapas aate hain."},
+  {id:545611,t:"movie",n:"Everything Everywhere All at Once",y:2022,r:7.8,g:["Sci-Fi","Comedy"],l:["English","Hindi"],o:"Ek aunty ko multiverse bachana hai."},
+  {id:244786,t:"movie",n:"Whiplash",y:2014,r:8.4,g:["Drama","Music"],l:["English","Hindi"],o:"Ek drummer aur uska zehreela teacher."},
+  {id:11324,t:"movie",n:"Shutter Island",y:2010,r:8.2,g:["Thriller","Mystery"],l:["English","Hindi"],o:"Ek marshal mental asylum me gayab patient dhoondhne jata hai."},
+  {id:550,t:"movie",n:"Fight Club",y:1999,r:8.4,g:["Drama","Thriller"],l:["English","Hindi"],o:"Anarchy, insomnia aur Tyler Durden."},
+  {id:680,t:"movie",n:"Pulp Fiction",y:1994,r:8.5,g:["Crime","Drama"],l:["English","Hindi"],o:"Interlinked LA crime kahaniyan."},
+  {id:238,t:"movie",n:"The Godfather",y:1972,r:8.7,g:["Crime","Drama"],l:["English","Hindi"],o:"Corleone parivaar ki satta ki kahani."},
+  {id:20453,t:"movie",n:"3 Idiots",y:2009,r:8.0,g:["Comedy","Drama"],l:["Hindi","English"],o:"Engineering ke pressure aur dosti."},
+  {id:360814,t:"movie",n:"Dangal",y:2016,r:7.9,g:["Drama","Sport"],l:["Hindi","English"],o:"Ek pita apni betiyon ko pehalwan banata hai."},
+  {id:224141,t:"movie",n:"PK",y:2014,r:8.1,g:["Comedy","Sci-Fi"],l:["Hindi","English"],o:"Ek alien duniya ke dharm ko sawaal karta hai."},
+  {id:534780,t:"movie",n:"Andhadhun",y:2018,r:8.2,g:["Thriller","Crime"],l:["Hindi","English"],o:"Ek blind pianist ek murder ka gawah ban jata hai."},
+  {id:510455,t:"movie",n:"Gully Boy",y:2019,r:7.4,g:["Drama","Music"],l:["Hindi","English"],o:"Dharavi se nikla street rapper."},
+  {id:66732,t:"tv",n:"Stranger Things",y:2016,r:8.6,g:["Sci-Fi","Horror"],l:["English","Hindi"],o:"Hawkins me ek ladka gayab, aur ek ladki with powers."},
+  {id:1396,t:"tv",n:"Breaking Bad",y:2008,r:8.9,g:["Crime","Drama"],l:["English","Hindi"],o:"Chemistry teacher meth banane lagta hai."},
+  {id:1399,t:"tv",n:"Game of Thrones",y:2011,r:8.4,g:["Fantasy","Drama"],l:["English","Hindi"],o:"Westeros ke takhton ki jang."},
+  {id:71446,t:"tv",n:"Money Heist",y:2017,r:8.2,g:["Crime","Thriller"],l:["Spanish","English","Hindi"],o:"Professor ki team Royal Mint par daka daalti hai."},
+  {id:70523,t:"tv",n:"Dark",y:2017,r:8.4,g:["Sci-Fi","Mystery"],l:["German","English","Hindi"],o:"Ek gayab bachcha, time travel aur chaar parivaar."},
+  {id:76479,t:"tv",n:"The Boys",y:2019,r:8.4,g:["Action","Comedy"],l:["English","Hindi"],o:"Superhero culture ka satirical blast."},
+  {id:93405,t:"tv",n:"Squid Game",y:2021,r:7.8,g:["Thriller","Drama"],l:["Korean","English","Hindi"],o:"Garib log bachche ke khelon me maut se ladte hain."},
+  {id:119051,t:"tv",n:"Wednesday",y:2022,r:8.1,g:["Comedy","Mystery"],l:["English","Hindi"],o:"Wednesday Addams Nevermore academy me."},
+  {id:1429,t:"tv",n:"Attack on Titan",y:2013,r:8.7,g:["Animation","Action"],l:["Japanese","English","Hindi"],o:"Deewar ke peeche titans se jang."},
+  {id:85937,t:"tv",n:"Demon Slayer",y:2019,r:8.6,g:["Animation","Action"],l:["Japanese","English","Hindi"],o:"Tanjiro apni behan ko insaan banane nikalta hai."},
+  {id:95479,t:"tv",n:"Jujutsu Kaisen",y:2020,r:8.5,g:["Animation","Action"],l:["Japanese","English","Hindi"],o:"Shraap aur jujutsu sorcerers."},
+  {id:94605,t:"tv",n:"Arcane",y:2021,r:8.7,g:["Animation","Action"],l:["English","Hindi"],o:"Piltover aur Zaun ki behen-dosti aur jang."},
+  {id:105248,t:"tv",n:"Cyberpunk: Edgerunners",y:2022,r:8.4,g:["Animation","Sci-Fi"],l:["Japanese","English","Hindi"],o:"Night City me ek street kid edgerunner banta hai."},
+  {id:60574,t:"tv",n:"Peaky Blinders",y:2013,r:8.5,g:["Crime","Drama"],l:["English","Hindi"],o:"Birmingham ka Shelby gang."},
+  {id:19885,t:"tv",n:"Sherlock",y:2010,r:8.5,g:["Crime","Mystery"],l:["English","Hindi"],o:"Modern London me Sherlock Holmes."},
+  {id:2316,t:"tv",n:"The Office",y:2005,r:8.6,g:["Comedy"],l:["English","Hindi"],o:"Dunder Mifflin ka mockumentary."},
+  {id:1668,t:"tv",n:"Friends",y:1994,r:8.4,g:["Comedy","Romance"],l:["English","Hindi"],o:"Chhe dost, ek coffee shop."},
+  {id:87108,t:"tv",n:"Chernobyl",y:2019,r:8.7,g:["Drama","History"],l:["English","Hindi"],o:"1986 ke nuclear disaster ki dramatization."},
+  {id:100088,t:"tv",n:"The Last of Us",y:2023,r:8.6,g:["Drama","Horror"],l:["English","Hindi"],o:"Post-apocalypse me Joel aur Ellie ka safar."},
+  {id:94997,t:"tv",n:"House of the Dragon",y:2022,r:8.4,g:["Fantasy","Drama"],l:["English","Hindi"],o:"Targaryen khaandaan ki andaruni jang."}
+];
+
+/* ============ state ============ */
+const DEF = { key:"", audio:"hi", sub:"hi", quality:"1080p", meta:"en-US", auto:true, hero:true, server:0 };
+let S = load("set", DEF);
+let catalog = [];           // demo + api mixed
+let watchlist = load("list", []);
+let progress = load("prog", []);
+let state = { audio:"", sub:"", season:1, episode:1, item:null, heroItem:null };
+
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+
+function load(k,d){ try{ const v=localStorage.getItem("nfx_"+k); return v?JSON.parse(v):d; }catch{ return d; } }
+function save(k,v){ try{ localStorage.setItem("nfx_"+k, JSON.stringify(v)); }catch{} }
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("on"),2200); }
+function esc(s=""){ return String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+function hue(s){ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))%360; return h; }
+function key(){ return S.key.trim(); }
+
+/* ============ TMDB ============ */
+async function tmdb(path, params={}){
+  const k = key(); if(!k) return null;
+  const u = new URL(API+path);
+  u.searchParams.set("api_key", k);
+  u.searchParams.set("language", S.meta || "en-US");
+  u.searchParams.set("include_adult","false");
+  for(const [a,b] of Object.entries(params)) if(b!==undefined && b!=="") u.searchParams.set(a,b);
+  const r = await fetch(u.toString());
+  if(!r.ok) throw new Error("TMDB "+r.status);
+  return r.json();
+}
+
+function norm(x, forced){
+  const type = forced || (x.media_type === "tv" ? "tv" : "movie");
+  return {
+    id: x.id, t: type,
+    n: x.title || x.name || x.original_title || x.original_name || "Untitled",
+    y: (x.release_date || x.first_air_date || "").slice(0,4),
+    r: x.vote_average ? Number(x.vote_average).toFixed(1) : "",
+    o: x.overview || "",
+    poster: x.poster_path ? IMG+"w500"+x.poster_path : "",
+    back: x.backdrop_path ? IMG+"w1280"+x.backdrop_path : "",
+    g: (x.genre_ids||[]).map(genreName).filter(Boolean),
+    l: (x.original_language ? [codeName(x.original_language)] : []),
+    pop: x.popularity || 0,
+    api: true
+  };
+}
+const GENRES = {28:"Action",12:"Adventure",16:"Animation",35:"Comedy",80:"Crime",99:"Documentary",18:"Drama",10751:"Family",14:"Fantasy",36:"History",27:"Horror",10402:"Music",9648:"Mystery",10749:"Romance",878:"Sci-Fi",10770:"TV Movie",53:"Thriller",10752:"War",37:"Western",10759:"Action & Adventure",10762:"Kids",10763:"News",10764:"Reality",10765:"Sci-Fi & Fantasy",10766:"Soap",10767:"Talk",10768:"War & Politics"};
+function genreName(id){ return GENRES[id] || ""; }
+function codeName(c){ const f = LANGS.find(l=>l[0]===c); return f ? f[1] : c.toUpperCase(); }
+
+/* ============ media helpers ============ */
+function posterHTML(item){
+  if(item.poster) return `<img loading="lazy" src="${item.poster}" alt="${esc(item.n)}">`;
+  return `<div class="ph" style="--h:${hue(item.n)}"><b>${esc(item.n)}</b></div>`;
+}
+function isSaved(id){ return watchlist.some(w=>w.id===id); }
+
+function card(item){
+  const el = document.createElement("div");
+  el.className = "card";
+  el.dataset.id = item.id;
+  el.innerHTML = `
+    <div class="poster">
+      ${posterHTML(item)}
+      <div class="card-top">
+        ${item.r ? `<span class="badge r">&#9733; ${item.r}</span>` : ""}
+        <span class="badge t">${item.t==="tv"?"Series":"Movie"}</span>
+        ${item.q4k ? `<span class="badge q">4K</span>` : ""}
+      </div>
+      <div class="card-ov">
+        <div class="mini">
+          <button class="p" data-act="play" aria-label="Play">&#9654;</button>
+          <button data-act="list" aria-label="My list">${isSaved(item.id)?"&#10003;":"+"}</button>
+          <button data-act="info" aria-label="Info">i</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>${esc(item.n)}</h3>
+      <small>${esc(item.y||"—")} · ${esc((item.l||[]).slice(0,2).join(", ")||item.g?.[0]||"")}</small>
+    </div>`;
+  el.addEventListener("click", e=>{
+    const act = e.target.closest("[data-act]")?.dataset.act;
+    if(act === "play") play(item, 1, 1);
+    else if(act === "list") toggleList(item);
+    else openDetail(item);
+  });
+  return el;
+}
+
+function skeleton(n=8){
+  const f = document.createDocumentFragment();
+  for(let i=0;i<n;i++){
+    const d = document.createElement("div");
+    d.className = "sk";
+    d.innerHTML = `<div class="a"></div><div class="b"></div><div class="c"></div>`;
+    f.appendChild(d);
+  }
+  return f;
+}
+
+/* ============ rows ============ */
+function makeRow(title, items, opts={}){
+  const row = document.createElement("section");
+  row.className = "row";
+  const hd = document.createElement("div");
+  hd.className = "row-hd";
+  hd.innerHTML = `<h2>${esc(title)}</h2>${items?.length?`<span class="cnt">${items.length}</span>`:""}`;
+  row.appendChild(hd);
+
+  const track = document.createElement("div");
+  track.className = "track";
+  if(!items){
+    track.appendChild(skeleton());
+  } else if(!items.length){
+    row.style.display = "none";
+  } else {
+    items.forEach(i=>track.appendChild(card(i)));
+  }
+  row.appendChild(track);
+  row._track = track;
+  return row;
+}
+
+function fillRow(row, items){
+  if(!items || !items.length){ row.style.display = "none"; return; }
+  row.style.display = "";
+  const track = row._track;
+  track.innerHTML = "";
+  items.forEach(i=>track.appendChild(card(i)));
+  const c = row.querySelector(".cnt"); if(c) c.textContent = items.length;
+}
+
+const ROWS = [
+  { k:"trend",  t:"Trending Now",        p:"/trending/all/week", multi:true },
+  { k:"new",    t:"New Releases",        p:"/discover/movie", pr:{ sort_by:"primary_release_date.desc", "primary_release_date.lte":new Date().toISOString().slice(0,10), "vote_count.gte":15 } },
+  { k:"up",     t:"Coming Soon",         p:"/movie/upcoming" },
+  { k:"popm",   t:"Popular Movies",      p:"/discover/movie", pr:{ sort_by:"popularity.desc" } },
+  { k:"poptv",  t:"Popular Web Series",  p:"/discover/tv",    pr:{ sort_by:"popularity.desc" } },
+  { k:"hindi",  t:"Hindi Movies & Series", p:"/discover/movie", pr:{ with_original_language:"hi", sort_by:"popularity.desc" } },
+  { k:"action", t:"Action",              p:"/discover/movie", pr:{ with_genres:"28", sort_by:"popularity.desc" } },
+  { k:"comedy", t:"Comedy",              p:"/discover/movie", pr:{ with_genres:"35", sort_by:"popularity.desc" } },
+  { k:"scifi",  t:"Sci-Fi",              p:"/discover/movie", pr:{ with_genres:"878", sort_by:"popularity.desc" } },
+  { k:"thrill", t:"Thrillers",           p:"/discover/movie", pr:{ with_genres:"53", sort_by:"popularity.desc" } },
+  { k:"anime",  t:"Anime",               p:"/discover/tv",    pr:{ with_genres:"16", with_origin_country:"JP", sort_by:"popularity.desc" } },
+  { k:"top",    t:"Top Rated",           p:"/movie/top_rated" },
+  { k:"toptv",  t:"Top Rated Series",    p:"/tv/top_rated" }
+];
+
+async function buildRows(){
+  const main = $("#main");
+  main.innerHTML = "";
+
+  if(progress.length){
+    const r = makeRow("Continue Watching", progress.slice(0,12));
+    r._track.classList.add("grid-mode");
+    main.appendChild(r);
+  }
+  if(watchlist.length){
+    main.appendChild(makeRow("My List", watchlist.slice()));
+  }
+
+  if(!key()){
+    main.appendChild(makeRow("Trending (demo catalog)", DEMO.slice(0,20)));
+    main.appendChild(makeRow("Movies", DEMO.filter(d=>d.t==="movie")));
+    main.appendChild(makeRow("Web Series & TV", DEMO.filter(d=>d.t==="tv")));
+    main.appendChild(makeRow("Anime", DEMO.filter(d=>d.g.includes("Animation"))));
+    main.appendChild(makeRow("Hindi", DEMO.filter(d=>d.l.includes("Hindi"))));
+    const note = document.createElement("div");
+    note.className = "empty";
+    note.innerHTML = `<b>Demo mode</b>Settings me free TMDB key daalo — phir hazaron titles, naye releases, real posters aur search sab on ho jayega.`;
+    main.appendChild(note);
+    return;
+  }
+
+  for(const cfg of ROWS){
+    const row = makeRow(cfg.t, null);
+    main.appendChild(row);
+    try{
+      const d = await tmdb(cfg.p, cfg.pr || {});
+      let items = (d?.results || []).filter(x=>x.media_type !== "person");
+      items = items.map(x=>norm(x, cfg.multi ? (x.media_type==="tv"?"tv":"movie") : (cfg.p.includes("/tv")?"tv":"movie")));
+      items.forEach(i=>{ i.q4k = (i.pop||0) > 400; });
+      fillRow(row, items.slice(0, 20));
+    }catch(e){
+      fillRow(row, []);
+    }
+  }
+}
+
+/* ============ hero ============ */
+function renderHero(item){
+  const h = $("#hero");
+  if(!S.hero || !item){ h.style.display = "none"; return; }
+  h.style.display = "";
+  state.heroItem = item;
+  h.innerHTML = `
+    <div class="hero-bg" style="${item.back?`background-image:url('${item.back}')`:`background:linear-gradient(140deg,hsl(${hue(item.n)} 55% 22%),#08080b)`}"></div>
+    <div class="hero-in">
+      <div class="tag"><i></i> Featured ${item.t==="tv"?"Series":"Film"}</div>
+      <h1>${esc(item.n)}</h1>
+      <div class="meta">
+        ${item.r?`<span>&#9733; ${item.r}</span>`:""}
+        ${item.y?`<span>${esc(item.y)}</span>`:""}
+        <span class="chip-mini">4K UHD</span>
+        <span class="chip-mini">${esc((item.l||[]).slice(0,3).join(" · ")||"Multi-language")}</span>
+        <span class="chip-mini">${esc(item.g?.[0]||"")}</span>
+      </div>
+      <p>${esc(item.o || "Dekhne ke liye play dabao.")}</p>
+      <div class="hero-btns">
+        <button class="btn btn-play" id="heroPlay">&#9654; Play</button>
+        <button class="btn btn-ghost" id="heroList">${isSaved(item.id)?"&#10003; My List":"+ My List"}</button>
+        <button class="btn btn-ghost" id="heroInfo">Info</button>
+      </div>
+    </div>`;
+  $("#heroPlay").onclick = ()=>play(item,1,1);
+  $("#heroList").onclick = ()=>toggleList(item, true);
+  $("#heroInfo").onclick = ()=>openDetail(item);
+}
+
+/* ============ detail ============ */
+async function openDetail(item){
+  state.item = item;
+  state.season = 1;
+  const d = $("#detailSheet");
+  d.innerHTML = `
+    <div class="sheet-hero" style="${item.back?`background-image:url('${item.back}')`:`background:linear-gradient(140deg,hsl(${hue(item.n)} 55% 24%),#0f0f14)`}">
+      <button class="x" id="dClose">&#10005;</button>
+      <div class="inner"><h2>${esc(item.n)}</h2></div>
+    </div>
+    <div class="sheet-body">
+      <div class="meta">
+        ${item.r?`<span>&#9733; ${item.r}</span>`:""}
+        ${item.y?`<span>${esc(item.y)}</span>`:""}
+        <span class="chip-mini">${item.t==="tv"?"Web Series":"Movie"}</span>
+        ${(item.g||[]).map(g=>`<span class="chip-mini">${esc(g)}</span>`).join("")}
+      </div>
+      <p class="ovw">${esc(item.o || "No description available.")}</p>
+      <div class="actions">
+        <button class="btn btn-play" id="dPlay">&#9654; ${item.t==="tv"?"Play S1E1":"Play"}</button>
+        <button class="btn btn-ghost" id="dList">${isSaved(item.id)?"&#10003; Saved":"+ My List"}</button>
+      </div>
+
+      <div class="lbl">Audio language</div>
+      <div class="chips" id="dAudio"></div>
+
+      <div class="lbl">Quality</div>
+      <div class="chips" id="dQual"></div>
+
+      <div class="lbl">Subtitles</div>
+      <div class="chips" id="dSub"></div>
+
+      <div class="lbl">Server</div>
+      <div class="chips" id="dServer"></div>
+
+      ${item.t==="tv" ? `<div class="lbl">Episodes</div><div class="seasons" id="dSeasons"></div><div class="eps" id="dEps"></div>` : ""}
+    </div>`;
+  $("#detail").classList.add("on");
+  document.body.classList.add("lock");
+
+  const langs = (item.l && item.l.length) ? item.l : [codeName(S.audio) || "Hindi", "English"];
+  state.audio = langs.includes(codeName(S.audio)) ? S.audio : (LANGS.find(l=>l[1]===langs[0])?.[0] || "en");
+  state.sub = S.sub;
+
+  $("#dAudio").innerHTML = langs.map(n=>{
+    const c = LANGS.find(l=>l[1]===n)?.[0] || "en";
+    return `<button data-c="${c}" class="${c===state.audio?"on":""}">${esc(n)}</button>`;
+  }).join("");
+  $("#dAudio").onclick = e=>{
+    const b = e.target.closest("[data-c]"); if(!b) return;
+    state.audio = b.dataset.c;
+    $$("#dAudio button").forEach(x=>x.classList.toggle("on", x===b));
+  };
+
+  $("#dQual").innerHTML = QUALITIES.map(q=>`<button data-q="${q}" class="${q===S.quality?"on":""}">${q==="auto"?"Auto":q==="2160p"?"4K (2160p)":q}</button>`).join("");
+  $("#dQual").onclick = e=>{
+    const b = e.target.closest("[data-q]"); if(!b) return;
+    S.quality = b.dataset.q; save("set", S);
+    $$("#dQual button").forEach(x=>x.classList.toggle("on", x===b));
+  };
+
+  $("#dSub").innerHTML = `<button data-s="off" class="${S.sub==="off"?"on":""}">Off</button>` +
+    LANGS.slice(0,10).map(([c,n])=>`<button data-s="${c}" class="${c===state.sub?"on":""}">${n}</button>`).join("");
+  $("#dSub").onclick = e=>{
+    const b = e.target.closest("[data-s]"); if(!b) return;
+    state.sub = b.dataset.s;
+    $$("#dSub button").forEach(x=>x.classList.toggle("on", x===b));
+  };
+
+  $("#dServer").innerHTML = SERVERS.map((s,i)=>`<button data-v="${i}" class="${i===S.server?"on":""}">${esc(s.n.split("· ")[1])}</button>`).join("");
+  $("#dServer").onclick = e=>{
+    const b = e.target.closest("[data-v]"); if(!b) return;
+    S.server = +b.dataset.v; save("set", S);
+    $$("#dServer button").forEach(x=>x.classList.toggle("on", x===b));
+  };
+
+  $("#dClose").onclick = closeDetail;
+  $("#dPlay").onclick = ()=>play(item, state.season, state.episode);
+  $("#dList").onclick = ()=>{ toggleList(item); $("#dList").textContent = isSaved(item.id)?"✓ Saved":"+ My List"; };
+
+  if(item.t === "tv") renderSeasons(item);
+}
+
+function closeDetail(){
+  $("#detail").classList.remove("on");
+  document.body.classList.remove("lock");
+}
+
+async function renderSeasons(item){
+  const box = $("#dSeasons");
+  const eps = $("#dEps");
+  let count = 1;
+  if(key() && item.api){
+    try{
+      const d = await tmdb(`/tv/${item.id}`);
+      count = Math.min(d?.number_of_seasons || 1, 30);
+    }catch{}
+  }
+  box.innerHTML = Array.from({length:count},(_,i)=>`<button data-s="${i+1}" class="${i===0?"on":""}">Season ${i+1}</button>`).join("");
+  box.onclick = e=>{
+    const b = e.target.closest("[data-s]"); if(!b) return;
+    state.season = +b.dataset.s;
+    $$("#dSeasons button").forEach(x=>x.classList.toggle("on", x===b));
+    loadEps(item, state.season);
+  };
+  loadEps(item, 1);
+}
+
+async function loadEps(item, season){
+  const eps = $("#dEps");
+  eps.innerHTML = `<div class="empty" style="padding:16px">Loading…</div>`;
+  let list = [];
+  if(key() && item.api){
+    try{
+      const d = await tmdb(`/tv/${item.id}/season/${season}`);
+      list = d?.episodes || [];
+    }catch{}
+  }
+  if(!list.length){
+    list = Array.from({length:12},(_,i)=>({ episode_number:i+1, name:`Episode ${i+1}`, overview:"" }));
+  }
+  eps.innerHTML = "";
+  list.forEach(ep=>{
+    const b = document.createElement("button");
+    b.className = "ep";
+    b.innerHTML = `<span class="n">${ep.episode_number}</span>
+      <span class="tx"><b>${esc(ep.name || "Episode "+ep.episode_number)}</b><small>${esc((ep.overview||"").slice(0,80))}</small></span>
+      <span class="pl">&#9654;</span>`;
+    b.onclick = ()=>play(item, season, ep.episode_number);
+    eps.appendChild(b);
+  });
+}
+
+/* ============ play ============ */
+function buildURL(item, serverIdx, season, episode){
+  const s = SERVERS[serverIdx] || SERVERS[0];
+  let url = item.t === "tv" ? s.t(item.id, season, episode) : s.m(item.id);
+  const sep = url.includes("?") ? "&" : "?";
+  const params = [];
+  if(S.quality && S.quality !== "auto") params.push("quality=" + S.quality);
+  if(state.audio) params.push("ds_lang=" + state.audio);
+  if(state.sub && state.sub !== "off") params.push("sub_lang=" + state.sub);
+  return url + (params.length ? sep + params.join("&") : "");
+}
+
+function play(item, season=1, episode=1){
+  state.item = item; state.season = season; state.episode = episode;
+  const p = $("#player");
+  $("#pTitle").textContent = item.n + (item.t==="tv" ? ` · S${season}E${episode}` : "");
+  $("#pServer").innerHTML = SERVERS.map((s,i)=>`<option value="${i}" ${i===S.server?"selected":""}>${esc(s.n)}</option>`).join("");
+  $("#pQuality").innerHTML = QUALITIES.map(q=>`<option value="${q}" ${q===S.quality?"selected":""}>${q==="auto"?"Auto quality":q==="2160p"?"4K 2160p":q}</option>`).join("");
+  $("#pAudio").innerHTML = (item.l?.length?item.l:["English"]).map(n=>{
+    const c = LANGS.find(l=>l[1]===n)?.[0] || "en";
+    return `<option value="${c}" ${c===state.audio?"selected":""}>${esc(n)}</option>`;
+  }).join("");
+  $("#pSub").innerHTML = `<option value="off">Subs off</option>` +
+    LANGS.slice(0,10).map(([c,n])=>`<option value="${c}" ${c===state.sub?"selected":""}>${esc(n)} subs</option>`).join("");
+
+  $("#pNext").style.display = item.t === "tv" ? "" : "none";
+  p.classList.add("on");
+  document.body.classList.add("lock");
+  loadFrame();
+  addProgress(item, season, episode);
+}
+
+function loadFrame(){
+  const f = $("#pFrame");
+  $("#pLoad").style.display = "grid";
+  f.src = buildURL(state.item, S.server, state.season, state.episode);
+  f.onload = ()=> $("#pLoad").style.display = "none";
+  setTimeout(()=> $("#pLoad").style.display = "none", 6000);
+}
+
+function addProgress(item, season, episode){
+  progress = progress.filter(p=>p.id !== item.id);
+  progress.unshift({ ...item, season, episode, at: Date.now() });
+  progress = progress.slice(0, 30);
+  save("prog", progress);
+}
+
+/* ============ watchlist ============ */
+function toggleList(item, silent){
+  const i = watchlist.findIndex(w=>w.id === item.id);
+  if(i > -1){ watchlist.splice(i,1); if(!silent) toast("List se hataya"); }
+  else { watchlist.unshift(item); if(!silent) toast("My List me add kiya"); }
+  save("list", watchlist);
+  const hb = $("#heroList");
+  if(hb && state.heroItem?.id === item.id) hb.textContent = isSaved(item.id) ? "✓ My List" : "+ My List";
+  refreshLists();
+}
+
+function refreshLists(){
+  const m = $("#main");
+  if(!m) return;
+  const listRow = $$("#main .row").find(r=>r.querySelector("h2")?.textContent === "My List");
+  if(watchlist.length){
+    if(listRow) fillRow(listRow, watchlist.slice());
+    else buildRows();
+  } else if(listRow){ listRow.style.display = "none"; }
+}
+
+/* ============ search ============ */
+let searchTimer = null;
+
+async function doSearch(q){
+  q = q.trim();
+  const page = $("#searchPage");
+  if(!q){
+    page.classList.remove("on");
+    $("#main").style.display = "";
+    $("#hero").style.display = S.hero ? "" : "none";
+    return;
+  }
+  page.classList.add("on");
+  $("#main").style.display = "none";
+  $("#hero").style.display = "none";
+  $("#spTitle").textContent = `Results for "${q}"`;
+  $("#spSub").textContent = "Movies, series aur shows.";
+  const grid = $("#spGrid");
+  grid.innerHTML = `<div class="sk"><div class="a"></div><div class="b"></div><div class="c"></div></div>`.repeat(6);
+
+  let items = [];
+  if(key()){
+    try{
+      const d = await tmdb("/search/multi", { query:q, page:1 });
+      items = (d?.results || []).filter(x=>x.media_type === "movie" || x.media_type === "tv").map(x=>norm(x));
+    }catch(e){ toast("Search fail — key check karo"); }
+  }
+  const ql = q.toLowerCase();
+  const local = DEMO.filter(x=>x.n.toLowerCase().includes(ql));
+  const seen = new Set(items.map(i=>i.id));
+  local.forEach(i=>{ if(!seen.has(i.id)) items.push(i); });
+
+  grid.innerHTML = "";
+  if(!items.length){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>Kuch nahi mila</b>"${esc(q)}" ke liye koi title nahi. Spelling check karo ya doosra naam try karo.</div>`;
+    return;
+  }
+  items.forEach(i=>grid.appendChild(card(i)));
+}
+
+/* ============ settings ============ */
+function openSettings(){
+  $("#sKey").value = S.key;
+  $("#sAudio").innerHTML = LANGS.map(([c,n])=>`<option value="${c}" ${c===S.audio?"selected":""}>${n}</option>`).join("");
+  $("#sSub").innerHTML = `<option value="off" ${S.sub==="off"?"selected":""}>Off</option>` +
+    LANGS.map(([c,n])=>`<option value="${c}" ${c===S.sub?"selected":""}>${n}</option>`).join("");
+  $("#sQuality").value = S.quality;
+  $("#sMeta").value = S.meta;
+  $("#sAuto").classList.toggle("on", S.auto);
+  $("#sHero").classList.toggle("on", S.hero);
+  $("#settings").classList.add("on");
+}
+
+function applySettings(){
+  S.key = $("#sKey").value.trim();
+  S.audio = $("#sAudio").value;
+  S.sub = $("#sSub").value;
+  S.quality = $("#sQuality").value;
+  S.meta = $("#sMeta").value;
+  save("set", S);
+  $("#settings").classList.remove("on");
+  toast("Settings saved");
+  init(true);
+}
+
+/* ============ init ============ */
+function buildNav(){
+  const nav = $("#nav");
+  const items = [["Home","home"],["Movies","movies"],["Web Series","series"],["Anime","anime"],["Hindi","hindi"],["My List","list"]];
+  nav.innerHTML = items.map(([t,k])=>`<button data-k="${k}">${t}</button>`).join("");
+  nav.onclick = e=>{
+    const b = e.target.closest("[data-k]"); if(!b) return;
+    const k = b.dataset.k;
+    $$("#nav button").forEach(x=>x.classList.toggle("on", x===b));
+    $("#q").value = "";
+    doSearch("");
+    if(k === "home"){ window.scrollTo({top:0,behavior:"smooth"}); return; }
+    const qmap = { movies:"popular movies", series:"web series", anime:"anime", hindi:"hindi", list:"my list" };
+    if(k === "list"){
+      $("#searchPage").classList.add("on");
+      $("#main").style.display = "none";
+      $("#hero").style.display = "none";
+      $("#spTitle").textContent = "My List";
+      $("#spSub").textContent = watchlist.length ? `${watchlist.length} titles` : "Abhi khaali hai — card pe + dabao.";
+      const g = $("#spGrid"); g.innerHTML = "";
+      if(!watchlist.length) g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>List khaali hai</b>Kisi bhi card ke hover pe + dabao.</div>`;
+      watchlist.forEach(i=>g.appendChild(card(i)));
+      return;
+    }
+    $("#q").value = qmap[k];
+    doSearch(qmap[k]);
+  };
+}
+
+async function init(first){
+  buildNav();
+  const q = $("#q").value.trim();
+  if(!q){
+    $("#searchPage").classList.remove("on");
+    $("#main").style.display = "";
+    await buildRows();
+    let pool = catalog.length ? catalog : DEMO;
+    if(key()){
+      try{
+        const d = await tmdb("/trending/all/week");
+        const items = (d?.results||[]).filter(x=>x.media_type!=="person").map(x=>norm(x));
+        if(items.length) pool = items;
+      }catch{}
+    }
+    const pick = pool.filter(x=>x.back || !key());
+    renderHero(pick[Math.floor(Math.random()*Math.min(pick.length,10))] || pool[0]);
+  }
+}
+
+/* ============ events ============ */
+$("#searchBtn").onclick = ()=>{
+  const w = $("#searchwrap");
+  if(!w.classList.contains("open")){ w.classList.add("open"); $("#q").focus(); }
+  else if($("#q").value){ doSearch($("#q").value); }
+  else { w.classList.remove("open"); doSearch(""); }
+};
+
+$("#q").addEventListener("input", e=>{
+  clearTimeout(searchTimer);
+  const v = e.target.value;
+  searchTimer = setTimeout(()=>doSearch(v), 380);
+});
+
+$("#q").addEventListener("keydown", e=>{
+  if(e.key === "Enter"){ clearTimeout(searchTimer); doSearch(e.target.value); }
+});
+
+$("#settingsBtn").onclick = openSettings;
+$("#sSave").onclick = applySettings;
+$("#sReset").onclick = ()=>{
+  S = { ...DEF }; save("set", S);
+  watchlist = []; progress = []; save("list", []); save("prog", []);
+  $("#settings").classList.remove("on");
+  toast("Reset ho gaya"); init(true);
+};
+$("#sAuto").onclick = e=>{ S.auto = !S.auto; e.currentTarget.classList.toggle("on", S.auto); };
+$("#sHero").onclick = e=>{ S.hero = !S.hero; e.currentTarget.classList.toggle("on", S.hero); };
+
+$("#pClose").onclick = ()=>{
+  $("#player").classList.remove("on");
+  $("#pFrame").src = "about:blank";
+  document.body.classList.remove("lock");
+};
+$("#pServer").onchange = e=>{ S.server = +e.target.value; save("set", S); loadFrame(); };
+$("#pQuality").onchange = e=>{ S.quality = e.target.value; save("set", S); loadFrame(); };
+$("#pAudio").onchange = e=>{ state.audio = e.target.value; loadFrame(); };
+$("#pSub").onchange = e=>{ state.sub = e.target.value; loadFrame(); };
+$("#pOpen").onclick = ()=> window.open(buildURL(state.item, S.server, state.season, state.episode), "_blank", "noopener");
+$("#pNext").onclick = ()=>{ state.episode++; play(state.item, state.season, state.episode); };
+
+$("#detail").addEventListener("click", e=>{ if(e.target.id === "detail") closeDetail(); });
+
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape"){
+    if($("#player").classList.contains("on")) $("#pClose").click();
+    else if($("#detail").classList.contains("on")) closeDetail();
+    else if($("#settings").classList.contains("on")) $("#settings").classList.remove("on");
+  }
+  if(e.key === "/" && document.activeElement.tagName !== "INPUT"){
+    e.preventDefault(); $("#searchwrap").classList.add("open"); $("#q").focus();
+  }
+});
+
+window.addEventListener("scroll", ()=>{
+  $("#hdr").classList.toggle("solid", window.scrollY > 30);
+}, { passive:true });
+
+/* boot */
+init();
+</script>
+</body>
+</html>
