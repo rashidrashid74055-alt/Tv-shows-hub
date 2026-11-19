@@ -1,822 +1,506 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVAFLIX — Movies, Web Series & TV Shows</title>
-<meta name="theme-color" content="#08080b">
+<title>NOVAFLIX</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#08080b;--bg2:#0f0f14;--card:#16161d;--fg:#f3f3f6;--mut:#9aa0ad;--red:#e50914;--rad:10px;--hdr:64px}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--fg);font-family:"Segoe UI",Inter,system-ui,-apple-system,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body.lock{overflow:hidden}
-::-webkit-scrollbar{width:9px;height:9px}
-::-webkit-scrollbar-thumb{background:#2c2c36;border-radius:9px}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--r:#e50914;--bg:#0b0b0f;--c:#16161d;--t:#fff;--m:#9a9aa6}
+body{background:var(--bg);color:var(--t);font-family:'Segoe UI',Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.hidden{display:none!important}
 a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-img{display:block;max-width:100%}
-
-header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:16px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
-header.solid{background:rgba(8,8,11,.98);box-shadow:0 1px 0 #1c1c24}
-.logo{font-size:1.5rem;font-weight:900;letter-spacing:-1.2px;color:var(--red);flex-shrink:0}
+header{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:18px;padding:14px 22px;background:linear-gradient(180deg,#0b0b0f 20%,rgba(11,11,15,.85) 70%,transparent);backdrop-filter:blur(8px)}
+.logo{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--r);cursor:pointer;white-space:nowrap}
 .logo span{color:#fff}
-nav{display:flex;gap:14px;font-size:.85rem;color:#c9ccd4;overflow:hidden}
-nav button{padding:6px 2px;border-bottom:2px solid transparent;white-space:nowrap}
-nav button:hover{color:#fff;border-color:var(--red)}
-.spacer{flex:1}
-.searchwrap{position:relative;display:flex;align-items:center}
-.searchwrap input{width:0;padding:0;opacity:0;border:1px solid #2a2a34;background:#14141a;color:#fff;border-radius:24px;height:36px;transition:.28s;font-size:.85rem}
-.searchwrap.open input{width:220px;padding:0 36px 0 14px;opacity:1}
-.searchwrap input:focus{outline:none;border-color:var(--red)}
-.iconbtn{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;color:#dfe2e8;transition:.2s;font-size:1.05rem}
-.iconbtn:hover{background:#20202a;color:#fff}
-.searchwrap .iconbtn{position:absolute;right:0}
-.avatar{width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#e50914,#7a0510);display:grid;place-items:center;font-weight:800;font-size:.78rem;flex-shrink:0}
-
-.hero{position:relative;height:min(80vh,640px);display:flex;align-items:flex-end;padding:0 16px 46px}
-.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 20%;z-index:0}
-.hero::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(8,8,11,.97) 0%,rgba(8,8,11,.7) 44%,rgba(8,8,11,.1) 74%),linear-gradient(0deg,var(--bg) 2%,transparent 48%)}
-.hero-in{position:relative;z-index:2;max-width:600px}
-.tag{display:inline-flex;gap:7px;align-items:center;font-size:.68rem;font-weight:800;letter-spacing:1.5px;color:#ffd7da;text-transform:uppercase;margin-bottom:10px}
-.tag i{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red);font-style:normal}
-.hero h1{font-size:clamp(1.9rem,5.6vw,3.4rem);line-height:1.04;letter-spacing:-1.6px;font-weight:900;margin-bottom:12px;text-shadow:0 4px 30px #000}
-.hero .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.8rem;color:#cfd3da;margin-bottom:12px}
-.chip-mini{padding:2px 8px;border:1px solid #3a3a46;border-radius:4px;font-size:.72rem;color:#dfe2e8}
-.hero p{font-size:.9rem;color:#c3c7d0;line-height:1.55;margin-bottom:18px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:6px;font-weight:700;font-size:.9rem;transition:.18s;white-space:nowrap}
-.btn-play{background:#fff;color:#000}.btn-play:hover{background:#d9d9de}
-.btn-ghost{background:rgba(109,109,125,.55);color:#fff}.btn-ghost:hover{background:rgba(109,109,125,.85)}
-.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#ff1a26}
-
-main{padding-bottom:70px;position:relative;z-index:3}
-.row{margin:24px 0}
-.row-hd{display:flex;align-items:center;gap:10px;padding:0 16px;margin-bottom:10px}
-.row-hd h2{font-size:1rem;font-weight:700;letter-spacing:-.2px}
-.row-hd .more{margin-left:auto;font-size:.74rem;color:var(--mut)}
-.row-hd .more:hover{color:#fff}
-.track{display:flex;gap:9px;overflow-x:auto;padding:4px 16px 12px;scroll-behavior:smooth;scrollbar-width:none}
+nav{display:flex;gap:16px;font-size:14px;color:var(--m)}
+nav a{cursor:pointer;padding:4px 0;border-bottom:2px solid transparent}
+nav a:hover,nav a.on{color:#fff;border-color:var(--r)}
+.srch{margin-left:auto;display:flex;align-items:center;background:#1c1c26;border:1px solid #2c2c3a;border-radius:8px;padding:7px 12px;gap:8px;width:260px}
+.srch input{background:none;border:0;outline:0;color:#fff;width:100%;font-size:14px}
+@media(max-width:760px){nav{display:none}.srch{width:150px}}
+main{padding-bottom:60px}
+#hero{position:relative;height:62vh;min-height:380px;display:flex;align-items:flex-end;background-size:cover;background-position:center 20%;padding:30px 22px 40px}
+#hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,15,.15),rgba(11,11,15,.6) 55%,var(--bg))}
+.hero-in{position:relative;z-index:2;max-width:640px}
+.hero-in h1{font-size:clamp(26px,5vw,52px);line-height:1.05;margin-bottom:12px}
+.hero-in p{color:#d3d3dd;font-size:14px;line-height:1.5;max-height:66px;overflow:hidden;margin-bottom:16px}
+.meta{display:flex;gap:12px;font-size:13px;color:#cfcfda;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.rate{color:#46d369;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:6px;padding:11px 22px;font-size:15px;font-weight:700;cursor:pointer;background:#e6e6e6;color:#000}
+.btn:hover{background:#fff}
+.btn.ghost{background:rgba(90,90,110,.55);color:#fff}
+.btn.ghost:hover{background:rgba(120,120,150,.7)}
+.btn.red{background:var(--r);color:#fff}
+.row{margin:26px 0 6px;padding:0 22px}
+.row h2{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.row h2 b{font-size:12px;color:var(--m);font-weight:500;cursor:pointer}
+.row h2 b:hover{color:#fff}
+.track{display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
 .track::-webkit-scrollbar{display:none}
-
-.card{width:158px;flex:0 0 auto;position:relative;border-radius:var(--rad);overflow:hidden;background:var(--card);transition:transform .22s,box-shadow .22s}
-.card:hover{transform:scale(1.045);box-shadow:0 12px 34px rgba(0,0,0,.7);z-index:5}
-.poster{aspect-ratio:2/3;position:relative;overflow:hidden;background:#101018}
-.poster img{width:100%;height:100%;object-fit:cover}
-.ph{width:100%;height:100%;display:grid;place-items:center;padding:10px;text-align:center;background:linear-gradient(150deg,hsl(var(--h) 55% 24%),hsl(calc(var(--h) + 55) 65% 8%))}
-.ph b{font-size:.78rem;font-weight:800;line-height:1.2;color:#fff;text-shadow:0 2px 10px #000}
-.card-top{position:absolute;top:6px;left:6px;right:6px;display:flex;gap:5px;align-items:flex-start}
-.badge{font-size:.6rem;font-weight:800;padding:3px 6px;border-radius:4px;letter-spacing:.5px;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);text-transform:uppercase}
-.badge.q{background:rgba(229,9,20,.92);color:#fff}
-.badge.r{background:rgba(20,20,26,.88);color:#ffd166}
-.badge.t{background:rgba(20,20,26,.88);color:#8ec5ff}
-.card-body{padding:8px 9px 10px}
-.card-body h3{font-size:.77rem;font-weight:600;line-height:1.28;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.05em}
-.card-body small{display:block;font-size:.65rem;color:var(--mut);margin-top:4px}
-.card-ov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.5) 46%,transparent 74%);opacity:0;transition:.22s;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:9px}
-.card:hover .card-ov{opacity:1}
-.mini{display:flex;gap:6px}
-.mini button{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;font-size:.78rem;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px)}
-.mini button:hover{background:#fff;color:#000}
-.mini .p{background:#fff;color:#000;border-color:#fff}
-
-.sk{width:158px;flex:0 0 auto;border-radius:var(--rad);overflow:hidden}
-.sk .a{aspect-ratio:2/3;background:linear-gradient(100deg,#14141c 30%,#1e1e29 50%,#14141c 70%);background-size:220% 100%;animation:sh 1.3s infinite}
-.sk .b{height:9px;margin:9px;border-radius:4px;background:#191922;animation:sh 1.3s infinite}
-@keyframes sh{0%{background-position:180% 0}100%{background-position:-80% 0}}
-
-#page{display:none;padding:calc(var(--hdr) + 18px) 16px 80px;min-height:100vh}
-#page.on{display:block}
-#page h1{font-size:1.28rem;margin-bottom:4px;letter-spacing:-.4px}
-#page .sub{color:var(--mut);font-size:.8rem;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
-.grid .card{width:auto}
-.empty{padding:50px 10px;text-align:center;color:var(--mut);font-size:.88rem;line-height:1.7}
-.empty b{display:block;color:#fff;font-size:1.02rem;margin-bottom:6px}
-
-.overlay{position:fixed;inset:0;z-index:200;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.84);backdrop-filter:blur(5px);overflow-y:auto;padding:32px 12px}
-.overlay.on{display:flex}
-.sheet{width:100%;max-width:880px;background:var(--bg2);border:1px solid #23232e;border-radius:14px;overflow:hidden;box-shadow:0 30px 80px #000;animation:pop .22s ease}
-@keyframes pop{from{transform:translateY(16px) scale(.985);opacity:0}to{transform:none;opacity:1}}
-.sheet-hero{position:relative;height:270px;background-size:cover;background-position:center 20%}
-.sheet-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,var(--bg2) 3%,rgba(15,15,20,.3) 62%,transparent)}
-.sheet-hero .x{position:absolute;top:12px;right:12px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.72);display:grid;place-items:center}
-.sheet-hero .inner{position:absolute;bottom:14px;left:16px;right:16px;z-index:2}
-.sheet-hero h2{font-size:1.7rem;font-weight:900;letter-spacing:-.9px;line-height:1.1;margin-bottom:8px}
-.sheet-body{padding:14px 16px 22px}
-.sheet-body .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;color:#c5c9d1;margin-bottom:12px;align-items:center}
-.ovw{font-size:.87rem;line-height:1.62;color:#c8ccd4;margin-bottom:14px}
-.lbl{font-size:.67rem;letter-spacing:1.3px;text-transform:uppercase;color:var(--mut);margin:14px 0 7px;font-weight:700}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{padding:6px 12px;border:1px solid #2e2e3a;border-radius:20px;font-size:.75rem;color:#d3d6dd;transition:.16s}
-.chips button:hover{border-color:#5a5a6c;color:#fff}
-.chips button.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:6px}
-.seasons{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
-.seasons::-webkit-scrollbar{display:none}
-.seasons button{padding:7px 14px;border-radius:20px;background:#1b1b24;font-size:.78rem;white-space:nowrap;border:1px solid transparent}
-.seasons button.on{background:var(--red);font-weight:700}
-.eps{display:flex;flex-direction:column;gap:8px;margin-top:10px;max-height:360px;overflow-y:auto}
-.ep{display:flex;gap:10px;align-items:center;padding:7px;border-radius:8px;background:#14141c;border:1px solid #20202a;text-align:left;transition:.16s}
-.ep:hover{background:#1d1d27;border-color:#3a3a4a}
-.ep img{width:96px;height:56px;object-fit:cover;border-radius:5px;flex-shrink:0;background:#0d0d13}
-.ep .tx{flex:1;min-width:0}
-.ep .tx b{display:block;font-size:.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ep .tx small{font-size:.67rem;color:var(--mut);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
-.ep .pl{width:30px;height:30px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;flex-shrink:0;font-size:.7rem}
-
-#player{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column}
-#player.on{display:flex}
-.p-bar{display:flex;align-items:center;gap:7px;padding:8px 10px;background:#0c0c11;border-bottom:1px solid #1d1d26;flex-wrap:wrap}
-.p-bar .ttl{font-size:.78rem;font-weight:700;max-width:28vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.p-bar .grp{display:flex;align-items:center;gap:5px;margin-left:auto;flex-wrap:wrap}
-select{background:#16161e;color:#e6e8ee;border:1px solid #2b2b38;border-radius:6px;padding:6px 8px;font-size:.72rem;cursor:pointer}
-select:focus{outline:none;border-color:var(--red)}
-.hin{background:#1b3a1f;border:1px solid #2f6b36;color:#b8f2c0;border-radius:6px;padding:6px 11px;font-size:.74rem;font-weight:800}
-.hin.on{background:#1f7a2c;color:#fff;border-color:#2fbe45}
-.nxt{background:#20202a;border:1px solid #3a3a4a;color:#dfe2e8;border-radius:6px;padding:6px 10px;font-size:.72rem}
-.nxt:hover{background:#2a2a36}
-.p-frame{flex:1;position:relative;background:#000}
-.p-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.p-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:.85rem;pointer-events:none;z-index:1}
-.spin{width:34px;height:34px;border:3px solid #2a2a36;border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.p-foot{padding:8px 11px;background:#0c0c11;border-top:1px solid #1d1d26;display:flex;gap:8px;flex-wrap:wrap;font-size:.7rem;color:var(--mut);align-items:center}
-.p-foot b{color:#c9ccd4}
-
-#settings{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);z-index:250;background:#0d0d13;border-left:1px solid #23232e;transform:translateX(102%);transition:transform .3s;overflow-y:auto;padding:20px}
-#settings.on{transform:none}
-#settings h2{font-size:1.05rem;margin-bottom:4px}
-#settings .hint{font-size:.74rem;color:var(--mut);line-height:1.55;margin-bottom:16px}
-.field{margin-bottom:15px}
-.field label{display:block;font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:6px;font-weight:700}
-.field select{width:100%;padding:9px 11px;border-radius:7px;font-size:.82rem}
-.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #1b1b24;font-size:.83rem}
-.sw{width:42px;height:23px;border-radius:20px;background:#2b2b38;position:relative;flex-shrink:0;transition:.2s}
-.sw::after{content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
-.sw.on{background:var(--red)}
-.sw.on::after{transform:translateX(19px)}
-.srow{display:flex;gap:8px;margin-top:18px}
-.srow button{flex:1;padding:10px;border-radius:7px;font-size:.8rem;font-weight:700}
-
-#toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,90px);z-index:400;background:#fff;color:#000;padding:10px 20px;border-radius:24px;font-size:.82rem;font-weight:700;transition:transform .28s;box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none}
-#toast.on{transform:translate(-50%,0)}
-footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font-size:.73rem;line-height:1.8;text-align:center}
-
-@media(max-width:760px){
-  nav{display:none}
-  .hero{height:74vh;padding-bottom:28px}
-  .card,.sk{width:124px}
-  .searchwrap.open input{width:150px}
-  .p-bar .ttl{max-width:100%;order:-1;width:100%}
-  .p-bar .grp{margin-left:0;width:100%}
-  .p-bar select{flex:1;min-width:0}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:9px}
-  .sheet-hero{height:200px}
-  .sheet-hero h2{font-size:1.26rem}
-  .ep img{width:78px;height:46px}
-}
+.card{flex:0 0 148px;cursor:pointer;position:relative}
+.card img{width:148px;height:222px;object-fit:cover;border-radius:7px;background:#1e1e28;display:block}
+.card:hover img{outline:2px solid var(--r)}
+.card .cn{font-size:12px;color:#c8c8d4;margin-top:6px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;padding:16px 22px}
+.grid .card{flex:none;width:auto}
+.grid .card img{width:100%;height:auto;aspect-ratio:2/3}
+#sentinel{height:40px}
+#detail{padding-bottom:60px}
+.dback{position:relative;height:52vh;min-height:320px;background-size:cover;background-position:center 18%}
+.dback::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,15,.2),rgba(11,11,15,.75) 60%,var(--bg))}
+.dwrap{max-width:900px;margin:-140px auto 0;position:relative;z-index:3;padding:0 22px}
+.dwrap h1{font-size:clamp(24px,4vw,42px);margin-bottom:12px}
+.dwrap .desc{color:#c9c9d6;font-size:14px;line-height:1.6;margin:14px 0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.chip{padding:8px 15px;border-radius:20px;background:#20202b;border:1px solid #31313f;font-size:13px;cursor:pointer;color:#d7d7e2}
+.chip:hover{border-color:#555}
+.chip.on{background:var(--r);border-color:var(--r);color:#fff;font-weight:700}
+.lbl{font-size:12px;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-top:18px}
+select{background:#20202b;color:#fff;border:1px solid #31313f;border-radius:6px;padding:8px 10px;font-size:13px;outline:0}
+.stabs{display:flex;gap:8px;overflow-x:auto;margin:22px 0 14px;padding-bottom:6px;scrollbar-width:none}
+.stabs::-webkit-scrollbar{display:none}
+.ep{display:flex;gap:12px;padding:12px;border-radius:8px;cursor:pointer;border-bottom:1px solid #1d1d27}
+.ep:hover{background:#16161f}
+.ep img{width:130px;height:74px;object-fit:cover;border-radius:5px;background:#22222e;flex:0 0 auto}
+.ep .en{font-size:14px;font-weight:600;margin-bottom:5px}
+.ep .eo{font-size:12px;color:var(--m);line-height:1.45;max-height:54px;overflow:hidden}
+#player{position:fixed;inset:0;z-index:200;background:#000;display:flex;flex-direction:column}
+.pbar{display:flex;align-items:center;gap:9px;padding:9px 14px;background:#0d0d12;border-bottom:1px solid #1e1e28;flex-wrap:wrap}
+.pbar .pt{font-size:13px;font-weight:700;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:auto}
+.pb{background:#1d1d27;border:1px solid #2e2e3c;color:#e8e8f0;border-radius:6px;padding:7px 11px;font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pb:hover{background:#2a2a38}
+.pb.act{background:var(--r);border-color:var(--r);color:#fff;font-weight:700}
+.pb.hi{font-size:13px;font-weight:800}
+.fwrap{flex:1;position:relative;background:#000}
+.fwrap iframe{width:100%;height:100%;border:0;display:block}
+.menu{position:absolute;top:100%;right:0;margin-top:6px;background:#15151d;border:1px solid #2c2c3a;border-radius:8px;padding:6px;min-width:150px;max-height:300px;overflow:auto;z-index:20;box-shadow:0 10px 30px #000a}
+.menu div{padding:9px 12px;border-radius:5px;font-size:13px;cursor:pointer;white-space:nowrap}
+.menu div:hover{background:#262633}
+.menu div.on{color:var(--r);font-weight:700}
+.rel{position:relative}
+.tip{padding:8px 14px;background:#15151d;border-top:1px solid #1e1e28;font-size:12px;color:#a9a9b8;line-height:1.5}
+.tip b{color:#fff}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:#e50914;color:#fff;padding:11px 20px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:500;transition:.3s;opacity:0;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+.load{padding:40px;text-align:center;color:var(--m)}
+.back{position:fixed;top:14px;left:14px;z-index:80;width:40px;height:40px;border-radius:50%;background:#000b;border:0;color:#fff;font-size:19px;cursor:pointer}
+.back:hover{background:#000}
 </style>
 </head>
 <body>
 
-<header id="hdr">
-  <div class="logo">NOVA<span>FLIX</span></div>
-  <nav id="nav"></nav>
-  <div class="spacer"></div>
-  <div class="searchwrap" id="searchwrap">
-    <input id="q" type="search" placeholder="Movies, series, shows..." autocomplete="off" aria-label="Search">
-    <button class="iconbtn" id="searchBtn" aria-label="Search">&#128269;</button>
+<header>
+  <div class="logo" onclick="goHome()">NOVA<span>FLIX</span></div>
+  <nav>
+    <a onclick="goHome()">होम</a>
+    <a onclick="browse('movie')">फ़िल्में</a>
+    <a onclick="browse('series')">वेब सीरीज़</a>
+    <a onclick="showList()">मेरी लिस्ट</a>
+  </nav>
+  <div class="srch">
+    <span>🔍</span>
+    <input id="q" placeholder="फ़िल्म, सीरीज़ खोजें..." autocomplete="off">
   </div>
-  <button class="iconbtn" id="settingsBtn" aria-label="Settings">&#9881;</button>
-  <div class="avatar">NF</div>
 </header>
 
-<section class="hero" id="hero"></section>
-<main id="main"></main>
-<section id="page"><h1 id="pTitle">Browse</h1><div class="sub" id="pSub"></div><div class="grid" id="pGrid"></div><div id="pSentinel" style="height:40px"></div></section>
+<main id="app">
+  <section id="hero"></section>
+  <div id="rows"></div>
+  <div id="sentinel"></div>
+</main>
 
-<div class="overlay" id="detail"><div class="sheet" id="detailSheet"></div></div>
+<div id="detail" class="hidden"></div>
 
-<div id="player">
-  <div class="p-bar">
-    <button class="iconbtn" id="pClose" aria-label="Close">&#10005;</button>
-    <div class="ttl" id="pTitleTxt">—</div>
-    <div class="grp">
-      <button class="hin" id="pHindi">हिंदी</button>
-      <button class="nxt" id="pNextSrv">next server</button>
-      <select id="pServer" aria-label="Server"></select>
-      <select id="pQuality" aria-label="Quality"></select>
-      <select id="pAudio" aria-label="Audio"></select>
-      <select id="pSub" aria-label="Subtitles"></select>
-      <select id="pSpeed" aria-label="Speed"></select>
-      <button class="iconbtn" id="pReload" title="Reload" aria-label="Reload">&#8635;</button>
-      <button class="iconbtn" id="pOpen" title="New tab" aria-label="New tab">&#8599;</button>
+<div id="player" class="hidden">
+  <div class="pbar">
+    <button class="pb" onclick="closePlayer()">✕</button>
+    <div class="pt" id="pTitle"></div>
+    <div class="rel">
+      <button class="pb hi act" id="pAudioBtn" onclick="toggleMenu('mAudio')">🔊 <span id="pAudioTxt">हिंदी</span> ▾</button>
+      <div class="menu hidden" id="mAudio"></div>
     </div>
+    <div class="rel">
+      <button class="pb" id="pQualBtn" onclick="toggleMenu('mQual')">⚙️ <span id="pQualTxt">Auto</span> ▾</button>
+      <div class="menu hidden" id="mQual"></div>
+    </div>
+    <div class="rel">
+      <button class="pb" onclick="toggleMenu('mSub')">💬 <span id="pSubTxt">सबटाइटल</span> ▾</button>
+      <div class="menu hidden" id="mSub"></div>
+    </div>
+    <button class="pb" id="pSrvBtn" onclick="nextServer()">⏭ अगला सर्वर</button>
+    <button class="pb" onclick="openTab()">↗ नई टैब</button>
   </div>
-  <div class="p-frame"><div class="p-load" id="pLoad"><div class="spin"></div></div>
-    <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe></div>
-  <div class="p-foot">
-    <span>Hindi na lage to <b>हिंदी</b> dabao, phir <b>next server</b>. Player ke andar <b>&#9881;</b> se bhi audio track milta hai.</span>
-    <span class="spacer"></span>
-    <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 14px;font-size:.74rem">Next episode &#8250;</button>
-  </div>
+  <div class="fwrap"><iframe id="frame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen referrerpolicy="origin"></iframe></div>
+  <div class="tip">अगर audio अभी भी English है → player के अंदर <b>🔊 audio icon</b> दबाकर हिंदी चुनें, या <b>नई टैब</b> में खोलें। सर्वर: <b id="pSrvName">—</b></div>
 </div>
 
-<aside id="settings">
-  <h2>Settings</h2>
-  <div class="hint">Sab kuch isi device pe save hota hai. Na account, na ad.</div>
-  <div class="field"><label>Default audio</label><select id="sAudio"></select></div>
-  <div class="field"><label>Default subtitles</label><select id="sSub"></select></div>
-  <div class="field"><label>Default quality</label><select id="sQuality">
-    <option value="auto">Auto</option><option value="2160p">4K (2160p)</option>
-    <option value="1080p">1080p</option><option value="720p">720p</option>
-    <option value="480p">480p</option><option value="360p">360p</option></select></div>
-  <div class="toggle"><span>Autoplay next episode</span><div class="sw" id="sAuto"></div></div>
-  <div class="toggle"><span>Hero banner dikhao</span><div class="sw" id="sHero"></div></div>
-  <div class="srow"><button class="btn btn-red" id="sSave">Save</button><button class="btn btn-ghost" id="sReset">Reset</button></div>
-  <div style="height:30px"></div>
-</aside>
-
 <div id="toast"></div>
-<footer><b>NOVAFLIX</b> — personal streaming front-end.<br>Metadata: Cinemeta · Playback: public embed servers · UI ad-free.</footer>
 
 <script>
-"use strict";
-const CIN = "https://v3-cinemeta.strem.io";
-const IMGUP = u => u ? u.replace("/small/", "/medium/") : "";
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const API='https://v3-cinemeta.strem.io';
+const AUDIO=[['original','Original'],['hi','हिंदी'],['en','English'],['ta','तमिल'],['te','तेलुगु'],['ml','मलयालम'],['kn','कन्नड़'],['bn','बांग्ला'],['mr','मराठी'],['pa','पंजाबी'],['gu','गुजराती'],['ur','उर्दू']];
+const QUAL=[['','Auto'],['2160','4K'],['1080','1080p'],['720','720p'],['480','480p']];
 
-const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["ml","Malayalam"],["kn","Kannada"],["bn","Bengali"],["mr","Marathi"],["pa","Punjabi"],["gu","Gujarati"],["ur","Urdu"],["es","Spanish"],["fr","French"],["de","German"],["ja","Japanese"],["ko","Korean"],["zh","Chinese"],["ru","Russian"],["ar","Arabic"],["pt","Portuguese"],["tr","Turkish"],["it","Italian"]];
-const QUALS = ["auto","2160p","1080p","720p","480p","360p"];
-const SPEEDS = ["1","1.25","1.5","0.75","2"];
+const state={type:'movie',audio:localStorage.getItem('nfx_audio')||'hi',q:'',sub:'',srv:0,tries:0,
+  imdb:null,tmdb:null,title:null,season:1,ep:1,open:false,gen:null,skip:0,search:''};
 
-/* lk = audio param support, sk = subtitle param, qp = quality param
-   tmdb = sirf TMDB id se chalta hai */
-const SERVERS = [
-  { n:"Server 1 · Videasy", tmdb:true, lang:true, sk:"sub", qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
-      return base + qs(o);
-  }},
-  { n:"Server 2 · VidFast", tmdb:true, lang:true, sk:"sub", qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
-      return base + qs(o);
-  }},
-  { n:"Server 3 · VidSrc", lang:true, sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
-      return base + qs(o);
-  }},
-  { n:"Server 4 · VidSrc XYZ", lang:true, sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidsrc.xyz/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.xyz/embed/movie?imdb=${it.imdb}`;
-      return base + qs(o, true);
-  }},
-  { n:"Server 5 · VidLink", tmdb:true, lang:true, sk:"sub", qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
-      return base + qs(o);
-  }},
-  { n:"Server 6 · VidSrc ME", lang:true, sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
-      return base + qs(o, true);
-  }},
-  { n:"Server 7 · 2Embed", u:(it,s,e)=>{
-      return it.t==="tv" ? `https://www.2embed.cc/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${it.imdb}`;
-  }},
-  { n:"Server 8 · SuperEmbed", u:(it,s,e)=>{
-      return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
-  }}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600)}
+function lbl(code){const f=AUDIO.find(a=>a[0]===code);return f?f[1]:'Original'}
+function qlbl(code){const f=QUAL.find(a=>a[0]===code);return f?f[1]:'Auto'}
+async function J(u){const r=await fetch(u);if(!r.ok)throw new Error('x');return r.json()}
+
+/* ---------- servers ---------- */
+const SERVERS=[
+ {n:'Videasy',lang:1,q:1,tmdb:1,u:(id,t,s,e,q,l)=>'https://player.videasy.net/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?color=e50914'+(l?'&lang='+l+'':'')+(q?'&quality='+q:'')},
+ {n:'VidFast',lang:1,q:1,tmdb:1,u:(id,t,s,e,q,l)=>'https://vidfast.pro/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?'+(l?'lang='+l+'&':'')+(q?'quality='+q:'')},
+ {n:'VidLink',lang:1,q:1,tmdb:1,u:(id,t,s,e,q,l)=>'https://vidlink.pro/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?'+(l?'lang='+l+'&':'')+(q?'quality='+q:'')},
+ {n:'VidSrc.to',tmdb:0,u:(id,t)=>'https://vidsrc.to/embed/'+t+'/'+id+'?ds_lang='+(state.audio==='original'?'en':state.audio)},
+ {n:'VidSrc.xyz',tmdb:0,u:(id,t)=>'https://vidsrc.xyz/embed/'+t+'/'+id+'?ds_lang='+(state.audio==='original'?'en':state.audio)},
+ {n:'2Embed',tmdb:0,u:(id)=>'https://www.2embed.cc/embed/'+id},
+ {n:'SuperEmbed',tmdb:0,u:(id,t)=>'https://multiembed.mov/?video_id='+id+'&tmdb=0'+(t==='tv'?'&s='+state.season+'&e='+state.ep:'')}
 ];
 
-/* language 3 naam se bhejte hain — jo bhi server padhta ho, padh lega */
-function qs(o, hasQuery){
-  const p = [];
-  if(o.qp && o.q && o.q !== "auto") p.push(o.qp + "=" + (o.numeric ? o.q.replace("p","") : o.q));
-  if(o.lang && o.a){
-    p.push("lang=" + o.a);
-    if(o.a !== "en") p.push("ds_lang=" + o.a);
-    p.push("audio=" + o.a);
+function order(){
+  let l=SERVERS.map((s,i)=>i).filter(i=>SERVERS[i].tmdb?!!state.tmdb:true);
+  if(state.audio!=='original'){
+    const L=l.filter(i=>SERVERS[i].lang), O=l.filter(i=>!SERVERS[i].lang);
+    l=[...L,...O];
   }
-  if(o.sk && o.s) p.push(o.sk + "=" + o.s);
-  if(o.sp && o.sp !== "1") p.push("speed=" + o.sp);
-  if(!p.length) return "";
-  return (hasQuery ? "&" : "?") + p.join("&");
+  return l;
 }
 
-const ROWS = [
-  {t:"Trending Now", type:"movie", cat:"top"},
-  {t:"Web Series",   type:"series",cat:"top"},
-  {t:"New Releases", type:"movie", cat:"year"},
-  {t:"Action",       type:"movie", cat:"top", genre:"Action"},
-  {t:"Comedy",       type:"movie", cat:"top", genre:"Comedy"},
-  {t:"Sci-Fi",       type:"movie", cat:"top", genre:"Sci-Fi"},
-  {t:"Thriller",     type:"movie", cat:"top", genre:"Thriller"},
-  {t:"Horror",       type:"movie", cat:"top", genre:"Horror"},
-  {t:"Romance",      type:"movie", cat:"top", genre:"Romance"},
-  {t:"Crime",        type:"series",cat:"top", genre:"Crime"},
-  {t:"Anime",        type:"series",cat:"top", genre:"Animation"},
-  {t:"Animation",    type:"movie", cat:"top", genre:"Animation"},
-  {t:"Documentary",  type:"movie", cat:"top", genre:"Documentary"},
-  {t:"Fantasy",      type:"series",cat:"top", genre:"Fantasy"}
+/* ---------- catalog ---------- */
+function catURL(type,cat,genre,skip,search){
+  let u=API+'/catalog/'+type+'/'+cat;
+  if(genre)u+='/genre='+encodeURIComponent(genre);
+  u+='.json?skip='+(skip||0);
+  if(search)u+='&search='+encodeURIComponent(search);
+  return u;
+}
+
+const ROWS=[
+ {t:'ट्रेंडिंग फ़िल्में',type:'movie',cat:'top'},
+ {t:'ट्रेंडिंग वेब सीरीज़',type:'series',cat:'top'},
+ {t:'Action',type:'movie',cat:'top',g:'Action'},
+ {t:'Comedy',type:'movie',cat:'top',g:'Comedy'},
+ {t:'Drama सीरीज़',type:'series',cat:'top',g:'Drama'},
+ {t:'Sci-Fi',type:'movie',cat:'top',g:'Sci-Fi'},
+ {t:'Horror',type:'movie',cat:'top',g:'Horror'},
+ {t:'Romance',type:'movie',cat:'top',g:'Romance'},
+ {t:'Thriller सीरीज़',type:'series',cat:'top',g:'Thriller'},
+ {t:'Animation',type:'movie',cat:'top',g:'Animation'},
+ {t:'Crime सीरीज़',type:'series',cat:'top',g:'Crime'},
+ {t:'Documentary',type:'movie',cat:'top',g:'Documentary'}
 ];
 
-const DEF = {audio:"hi", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:true, server:0};
-let S = load("set", DEF);
-if(!S.audio && S.audio !== "") S.audio = "hi";
-let list = load("list", []);
-let prog = load("prog", []);
-const state = {audio:"hi", sub:"hi", season:1, episode:1, item:null, heroItem:null, browse:null};
-
-const $ = (s,r=document)=>r.querySelector(s);
-const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
-function load(k,d){ try{const v=localStorage.getItem("nfx_"+k); return v?JSON.parse(v):d}catch{return d} }
-function save(k,v){ try{localStorage.setItem("nfx_"+k, JSON.stringify(v))}catch{} }
-function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("on"),2000) }
-function esc(s=""){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])) }
-function hue(s){ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))%360; return h }
-const isSaved = id => list.some(w=>w.id===id);
-
-/* ---------- cinemeta ---------- */
-async function jget(url){ const r = await fetch(url); if(!r.ok) throw new Error(r.status); return r.json() }
-async function catalog(type, cat, opts={}){
-  const parts = [];
-  if(opts.genre) parts.push("genre="+encodeURIComponent(opts.genre));
-  if(opts.skip) parts.push("skip="+opts.skip);
-  if(opts.search) parts.push("search="+encodeURIComponent(opts.search));
-  const tail = parts.length ? "/"+parts.join("&") : "";
-  const d = await jget(`${CIN}/catalog/${type}/${cat}${tail}.json`);
-  return d.metas || [];
-}
-async function meta(type, id){ const d = await jget(`${CIN}/meta/${type}/${id}.json`); return d.meta || null }
-
-function norm(m, type){
-  const t = type || (m.type === "series" ? "tv" : "movie");
-  return {
-    id: m.imdb_id || m.id, imdb: m.imdb_id || m.id, tmdb: m.moviedb_id || "",
-    t, n: m.name || "Untitled",
-    y: String(m.releaseInfo || m.year || "").slice(0,4),
-    r: m.imdbRating ? String(m.imdbRating) : "",
-    o: m.description || "",
-    poster: IMGUP(m.poster), back: IMGUP(m.background),
-    g: m.genres || m.genre || [], cast: (m.cast||[]).slice(0,6),
-    country: m.country || "", vids: m.videos || []
-  };
+function cardHTML(it,type){
+  const p=it.poster||('https://images.metahub.space/poster/medium/'+it.id+'/img');
+  return '<div class="card" data-id="'+it.id+'" data-type="'+(it.type||type)+'">'+
+    '<img loading="lazy" src="'+p+'" onerror="this.style.background=\'linear-gradient(160deg,#26263a,#12121a)\';this.removeAttribute(\'src\')">'+
+    '<span class="cn">'+(it.name||'')+'</span></div>';
 }
 
-function audioSet(it){
-  const c = String(it.country || "").toLowerCase();
-  const isAnim = (it.g||[]).includes("Animation");
-  const orig = isAnim ? "Japanese" : "";
-  const indian = ["Hindi","English","Tamil","Telugu","Malayalam","Kannada","Bengali","Marathi","Punjabi","Gujarati"];
-  let base;
-  if(c.includes("india")) base = indian;
-  else if(c.includes("japan")) base = ["Japanese","English","Hindi","Spanish"];
-  else if(c.includes("korea")) base = ["Korean","English","Hindi","Japanese"];
-  else if(c.includes("france")) base = ["French","English","Hindi","Spanish"];
-  else if(c.includes("spain") || c.includes("mexico") || c.includes("argentina")) base = ["Spanish","English","Hindi","Portuguese"];
-  else if(c.includes("germany")) base = ["German","English","Hindi"];
-  else if(c.includes("italy")) base = ["Italian","English","Hindi"];
-  else if(c.includes("china") || c.includes("hong kong")) base = ["Chinese","English","Hindi"];
-  else if(c.includes("russia")) base = ["Russian","English","Hindi"];
-  else base = ["English","Hindi","Tamil","Telugu","Spanish","French","German","Japanese","Korean"];
-
-  const out = [{c:"", n:"Original" + (orig ? " ("+orig+")" : "")}];
-  base.forEach(n=>{ if(n === orig) return; const f = LANGS.find(l=>l[1]===n); if(f) out.push({c:f[0], n}) });
-  return out;
-}
-
-/* ---------- cards ---------- */
-function card(it){
-  const el = document.createElement("div");
-  el.className = "card";
-  el.innerHTML = `
-    <div class="poster">
-      ${it.poster ? `<img loading="lazy" src="${it.poster}" alt="${esc(it.n)}">` : `<div class="ph" style="--h:${hue(it.n)}"><b>${esc(it.n)}</b></div>`}
-      <div class="card-top">
-        ${it.r ? `<span class="badge r">&#9733; ${esc(it.r)}</span>` : ""}
-        <span class="badge t">${it.t==="tv"?"Series":"Movie"}</span>
-      </div>
-      <div class="card-ov"><div class="mini">
-        <button class="p" data-a="play" aria-label="Play">&#9654;</button>
-        <button data-a="list" aria-label="List">${isSaved(it.id)?"&#10003;":"+"}</button>
-        <button data-a="info" aria-label="Info">i</button>
-      </div></div>
-    </div>
-    <div class="card-body"><h3>${esc(it.n)}</h3><small>${esc(it.y||"—")}${it.g[0]?" · "+esc(it.g[0]):""}</small></div>`;
-  el.addEventListener("click", e=>{
-    const a = e.target.closest("[data-a]")?.dataset.a;
-    if(a === "play") play(it,1,1);
-    else if(a === "list") toggleList(it);
-    else openDetail(it);
+function bindCards(root){
+  root.querySelectorAll('.card').forEach(c=>{
+    c.onclick=()=>openDetail(c.dataset.id,c.dataset.type);
   });
-  return el;
-}
-function skeleton(n=8){
-  const f = document.createDocumentFragment();
-  for(let i=0;i<n;i++){ const d = document.createElement("div"); d.className="sk"; d.innerHTML=`<div class="a"></div><div class="b"></div>`; f.appendChild(d) }
-  return f;
-}
-function row(title, items, browseCfg){
-  const s = document.createElement("section");
-  s.className = "row";
-  s.innerHTML = `<div class="row-hd"><h2>${esc(title)}</h2>${browseCfg?`<button class="more">See all &#8250;</button>`:""}</div>`;
-  const tr = document.createElement("div"); tr.className = "track";
-  if(!items) tr.appendChild(skeleton()); else if(!items.length) s.style.display="none";
-  else items.forEach(i=>tr.appendChild(card(i)));
-  s.appendChild(tr); s._track = tr;
-  if(browseCfg) s.querySelector(".more").onclick = ()=>openBrowse(browseCfg);
-  return s;
-}
-function fillRow(s, items){
-  if(!items || !items.length){ s.style.display="none"; return }
-  s._track.innerHTML = ""; items.forEach(i=>s._track.appendChild(card(i)));
 }
 
-/* ---------- home ---------- */
-async function buildHome(){
-  const main = $("#main");
-  main.innerHTML = "";
-  if(prog.length) main.appendChild(row("Continue Watching", prog.slice(0,14)));
-  if(list.length) main.appendChild(row("My List", list.slice()));
-  const heroPool = [];
-
-  for(const cfg of ROWS){
-    const s = row(cfg.t, null, cfg);
-    main.appendChild(s);
+async function buildRows(){
+  const rowsEl=$('#rows');rowsEl.innerHTML='';
+  for(const r of ROWS){
     try{
-      const raw = await catalog(cfg.type, cfg.cat, {genre:cfg.genre});
-      const items = raw.map(m=>norm(m, cfg.type));
-      if(!heroPool.length && items.length) heroPool.push(...items.slice(0,10));
-      fillRow(s, items.slice(0,24));
-    }catch{ fillRow(s, []) }
+      const d=await J(catURL(r.type,r.cat,r.g,0,''));
+      if(!d.metas||!d.metas.length)continue;
+      const div=document.createElement('div');div.className='row';
+      div.innerHTML='<h2>'+r.t+' <b data-t="'+r.t+'" data-type="'+r.type+'" data-g="'+(r.g||'')+'">सभी देखें ›</b></h2>'+
+        '<div class="track">'+d.metas.slice(0,18).map(m=>cardHTML(m,r.type)).join('')+'</div>';
+      div.querySelector('b').onclick=()=>browse(r.type,r.g);
+      rowsEl.appendChild(div);
+      bindCards(div);
+    }catch(e){}
   }
-  renderHero(heroPool[Math.floor(Math.random()*Math.max(heroPool.length,1))]);
+  heroPick();
 }
 
-function renderHero(it){
-  const h = $("#hero");
-  if(!S.hero || !it){ h.style.display="none"; return }
-  h.style.display = "";
-  state.heroItem = it;
-  h.innerHTML = `
-    <div class="hero-bg" style="${it.back?`background-image:url('${it.back}')`:`background:linear-gradient(140deg,hsl(${hue(it.n)} 55% 22%),#08080b)`}"></div>
-    <div class="hero-in">
-      <div class="tag"><i></i> Featured ${it.t==="tv"?"Series":"Film"}</div>
-      <h1>${esc(it.n)}</h1>
-      <div class="meta">${it.r?`<span>&#9733; ${esc(it.r)}</span>`:""}${it.y?`<span>${esc(it.y)}</span>`:""}
-        <span class="chip-mini">4K UHD</span><span class="chip-mini">${esc(it.g.slice(0,2).join(" · ")||"Multi-language")}</span></div>
-      <p>${esc(it.o || "Play dabao aur dekho.")}</p>
-      <div class="hero-btns">
-        <button class="btn btn-play" id="hPlay">&#9654; Play</button>
-        <button class="btn btn-ghost" id="hList">${isSaved(it.id)?"&#10003; My List":"+ My List"}</button>
-        <button class="btn btn-ghost" id="hInfo">Info</button>
-      </div>
-    </div>`;
-  $("#hPlay").onclick = ()=>play(it,1,1);
-  $("#hList").onclick = ()=>{ toggleList(it); $("#hList").textContent = isSaved(it.id)?"✓ My List":"+ My List" };
-  $("#hInfo").onclick = ()=>openDetail(it);
-}
-
-/* ---------- browse ---------- */
-async function openBrowse(cfg){
-  $("#hero").style.display="none"; $("#main").style.display="none";
-  $("#page").classList.add("on");
-  $("#pTitle").textContent = cfg.t;
-  $("#pSub").textContent = cfg.type === "tv" ? "Web series" : "Movies";
-  const g = $("#pGrid"); g.innerHTML = ""; g.appendChild(skeleton(12));
-  state.browse = {cfg, skip:0, busy:false, done:false};
-  g.innerHTML = "";
-  await moreBrowse();
-}
-async function moreBrowse(){
-  const b = state.browse; if(!b || b.busy || b.done) return;
-  b.busy = true;
+async function heroPick(){
   try{
-    const raw = await catalog(b.cfg.type, b.cfg.cat, {genre:b.cfg.genre, skip:b.skip});
-    b.skip += raw.length;
-    if(!raw.length) b.done = true;
-    raw.forEach(m=>$("#pGrid").appendChild(card(norm(m, b.cfg.type))));
-    if(raw.length < 20) b.done = true;
-  }catch{ b.done = true }
-  b.busy = false;
+    const d=await J(catURL('movie','top',null,0,''));
+    const picks=(d.metas||[]).slice(0,6);
+    if(!picks.length)return;
+    const m=picks[Math.floor(Math.random()*picks.length)];
+    const bg=m.background||('https://images.metahub.space/background/medium/'+m.id+'/img');
+    $('#hero').style.backgroundImage='url('+bg+')';
+    $('#hero').innerHTML='<div class="hero-in"><h1>'+m.name+'</h1>'+
+      '<div class="meta">'+(m.releaseInfo?'<span>'+m.releaseInfo+'</span>':'')+(m.imdbRating?'<span class="rate">★ '+m.imdbRating+'</span>':'')+'<span>HD</span></div>'+
+      '<p>'+(m.description||'')+'</p>'+
+      '<button class="btn" onclick="openDetail(\''+m.id+'\',\'movie\')">▶ चलाएं</button> '+
+      '<button class="btn ghost" onclick="openDetail(\''+m.id+'\',\'movie\')">ℹ जानकारी</button></div>';
+  }catch(e){}
 }
-new IntersectionObserver(e=>{ if(e[0].isIntersecting) moreBrowse() }, {rootMargin:"400px"}).observe($("#pSentinel"));
+
+function goHome(){
+  state.search='';$('#q').value='';
+  $('#detail').classList.add('hidden');$('#app').classList.remove('hidden');
+  buildRows();window.scrollTo(0,0);
+}
+
+async function browse(type,g){
+  state.type=type;state.gen=g||null;state.skip=0;state.search='';
+  $('#hero').style.backgroundImage='';$('#hero').innerHTML='';
+  $('#detail').classList.add('hidden');
+  const app=$('#app');app.classList.remove('hidden');
+  $('#rows').innerHTML='<div class="row"><h2>'+(g?g+' — ':'')+(type==='movie'?'फ़िल्में':'वेब सीरीज़')+'</h2><div class="grid" id="gGrid"></div></div>';
+  $('#rows').className='';
+  $('#hero').classList.add('hidden');
+  await more();
+  window.scrollTo(0,0);
+}
+
+async function more(){
+  const g=$('#gGrid');if(!g)return;
+  try{
+    const d=await J(catURL(state.type,'top',state.gen,state.skip,state.search));
+    if(!d.metas||!d.metas.length)return;
+    const frag=document.createElement('div');
+    frag.innerHTML=d.metas.map(m=>cardHTML(m,state.type)).join('');
+    [...frag.children].forEach(c=>g.appendChild(c));
+    bindCards(g);
+    state.skip+=d.metas.length;
+  }catch(e){}
+}
+
+/* search */
+let sT;
+$('#q').oninput=e=>{
+  clearTimeout(sT);
+  const v=e.target.value.trim();
+  sT=setTimeout(()=>{
+    if(!v){goHome();return}
+    doSearch(v);
+  },420);
+};
+
+async function doSearch(v){
+  state.search=v;
+  $('#hero').classList.add('hidden');$('#hero').innerHTML='';
+  $('#detail').classList.add('hidden');$('#app').classList.remove('hidden');
+  $('#rows').innerHTML='<div class="row"><h2>"'+v+'" के नतीजे</h2><div class="grid" id="gGrid"></div></div>';
+  state.skip=0;
+  try{
+    const [a,b]=await Promise.all([J(catURL('movie','top',null,0,v)),J(catURL('series','top',null,0,v))]);
+    const all=[...(a.metas||[]),...(b.metas||[])];
+    const g=$('#gGrid');
+    if(!all.length){g.innerHTML='<div class="load">कुछ नहीं मिला</div>';return}
+    const frag=document.createElement('div');
+    frag.innerHTML=all.map(m=>cardHTML(m,m.type)).join('');
+    [...frag.children].forEach(c=>g.appendChild(c));
+    bindCards(g);
+  }catch(e){}
+}
 
 /* ---------- detail ---------- */
-async function openDetail(it){
-  state.item = it; state.season = 1; state.episode = 1;
-  $("#detail").classList.add("on"); document.body.classList.add("lock");
-  const d = $("#detailSheet");
-  d.innerHTML = `<div class="sheet-hero" style="${it.back?`background-image:url('${it.back}')`:""}">
-      <button class="x" id="dX">&#10005;</button><div class="inner"><h2>${esc(it.n)}</h2></div></div>
-    <div class="sheet-body"><div class="empty" style="padding:20px">Loading…</div></div>`;
-  $("#dX").onclick = closeDetail;
-
-  let full = it;
+async function openDetail(id,type){
   try{
-    const m = await meta(it.t === "tv" ? "series" : "movie", it.imdb);
-    if(m) full = norm(m, it.t);
-  }catch{}
+    const d=await J(API+'/meta/'+type+'/'+id+'.json');
+    const m=d.meta;if(!m)throw 0;
+    state.imdb=id;state.type=type;state.title=m.name;
+    state.tmdb=m.moviedb_id||m.tmdb_id||null;
+    state.season=1;state.ep=1;
 
-  const langs = audioSet(full);
-  state.audio = langs.some(l=>l.c === S.audio) ? S.audio : "hi";
-  if(!langs.some(l=>l.c === state.audio)) state.audio = "";
-  state.sub = S.sub || "hi";
+    $('#app').classList.add('hidden');
+    const det=$('#detail');det.classList.remove('hidden');
+    const bg=m.background||('https://images.metahub.space/background/medium/'+id+'/img');
 
-  d.innerHTML = `
-    <div class="sheet-hero" style="${full.back?`background-image:url('${full.back}')`:""}">
-      <button class="x" id="dX">&#10005;</button><div class="inner"><h2>${esc(full.n)}</h2></div></div>
-    <div class="sheet-body">
-      <div class="meta">${full.r?`<span>&#9733; ${esc(full.r)}</span>`:""}${full.y?`<span>${esc(full.y)}</span>`:""}
-        <span class="chip-mini">${full.t==="tv"?"Web Series":"Movie"}</span>
-        ${full.g.map(g=>`<span class="chip-mini">${esc(g)}</span>`).join("")}</div>
-      <p class="ovw">${esc(full.o || "Description available nahi hai.")}</p>
-      ${full.cast.length?`<p class="ovw" style="font-size:.8rem;color:#9aa0ad">Cast: ${esc(full.cast.join(", "))}</p>`:""}
-      <div class="actions"><button class="btn btn-play" id="dPlay">&#9654; ${full.t==="tv"?"Play S1E1":"Play"}</button>
-        <button class="btn btn-ghost" id="dList">${isSaved(full.id)?"&#10003; Saved":"+ My List"}</button></div>
-      <div class="lbl">Audio</div><div class="chips" id="dA"></div>
-      <div class="lbl">Quality</div><div class="chips" id="dQ"></div>
-      <div class="lbl">Subtitles</div><div class="chips" id="dS"></div>
-      <div class="lbl">Server</div><div class="chips" id="dV"></div>
-      ${full.t==="tv" ? `<div class="lbl">Seasons</div><div class="seasons" id="dSeasons"></div><div class="eps" id="dEps"></div>` : ""}
-    </div>`;
+    let eps='';
+    if(type==='series'&&m.videos&&m.videos.length){
+      const seasons=[...new Set(m.videos.map(v=>v.season))].filter(s=>s>0).sort((a,b)=>a-b);
+      eps='<div class="stabs">'+seasons.map(s=>'<div class="chip'+(s===1?' on':'')+'" data-s="'+s+'">सीज़न '+s+'</div>').join('')+'</div><div id="eps"></div>';
+      state._vids=m.videos;
+    }else state._vids=null;
 
-  $("#dX").onclick = closeDetail;
-  $("#dPlay").onclick = ()=>play(full, state.season, state.episode);
-  $("#dList").onclick = ()=>{ toggleList(full); $("#dList").textContent = isSaved(full.id)?"✓ Saved":"+ My List" };
+    det.innerHTML='<button class="back" onclick="closeDetail()">←</button>'+
+      '<div class="dback" style="background-image:url('+bg+')"></div>'+
+      '<div class="dwrap"><h1>'+(m.name||'')+'</h1>'+
+      '<div class="meta">'+(m.releaseInfo?'<span>'+m.releaseInfo+'</span>':'')+(m.runtime?'<span>'+m.runtime+'</span>':'')+(m.imdbRating?'<span class="rate">★ '+m.imdbRating+'</span>':'')+'</div>'+
+      '<div class="chips">'+(m.genres||[]).map(g=>'<span class="chip">'+g+'</span>').join('')+'</div>'+
+      '<p class="desc">'+(m.description||'')+'</p>'+
+      '<div class="lbl">🔊 Audio</div><div class="chips" id="aChips"></div>'+
+      '<div class="lbl">⚙️ Quality</div><div class="chips" id="qChips"></div>'+
+      '<div style="margin:22px 0;display:flex;gap:10px;flex-wrap:wrap">'+
+        '<button class="btn red" id="playBtn">▶ चलाएं</button>'+
+        '<button class="btn ghost" id="listBtn">＋ मेरी लिस्ट</button>'+
+      '</div>'+eps+'</div>';
 
-  $("#dA").innerHTML = langs.map(l=>`<button data-c="${l.c}" class="${l.c===state.audio?"on":""}">${esc(l.n)}</button>`).join("");
-  $("#dA").onclick = e=>{ const b=e.target.closest("[data-c]"); if(!b) return; state.audio=b.dataset.c; $$("#dA button").forEach(x=>x.classList.toggle("on",x===b)) };
+    renderAudioChips();renderQualChips();
+    $('#playBtn').onclick=()=>play();
+    $('#listBtn').onclick=()=>toggleList(id,m.name,m.poster,type);
 
-  $("#dQ").innerHTML = QUALS.map(q=>`<button data-q="${q}" class="${q===S.quality?"on":""}">${q==="auto"?"Auto":q==="2160p"?"4K (2160p)":q}</button>`).join("");
-  $("#dQ").onclick = e=>{ const b=e.target.closest("[data-q]"); if(!b) return; S.quality=b.dataset.q; save("set",S); $$("#dQ button").forEach(x=>x.classList.toggle("on",x===b)) };
-
-  $("#dS").innerHTML = `<button data-s="off" class="${state.sub==="off"?"on":""}">Off</button>` +
-    LANGS.slice(0,10).map(([c,n])=>`<button data-s="${c}" class="${c===state.sub?"on":""}">${n}</button>`).join("");
-  $("#dS").onclick = e=>{ const b=e.target.closest("[data-s]"); if(!b) return; state.sub=b.dataset.s; $$("#dS button").forEach(x=>x.classList.toggle("on",x===b)) };
-
-  $("#dV").innerHTML = SERVERS.map((s,i)=>`<button data-v="${i}" class="${i===S.server?"on":""}">${esc(s.n.split("· ")[1])}</button>`).join("");
-  $("#dV").onclick = e=>{ const b=e.target.closest("[data-v]"); if(!b) return; S.server=+b.dataset.v; save("set",S); $$("#dV button").forEach(x=>x.classList.toggle("on",x===b)) };
-
-  if(full.t === "tv") buildSeasons(full);
-}
-function closeDetail(){ $("#detail").classList.remove("on"); document.body.classList.remove("lock") }
-
-function buildSeasons(it){
-  const groups = {};
-  (it.vids||[]).forEach(v=>{
-    const s = Number(v.season ?? v.number ?? 0);
-    (groups[s] = groups[s] || []).push(v);
-  });
-  let seasons = Object.keys(groups).map(Number).filter(n=>n>0).sort((a,b)=>a-b);
-  if(!seasons.length) seasons = Object.keys(groups).map(Number).sort((a,b)=>a-b);
-  if(!seasons.length) seasons = [1];
-
-  const box = $("#dSeasons");
-  box.innerHTML = seasons.map((s,i)=>`<button data-s="${s}" class="${i===0?"on":""}">Season ${s}</button>`).join("");
-  box.onclick = e=>{
-    const b = e.target.closest("[data-s]"); if(!b) return;
-    state.season = +b.dataset.s;
-    $$("#dSeasons button").forEach(x=>x.classList.toggle("on", x===b));
-    renderEps(it, state.season);
-  };
-  state.season = seasons[0];
-  renderEps(it, seasons[0]);
+    if(state._vids){
+      const tabs=det.querySelectorAll('.stabs .chip');
+      tabs.forEach(t=>t.onclick=()=>{
+        tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');
+        renderEps(+t.dataset.s);
+      });
+      renderEps(1);
+    }
+    window.scrollTo(0,0);
+  }catch(e){toast('जानकारी नहीं मिली')}
 }
 
-function renderEps(it, season){
-  const box = $("#dEps");
-  const eps = (it.vids||[]).filter(v=>Number(v.season ?? v.number) === season);
-  if(!eps.length){ box.innerHTML = `<div class="empty" style="padding:14px">Is season ke episodes available nahi.</div>`; return }
-  eps.sort((a,b)=>Number(a.episode ?? a.number) - Number(b.episode ?? b.number));
-  box.innerHTML = "";
-  eps.forEach(ep=>{
-    const num = Number(ep.episode ?? ep.number);
-    const b = document.createElement("button");
-    b.className = "ep";
-    b.innerHTML = `${ep.thumbnail?`<img loading="lazy" src="${ep.thumbnail}" alt="">`:""}
-      <span class="tx"><b>${num}. ${esc(ep.name || ep.title || "Episode "+num)}</b><small>${esc((ep.overview || ep.description || "").slice(0,110))}</small></span>
-      <span class="pl">&#9654;</span>`;
-    b.onclick = ()=>play(it, season, num);
-    box.appendChild(b);
+function renderAudioChips(){
+  const c=$('#aChips');if(!c)return;
+  c.innerHTML=AUDIO.map(a=>'<div class="chip'+(state.audio===a[0]?' on':'')+'" data-a="'+a[0]+'">'+a[1]+'</div>').join('');
+  c.querySelectorAll('.chip').forEach(x=>x.onclick=()=>{audioSet(x.dataset.a);renderAudioChips()});
+}
+function renderQualChips(){
+  const c=$('#qChips');if(!c)return;
+  c.innerHTML=QUAL.map(a=>'<div class="chip'+(state.q===a[0]?' on':'')+'" data-q="'+a[0]+'">'+a[1]+'</div>').join('');
+  c.querySelectorAll('.chip').forEach(x=>x.onclick=()=>{state.q=x.dataset.q;renderQualChips();syncQ()});
+}
+
+function renderEps(s){
+  const box=$('#eps');if(!box)return;
+  const list=state._vids.filter(v=>v.season===s).sort((a,b)=>a.number-b.number);
+  box.innerHTML=list.map(v=>'<div class="ep" data-e="'+v.number+'">'+
+    '<img loading="lazy" src="'+(v.thumbnail||('https://images.metahub.space/background/medium/'+state.imdb+'/img'))+'" onerror="this.style.background=\'#22222e\'">'+
+    '<div><div class="en">'+v.number+'. '+(v.name||'Episode '+v.number)+'</div><div class="eo">'+(v.overview||'')+'</div></div></div>').join('');
+  box.querySelectorAll('.ep').forEach(e=>e.onclick=()=>{
+    state.season=s;state.ep=+e.dataset.e;play();
   });
+}
+
+function closeDetail(){$('#detail').classList.add('hidden');$('#app').classList.remove('hidden');goHome()}
+
+/* ---------- list ---------- */
+function getList(){try{return JSON.parse(localStorage.getItem('nfx_list')||'[]')}catch(e){return[]}}
+function toggleList(id,name,poster,type){
+  let l=getList();const i=l.findIndex(x=>x.id===id);
+  if(i>-1){l.splice(i,1);toast('लिस्ट से हटाया')}
+  else{l.push({id,name,poster,type});toast('लिस्ट में जोड़ा')}
+  localStorage.setItem('nfx_list',JSON.stringify(l));
+}
+function showList(){
+  const l=getList();
+  $('#hero').classList.add('hidden');$('#hero').innerHTML='';
+  $('#detail').classList.add('hidden');$('#app').classList.remove('hidden');
+  $('#rows').innerHTML='<div class="row"><h2>मेरी लिस्ट</h2><div class="grid" id="gGrid">'+
+    (l.length?l.map(m=>cardHTML(m,m.type)).join(''):'<div class="load">खाली है</div>')+'</div></div>';
+  bindCards($('#rows'));
 }
 
 /* ---------- player ---------- */
-function langServers(){ return SERVERS.map((s,i)=>({s,i})).filter(x=>x.s.lang).map(x=>x.i) }
-
-function safeServer(it, idx){
-  const srv = SERVERS[idx] || SERVERS[0];
-  if(srv.tmdb && !it.tmdb){
-    const alt = SERVERS.findIndex(x=>x.lang && !x.tmdb);
-    return alt > -1 ? alt : SERVERS.findIndex(x=>!x.tmdb);
-  }
-  return idx;
+function audioSet(code){
+  state.audio=code;
+  localStorage.setItem('nfx_audio',code);
+  syncAudio();
+  if(state.open)reloadSmart();
 }
+function syncAudio(){
+  const t=$('#pAudioTxt');if(t)t.textContent=lbl(state.audio);
+  const b=$('#pAudioBtn');
+  if(b)b.classList.toggle('act',state.audio!=='original');
+  const m=$('#mAudio');
+  if(m)m.querySelectorAll('div').forEach(d=>d.classList.toggle('on',d.dataset.a===state.audio));
+}
+function syncQ(){$('#pQualTxt').textContent=qlbl(state.q);if(state.open)loadFrame()}
 
-function buildURL(it, si, s, e){
-  const idx = safeServer(it, si);
-  const srv = SERVERS[idx] || SERVERS[0];
-  return srv.u(it, s, e, {
-    q: S.quality, numeric: !!srv.tmdb, qp: srv.qp,
-    a: srv.lang ? (state.audio || "") : "",
-    s: srv.sk ? (state.sub === "off" ? "" : (state.sub || "")) : "",
-    lang: srv.lang, sk: srv.sk, sp: S.speed
+function buildMenus(){
+  $('#mAudio').innerHTML=AUDIO.map(a=>'<div data-a="'+a[0]+'" class="'+(state.audio===a[0]?'on':'')+'">'+a[1]+'</div>').join('');
+  $('#mAudio').querySelectorAll('div').forEach(d=>d.onclick=()=>{audioSet(d.dataset.a);hideMenus()});
+  $('#mQual').innerHTML=QUAL.map(a=>'<div data-q="'+a[0]+'" class="'+(state.q===a[0]?'on':'')+'">'+a[1]+'</div>').join('');
+  $('#mQual').querySelectorAll('div').forEach(d=>d.onclick=()=>{state.q=d.dataset.q;syncQ();hideMenus()});
+  $('#mSub').innerHTML=AUDIO.filter(a=>a[0]!=='original').map(a=>'<div data-s="'+a[0]+'" class="'+(state.sub===a[0]?'on':'')+'">'+a[1]+'</div>').join('');
+  $('#mSub').querySelectorAll('div').forEach(d=>d.onclick=()=>{
+    state.sub=d.dataset.s;$('#pSubTxt').textContent=lbl(state.sub);
+    $('#mSub').querySelectorAll('div').forEach(x=>x.classList.toggle('on',x.dataset.s===state.sub));
+    loadFrame();hideMenus();
   });
 }
-
-async function play(it, s=1, e=1){
-  let item = it;
-  if(!item.tmdb){
-    try{
-      const m = await meta(item.t === "tv" ? "series" : "movie", item.imdb);
-      if(m){ const n = norm(m, item.t); n.tmdb = n.tmdb || item.tmdb; item = n }
-    }catch{}
-  }
-  state.item = item; state.season = s; state.episode = e;
-  if(!state.audio) state.audio = S.audio || "hi";
-  if(!state.sub) state.sub = S.sub || "hi";
-
-  const active = safeServer(item, S.server);
-  if(active !== S.server){ S.server = active; save("set", S) }
-
-  $("#pTitleTxt").textContent = item.n + (item.t==="tv" ? ` · S${s}E${e}` : "");
-  $("#pServer").innerHTML = SERVERS.map((x,i)=>`<option value="${i}" ${i===S.server?"selected":""}>${esc(x.n)}</option>`).join("");
-  $("#pQuality").innerHTML = QUALS.map(q=>`<option value="${q}" ${q===S.quality?"selected":""}>${q==="auto"?"Auto quality":q==="2160p"?"4K 2160p":q}</option>`).join("");
-  $("#pAudio").innerHTML = audioSet(item).map(l=>`<option value="${l.c}" ${l.c===state.audio?"selected":""}>${esc(l.n)}</option>`).join("");
-  $("#pSub").innerHTML = `<option value="off" ${state.sub==="off"?"selected":""}>Subs off</option>` +
-    LANGS.slice(0,10).map(([c,n])=>`<option value="${c}" ${c===state.sub?"selected":""}>${esc(n)} subs</option>`).join("");
-  $("#pSpeed").innerHTML = SPEEDS.map(v=>`<option value="${v}" ${v===S.speed?"selected":""}>${v}×</option>`).join("");
-  $("#pNext").style.display = item.t === "tv" ? "" : "none";
-  $("#pHindi").classList.toggle("on", state.audio === "hi");
-  $("#player").classList.add("on"); document.body.classList.add("lock");
-  loadFrame(); addProg(item, s, e);
+function toggleMenu(id){
+  const m=$('#'+id);const open=!m.classList.contains('hidden');
+  hideMenus();if(!open)m.classList.remove('hidden');
 }
+function hideMenus(){document.querySelectorAll('.menu').forEach(m=>m.classList.add('hidden'))}
+
+function play(){
+  const o=order();
+  if(!o.length){toast('कोई सर्वर उपलब्ध नहीं');return}
+  state.srv=o[0];state.tries=0;state.open=true;
+  $('#player').classList.remove('hidden');
+  $('#pTitle').textContent=state.title+(state.type==='series'?' · S'+state.season+'E'+state.ep:'');
+  buildMenus();syncAudio();$('#pQualTxt').textContent=qlbl(state.q);
+  loadFrame();
+}
+
 function loadFrame(){
-  $("#pLoad").style.display = "grid";
-  const f = $("#pFrame");
-  f.src = buildURL(state.item, S.server, state.season, state.episode);
-  setTimeout(()=>{ $("#pLoad").style.display = "none" }, 5500);
-}
-function addProg(it, s, e){
-  prog = prog.filter(p=>p.id !== it.id);
-  prog.unshift({...it, season:s, episode:e});
-  prog = prog.slice(0,30); save("prog", prog);
-}
-function forceLangServer(){
-  const cur = SERVERS[S.server];
-  if(cur && cur.lang) return;
-  const idx = langServers()[0];
-  if(idx !== undefined){ S.server = idx; save("set", S); $("#pServer").value = idx }
+  const s=SERVERS[state.srv];
+  if(!s)return;
+  const l=state.audio==='original'?'':state.audio;
+  const id=s.tmdb?state.tmdb:state.imdb;
+  if(!id){nextServer();return}
+  let url=s.u(id,state.type==='series'?'tv':'movie',state.season,state.ep,s.q?state.q:'',l);
+  if(state.sub&&s.lang)url+='&sub_lang='+state.sub;
+  $('#pSrvName').textContent=s.n;
+  $('#frame').src=url;
+  $('#pSrvBtn').classList.toggle('act',s.lang&&state.audio!=='original');
+  clearTimeout(state._to);
+  state._to=setTimeout(()=>{if(state.tries<2){state.tries++;nextServer(true)}},11000);
 }
 
-/* ---------- list ---------- */
-function toggleList(it){
-  const i = list.findIndex(w=>w.id === it.id);
-  if(i > -1){ list.splice(i,1); toast("List se hataya") }
-  else { list.unshift(it); toast("My List me add kiya") }
-  save("list", list);
-  const hb = $("#hList");
-  if(hb && state.heroItem?.id === it.id) hb.textContent = isSaved(it.id) ? "✓ My List" : "+ My List";
+function reloadSmart(){
+  const s=SERVERS[state.srv];
+  if(state.audio!=='original'&&!s.lang){
+    const i=SERVERS.findIndex(x=>x.lang&&(x.tmdb?!!state.tmdb:true));
+    if(i>-1)state.srv=i;
+  }
+  state.tries=0;
+  loadFrame();
 }
 
-/* ---------- search ---------- */
-let timer = null;
-async function doSearch(q){
-  q = q.trim();
-  const page = $("#page");
-  if(!q){
-    page.classList.remove("on");
-    $("#main").style.display = ""; $("#hero").style.display = S.hero ? "" : "none";
+function nextServer(auto){
+  const o=order();
+  const pos=o.indexOf(state.srv);
+  const nxt=o[pos+1];
+  if(nxt===undefined){
+    if(!auto)toast('सभी सर्वर आज़माए जा चुके');
     return;
   }
-  $("#main").style.display = "none"; $("#hero").style.display = "none";
-  page.classList.add("on");
-  $("#pTitle").textContent = `Results for "${q}"`;
-  $("#pSub").textContent = "Movies, series aur shows.";
-  const g = $("#pGrid"); g.innerHTML = ""; g.appendChild(skeleton(8));
-
-  let items = [];
-  try{
-    const [a,b] = await Promise.all([catalog("movie","top",{search:q}), catalog("series","top",{search:q})]);
-    items = [...a.map(m=>norm(m,"movie")), ...b.map(m=>norm(m,"tv"))];
-  }catch{}
-  const seen = new Set(); items = items.filter(i=>{ if(seen.has(i.id)) return false; seen.add(i.id); return true });
-
-  g.innerHTML = "";
-  if(!items.length){
-    g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>Kuch nahi mila</b>"${esc(q)}" ke liye koi title nahi. Spelling check karo.</div>`;
-    return;
-  }
-  items.forEach(i=>g.appendChild(card(i)));
-}
-
-/* ---------- settings ---------- */
-function openSettings(){
-  $("#sAudio").innerHTML = `<option value="" ${S.audio===""?"selected":""}>Original</option>` +
-    LANGS.map(([c,n])=>`<option value="${c}" ${c===S.audio?"selected":""}>${n}</option>`).join("");
-  $("#sSub").innerHTML = `<option value="off" ${S.sub==="off"?"selected":""}>Off</option>` +
-    LANGS.map(([c,n])=>`<option value="${c}" ${c===S.sub?"selected":""}>${n}</option>`).join("");
-  $("#sQuality").value = S.quality;
-  $("#sAuto").classList.toggle("on", S.auto);
-  $("#sHero").classList.toggle("on", S.hero);
-  $("#settings").classList.add("on");
-}
-
-/* ---------- nav ---------- */
-function buildNav(){
-  const nav = $("#nav");
-  const items = ["Home","Movies","Web Series","Anime","My List"];
-  nav.innerHTML = items.map(t=>`<button data-k="${t}">${t}</button>`).join("");
-  nav.onclick = e=>{
-    const b = e.target.closest("[data-k]"); if(!b) return;
-    const k = b.dataset.k;
-    $("#q").value = ""; doSearch("");
-    if(k === "Home"){ $("#page").classList.remove("on"); $("#main").style.display=""; $("#hero").style.display=S.hero?"":"none"; window.scrollTo({top:0,behavior:"smooth"}); return }
-    if(k === "My List"){ showList(); return }
-    const map = {Movies:{t:"Movies",type:"movie",cat:"top"}, "Web Series":{t:"Web Series",type:"series",cat:"top"}, Anime:{t:"Anime",type:"series",cat:"top",genre:"Animation"}};
-    openBrowse(map[k]);
-  };
-}
-function showList(){
-  $("#hero").style.display="none"; $("#main").style.display="none";
-  $("#page").classList.add("on");
-  $("#pTitle").textContent = "My List"; $("#pSub").textContent = list.length ? `${list.length} titles` : "Khaali hai — card pe + dabao.";
-  const g = $("#pGrid"); g.innerHTML = "";
-  if(!list.length) g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>List khaali hai</b>Kisi bhi card pe + dabao.</div>`;
-  list.forEach(i=>g.appendChild(card(i)));
-}
-
-/* ---------- events ---------- */
-$("#searchBtn").onclick = ()=>{
-  const w = $("#searchwrap");
-  if(!w.classList.contains("open")){ w.classList.add("open"); $("#q").focus() }
-  else if($("#q").value) doSearch($("#q").value);
-  else { w.classList.remove("open"); doSearch("") }
-};
-$("#q").addEventListener("input", e=>{ clearTimeout(timer); const v=e.target.value; timer=setTimeout(()=>doSearch(v), 400) });
-$("#q").addEventListener("keydown", e=>{ if(e.key==="Enter"){ clearTimeout(timer); doSearch(e.target.value) } });
-$("#settingsBtn").onclick = openSettings;
-$("#sSave").onclick = ()=>{
-  S.audio = $("#sAudio").value; S.sub = $("#sSub").value; S.quality = $("#sQuality").value;
-  state.audio = S.audio; state.sub = S.sub;
-  save("set", S); $("#settings").classList.remove("on"); toast("Settings saved");
-  $("#hero").style.display = S.hero ? "" : "none";
-};
-$("#sReset").onclick = ()=>{
-  S = {...DEF}; state.audio = "hi"; state.sub = "hi";
-  list = []; prog = []; save("set",S); save("list",[]); save("prog",[]);
-  $("#settings").classList.remove("on"); toast("Reset ho gaya"); buildHome();
-};
-$("#sAuto").onclick = e=>{ S.auto=!S.auto; e.currentTarget.classList.toggle("on", S.auto); save("set",S) };
-$("#sHero").onclick = e=>{ S.hero=!S.hero; e.currentTarget.classList.toggle("on", S.hero); save("set",S) };
-
-$("#pClose").onclick = ()=>{ $("#player").classList.remove("on"); $("#pFrame").src="about:blank"; document.body.classList.remove("lock") };
-$("#pServer").onchange = e=>{ S.server=+e.target.value; save("set",S); loadFrame() };
-$("#pQuality").onchange = e=>{ S.quality=e.target.value; save("set",S); loadFrame(); toast("Quality: "+S.quality) };
-$("#pAudio").onchange = e=>{ state.audio=e.target.value; $("#pHindi").classList.toggle("on", state.audio==="hi"); forceLangServer(); loadFrame() };
-$("#pSub").onchange = e=>{ state.sub=e.target.value; forceLangServer(); loadFrame() };
-$("#pSpeed").onchange = e=>{ S.speed=e.target.value; save("set",S); loadFrame() };
-$("#pReload").onclick = loadFrame;
-
-/* HINDI button — audio hi + language server */
-$("#pHindi").onclick = ()=>{
-  state.audio = "hi";
-  $("#pHindi").classList.add("on");
-  $("#pAudio").value = "hi";
-  const idx = langServers()[0];
-  if(idx !== undefined){ S.server = idx; save("set", S); $("#pServer").value = idx }
-  toast("Hindi audio try ho raha hai — na chale to next server");
+  state.srv=nxt;
   loadFrame();
-};
+}
 
-/* next server — language wale pehle */
-$("#pNextSrv").onclick = ()=>{
-  const order = [...langServers(), ...SERVERS.map((s,i)=>i).filter(i=>!SERVERS[i].lang)];
-  const pos = order.indexOf(S.server);
-  const nxt = order[(pos + 1) % order.length];
-  S.server = nxt; save("set", S);
-  $("#pServer").value = nxt;
-  toast(SERVERS[nxt].n);
-  loadFrame();
-};
+function openTab(){
+  const s=SERVERS[state.srv];if(!s)return;
+  const l=state.audio==='original'?'':state.audio;
+  const id=s.tmdb?state.tmdb:state.imdb;
+  window.open(s.u(id,state.type==='series'?'tv':'movie',state.season,state.ep,s.q?state.q:'',l),'_blank');
+}
 
-$("#pOpen").onclick = ()=> window.open(buildURL(state.item, S.server, state.season, state.episode), "_blank", "noopener");
-$("#pNext").onclick = ()=>{ state.episode++; play(state.item, state.season, state.episode) };
-$("#detail").addEventListener("click", e=>{ if(e.target.id === "detail") closeDetail() });
+function closePlayer(){
+  state.open=false;clearTimeout(state._to);
+  $('#frame').src='about:blank';
+  $('#player').classList.add('hidden');
+}
 
-document.addEventListener("keydown", e=>{
-  if(e.key === "Escape"){
-    if($("#player").classList.contains("on")) $("#pClose").click();
-    else if($("#detail").classList.contains("on")) closeDetail();
-    else if($("#settings").classList.contains("on")) $("#settings").classList.remove("on");
-  }
-  if(e.key === "/" && document.activeElement.tagName !== "INPUT"){
-    e.preventDefault(); $("#searchwrap").classList.add("open"); $("#q").focus();
-  }
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(state.open)closePlayer()}
 });
-window.addEventListener("scroll", ()=> $("#hdr").classList.toggle("solid", window.scrollY > 30), {passive:true});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.rel'))hideMenus();
+});
 
-/* boot */
-buildNav();
-buildHome();
+/* infinite scroll */
+new IntersectionObserver(es=>{
+  if(es[0].isIntersecting&&$('#gGrid')&&state.search!=='')more();
+},{rootMargin:'300px'}).observe($('#sentinel'));
+
+/* init */
+state.q='';
+buildRows();
 </script>
 </body>
 </html>
