@@ -211,7 +211,7 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
   <div class="p-frame"><div class="p-load" id="pLoad"><div class="spin"></div></div>
     <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe></div>
   <div class="p-foot">
-    <span>Quality/audio player ke andar <b>&#9881;</b> pe bhi milta hai. Blank ho to reload ya doosra server.</span>
+    <span>Audio Hindi na lage to <b>Server 1 / 2</b> rakho, ya player ke andar <b>&#9881;</b> se track chuno.</span>
     <span class="spacer"></span>
     <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 14px;font-size:.74rem">Next episode &#8250;</button>
   </div>
@@ -244,42 +244,46 @@ const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["
 const QUALS = ["auto","2160p","1080p","720p","480p","360p"];
 const SPEEDS = ["1","1.25","1.5","0.75","2"];
 
-/* qp: quality param key (null = server khud handle karta hai)
-   lang: audio/sub param support
-   tmdb: sirf TMDB id chahiye */
+/* lk = audio lang param, sk = subtitle param, qp = quality param
+   lang = language support, tmdb = sirf TMDB id */
 const SERVERS = [
-  { n:"Server 1 · VidLink", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
+  { n:"Server 1 · Videasy", tmdb:true, lang:true, lk:"lang", sk:"sub", qp:"quality", u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
       return base + qs(o);
   }},
-  { n:"Server 2 · VidSrc", lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 2 · VidFast", tmdb:true, lang:true, lk:"lang", sk:"sub", qp:"quality", u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
+      return base + qs(o);
+  }},
+  { n:"Server 3 · VidSrc", lang:true, lk:"ds_lang", sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
       return base + qs(o);
   }},
-  { n:"Server 3 · VidSrc XYZ", lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 4 · VidSrc XYZ", lang:true, lk:"ds_lang", sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.xyz/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.xyz/embed/movie?imdb=${it.imdb}`;
       return base + qs(o, true);
   }},
-  { n:"Server 4 · VidSrc ME", lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 5 · VidLink", tmdb:true, lang:true, sk:"sub", qp:"quality", u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
+      return base + qs(o);
+  }},
+  { n:"Server 6 · VidSrc ME", lang:true, lk:"ds_lang", sk:"sub_lang", qp:"quality", u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
       return base + qs(o, true);
   }},
-  { n:"Server 5 · 2Embed", lang:false, u:(it,s,e)=>{
+  { n:"Server 7 · 2Embed", u:(it,s,e)=>{
       return it.t==="tv" ? `https://www.2embed.cc/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${it.imdb}`;
   }},
-  { n:"Server 6 · SuperEmbed", lang:false, u:(it,s,e)=>{
+  { n:"Server 8 · SuperEmbed", u:(it,s,e)=>{
       return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
   }}
 ];
 
 function qs(o, hasQuery){
   const p = [];
-  if(o.q && o.q !== "auto"){
-    /* VidLink numeric maangta hai, baaki "1080p" */
-    p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
-  }
-  if(o.a) p.push("ds_lang=" + o.a);
-  if(o.s) p.push("sub_lang=" + o.s);
+  if(o.qp && o.q && o.q !== "auto") p.push(o.qp + "=" + (o.numeric ? o.q.replace("p","") : o.q));
+  if(o.lk && o.a) p.push(o.lk + "=" + o.a);
+  if(o.sk && o.s) p.push(o.sk + "=" + o.s);
   if(o.sp && o.sp !== "1") p.push("speed=" + o.sp);
   if(!p.length) return "";
   return (hasQuery ? "&" : "?") + p.join("&");
@@ -302,7 +306,7 @@ const ROWS = [
   {t:"Fantasy",      type:"series",cat:"top", genre:"Fantasy"}
 ];
 
-const DEF = {audio:"", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:true, server:0};
+const DEF = {audio:"hi", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:true, server:0};
 let S = load("set", DEF);
 let list = load("list", []);
 let prog = load("prog", []);
@@ -344,10 +348,10 @@ function norm(m, type){
   };
 }
 
-/* title ke hisaab se audio list — "Original" sabse pehle */
 function audioSet(it){
   const c = String(it.country || "").toLowerCase();
-  const orig = (it.g||[]).includes("Animation") ? "Japanese" : "";
+  const isAnim = (it.g||[]).includes("Animation");
+  const orig = isAnim ? "Japanese" : "";
   const indian = ["Hindi","English","Tamil","Telugu","Malayalam","Kannada","Bengali","Marathi","Punjabi","Gujarati"];
   let base;
   if(c.includes("india")) base = indian;
@@ -359,7 +363,7 @@ function audioSet(it){
   else if(c.includes("italy")) base = ["Italian","English","Hindi"];
   else if(c.includes("china") || c.includes("hong kong")) base = ["Chinese","English","Hindi"];
   else if(c.includes("russia")) base = ["Russian","English","Hindi"];
-  else base = ["English","Hindi","Spanish","French","German","Japanese","Korean","Tamil","Telugu"];
+  else base = ["English","Hindi","Tamil","Telugu","Spanish","French","German","Japanese","Korean"];
 
   const out = [{c:"", n:"Original" + (orig ? " ("+orig+")" : "")}];
   base.forEach(n=>{ if(n === orig) return; const f = LANGS.find(l=>l[1]===n); if(f) out.push({c:f[0], n}) });
@@ -500,9 +504,8 @@ async function openDetail(it){
   }catch{}
 
   const langs = audioSet(full);
-  const prefs = [S.audio, ...langs.map(l=>l.c)].filter(Boolean);
-  state.audio = langs.find(l=>l.c === prefs[0])?.c ?? "";
-  state.sub = S.sub;
+  state.audio = langs.some(l=>l.c === S.audio) ? S.audio : "";
+  state.sub = S.sub || "hi";
 
   d.innerHTML = `
     <div class="sheet-hero" style="${full.back?`background-image:url('${full.back}')`:""}">
@@ -532,7 +535,7 @@ async function openDetail(it){
   $("#dQ").innerHTML = QUALS.map(q=>`<button data-q="${q}" class="${q===S.quality?"on":""}">${q==="auto"?"Auto":q==="2160p"?"4K (2160p)":q}</button>`).join("");
   $("#dQ").onclick = e=>{ const b=e.target.closest("[data-q]"); if(!b) return; S.quality=b.dataset.q; save("set",S); $$("#dQ button").forEach(x=>x.classList.toggle("on",x===b)) };
 
-  $("#dS").innerHTML = `<button data-s="off" class="${S.sub==="off"?"on":""}">Off</button>` +
+  $("#dS").innerHTML = `<button data-s="off" class="${state.sub==="off"?"on":""}">Off</button>` +
     LANGS.slice(0,10).map(([c,n])=>`<button data-s="${c}" class="${c===state.sub?"on":""}">${n}</button>`).join("");
   $("#dS").onclick = e=>{ const b=e.target.closest("[data-s]"); if(!b) return; state.sub=b.dataset.s; $$("#dS button").forEach(x=>x.classList.toggle("on",x===b)) };
 
@@ -599,9 +602,10 @@ function buildURL(it, si, s, e){
   const idx = safeServer(it, si);
   const srv = SERVERS[idx] || SERVERS[0];
   return srv.u(it, s, e, {
-    q: S.quality, numeric: !!srv.tmdb,
-    a: state.audio, s: state.sub === "off" ? "" : state.sub,
-    sp: S.speed
+    q: S.quality, numeric: !!srv.tmdb, qp: srv.qp,
+    a: srv.lk ? (state.audio || "") : "",
+    s: srv.sk ? (state.sub === "off" ? "" : (state.sub || "")) : "",
+    lk: srv.lk, sk: srv.sk, sp: S.speed
   });
 }
 
@@ -614,6 +618,7 @@ async function play(it, s=1, e=1){
     }catch{}
   }
   state.item = item; state.season = s; state.episode = e;
+  if(!state.sub) state.sub = S.sub || "hi";
 
   const active = safeServer(item, S.server);
   if(active !== S.server){ S.server = active; save("set", S) }
@@ -622,7 +627,8 @@ async function play(it, s=1, e=1){
   $("#pServer").innerHTML = SERVERS.map((x,i)=>`<option value="${i}" ${i===S.server?"selected":""}>${esc(x.n)}</option>`).join("");
   $("#pQuality").innerHTML = QUALS.map(q=>`<option value="${q}" ${q===S.quality?"selected":""}>${q==="auto"?"Auto quality":q==="2160p"?"4K 2160p":q}</option>`).join("");
   $("#pAudio").innerHTML = audioSet(item).map(l=>`<option value="${l.c}" ${l.c===state.audio?"selected":""}>${esc(l.n)}</option>`).join("");
-  $("#pSub").innerHTML = `<option value="off">Subs off</option>` + LANGS.slice(0,10).map(([c,n])=>`<option value="${c}" ${c===state.sub?"selected":""}>${esc(n)} subs</option>`).join("");
+  $("#pSub").innerHTML = `<option value="off" ${state.sub==="off"?"selected":""}>Subs off</option>` +
+    LANGS.slice(0,10).map(([c,n])=>`<option value="${c}" ${c===state.sub?"selected":""}>${esc(n)} subs</option>`).join("");
   $("#pSpeed").innerHTML = SPEEDS.map(v=>`<option value="${v}" ${v===S.speed?"selected":""}>${v}×</option>`).join("");
   $("#pNext").style.display = item.t === "tv" ? "" : "none";
   $("#player").classList.add("on"); document.body.classList.add("lock");
@@ -691,7 +697,8 @@ async function doSearch(q){
 function openSettings(){
   $("#sAudio").innerHTML = `<option value="" ${S.audio===""?"selected":""}>Original</option>` +
     LANGS.map(([c,n])=>`<option value="${c}" ${c===S.audio?"selected":""}>${n}</option>`).join("");
-  $("#sSub").innerHTML = `<option value="off" ${S.sub==="off"?"selected":""}>Off</option>` + LANGS.map(([c,n])=>`<option value="${c}" ${c===S.sub?"selected":""}>${n}</option>`).join("");
+  $("#sSub").innerHTML = `<option value="off" ${S.sub==="off"?"selected":""}>Off</option>` +
+    LANGS.map(([c,n])=>`<option value="${c}" ${c===S.sub?"selected":""}>${n}</option>`).join("");
   $("#sQuality").value = S.quality;
   $("#sAuto").classList.toggle("on", S.auto);
   $("#sHero").classList.toggle("on", S.hero);
