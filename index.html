@@ -17,8 +17,7 @@ a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 img{display:block;max-width:100%}
 
-header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:16px;padding:0 16px;
-background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
+header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:16px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
 header.solid{background:rgba(8,8,11,.98);box-shadow:0 1px 0 #1c1c24}
 .logo{font-size:1.5rem;font-weight:900;letter-spacing:-1.2px;color:var(--red);flex-shrink:0}
 .logo span{color:#fff}
@@ -139,6 +138,7 @@ select:focus{outline:none;border-color:var(--red)}
 .spin{width:34px;height:34px;border:3px solid #2a2a36;border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .p-foot{padding:8px 11px;background:#0c0c11;border-top:1px solid #1d1d26;display:flex;gap:8px;flex-wrap:wrap;font-size:.71rem;color:var(--mut);align-items:center}
+.p-foot b{color:#c9ccd4}
 
 #settings{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);z-index:250;background:#0d0d13;border-left:1px solid #23232e;transform:translateX(102%);transition:transform .3s;overflow-y:auto;padding:20px}
 #settings.on{transform:none}
@@ -203,13 +203,17 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
       <select id="pQuality" aria-label="Quality"></select>
       <select id="pAudio" aria-label="Audio"></select>
       <select id="pSub" aria-label="Subtitles"></select>
+      <button class="iconbtn" id="pReload" title="Reload" aria-label="Reload">&#8635;</button>
       <button class="iconbtn" id="pOpen" title="New tab" aria-label="New tab">&#8599;</button>
     </div>
   </div>
   <div class="p-frame"><div class="p-load" id="pLoad"><div class="spin"></div></div>
     <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe></div>
-  <div class="p-foot"><span>Server slow ho to doosra server try karo.</span><span class="spacer"></span>
-    <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 14px;font-size:.74rem">Next episode &#8250;</button></div>
+  <div class="p-foot">
+    <span>Audio/sub badalne pe server khud badal jayega. Blank ho to <b>reload</b> ya doosra server.</span>
+    <span class="spacer"></span>
+    <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 14px;font-size:.74rem">Next episode &#8250;</button>
+  </div>
 </div>
 
 <aside id="settings">
@@ -238,37 +242,63 @@ const IMGUP = u => u ? u.replace("/small/", "/medium/") : "";
 const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["ml","Malayalam"],["kn","Kannada"],["bn","Bengali"],["mr","Marathi"],["pa","Punjabi"],["gu","Gujarati"],["ur","Urdu"],["es","Spanish"],["fr","French"],["de","German"],["ja","Japanese"],["ko","Korean"],["zh","Chinese"],["ru","Russian"],["ar","Arabic"],["pt","Portuguese"],["tr","Turkish"],["it","Italian"]];
 const QUALS = ["auto","2160p","1080p","720p","480p","360p"];
 
+/* lang: server audio/sub param support karta hai
+   tmdb: sirf TMDB id chahiye (IMDb se nahi chalta) */
 const SERVERS = [
-  {n:"Server 1 · VidLink",   u:(it,s,e)=> it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb||it.imdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb||it.imdb}`},
-  {n:"Server 2 · VidSrc",    u:(it,s,e)=> it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`},
-  {n:"Server 3 · VidSrc XYZ",u:(it,s,e)=> it.t==="tv" ? `https://vidsrc.xyz/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.xyz/embed/movie?imdb=${it.imdb}`},
-  {n:"Server 4 · 2Embed",    u:(it,s,e)=> it.t==="tv" ? `https://www.2embed.cc/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${it.imdb}`},
-  {n:"Server 5 · SuperEmbed",u:(it,s,e)=> it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`},
-  {n:"Server 6 · VidSrc ME", u:(it,s,e)=> it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`}
+  { n:"Server 1 · VidSrc", lang:true, u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
+      return base + qs(o);
+  }},
+  { n:"Server 2 · VidSrc XYZ", lang:true, u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://vidsrc.xyz/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.xyz/embed/movie?imdb=${it.imdb}`;
+      return base + qs(o, true);
+  }},
+  { n:"Server 3 · VidSrc ME", lang:true, u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
+      return base + qs(o, true);
+  }},
+  { n:"Server 4 · 2Embed", lang:false, u:(it,s,e)=>{
+      return it.t==="tv" ? `https://www.2embed.cc/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${it.imdb}`;
+  }},
+  { n:"Server 5 · VidLink", lang:false, tmdb:true, u:(it,s,e)=>{
+      return it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
+  }},
+  { n:"Server 6 · SuperEmbed", lang:false, u:(it,s,e)=>{
+      return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
+  }}
 ];
 
+function qs(o, hasQuery){
+  const p = [];
+  if(o.q && o.q !== "auto") p.push("quality=" + o.q);
+  if(o.a) p.push("ds_lang=" + o.a);
+  if(o.s) p.push("sub_lang=" + o.s);
+  if(!p.length) return "";
+  return (hasQuery ? "&" : "?") + p.join("&");
+}
+
 const ROWS = [
-  {t:"Trending Now",     type:"movie", cat:"top"},
-  {t:"Web Series",       type:"series",cat:"top"},
-  {t:"New Releases",     type:"movie", cat:"year"},
-  {t:"Action",           type:"movie", cat:"top", genre:"Action"},
-  {t:"Comedy",           type:"movie", cat:"top", genre:"Comedy"},
-  {t:"Sci-Fi",           type:"movie", cat:"top", genre:"Sci-Fi"},
-  {t:"Thriller",         type:"movie", cat:"top", genre:"Thriller"},
-  {t:"Horror",           type:"movie", cat:"top", genre:"Horror"},
-  {t:"Romance",          type:"movie", cat:"top", genre:"Romance"},
-  {t:"Crime",            type:"series",cat:"top", genre:"Crime"},
-  {t:"Anime",            type:"series",cat:"top", genre:"Animation"},
-  {t:"Animation",        type:"movie", cat:"top", genre:"Animation"},
-  {t:"Documentary",      type:"movie", cat:"top", genre:"Documentary"},
-  {t:"Fantasy",          type:"series",cat:"top", genre:"Fantasy"}
+  {t:"Trending Now", type:"movie", cat:"top"},
+  {t:"Web Series",   type:"series",cat:"top"},
+  {t:"New Releases", type:"movie", cat:"year"},
+  {t:"Action",       type:"movie", cat:"top", genre:"Action"},
+  {t:"Comedy",       type:"movie", cat:"top", genre:"Comedy"},
+  {t:"Sci-Fi",       type:"movie", cat:"top", genre:"Sci-Fi"},
+  {t:"Thriller",     type:"movie", cat:"top", genre:"Thriller"},
+  {t:"Horror",       type:"movie", cat:"top", genre:"Horror"},
+  {t:"Romance",      type:"movie", cat:"top", genre:"Romance"},
+  {t:"Crime",        type:"series",cat:"top", genre:"Crime"},
+  {t:"Anime",        type:"series",cat:"top", genre:"Animation"},
+  {t:"Animation",    type:"movie", cat:"top", genre:"Animation"},
+  {t:"Documentary",  type:"movie", cat:"top", genre:"Documentary"},
+  {t:"Fantasy",      type:"series",cat:"top", genre:"Fantasy"}
 ];
 
 const DEF = {audio:"hi", sub:"hi", quality:"1080p", auto:true, hero:true, server:0};
 let S = load("set", DEF);
 let list = load("list", []);
 let prog = load("prog", []);
-const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, eps:[], browse:null};
+const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null};
 
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -308,8 +338,22 @@ function norm(m, type){
     o: m.description || "",
     poster: IMGUP(m.poster), back: IMGUP(m.background),
     g: m.genres || m.genre || [], cast: (m.cast||[]).slice(0,6),
-    vids: m.videos || []
+    country: m.country || "", vids: m.videos || []
   };
+}
+
+/* title ke hisaab se realistic audio list */
+function audioSet(it){
+  const c = String(it.country || "").toLowerCase();
+  const indian = ["Hindi","English","Tamil","Telugu","Malayalam","Kannada","Bengali","Marathi","Punjabi","Gujarati"];
+  if(c.includes("india")) return indian;
+  if(c.includes("japan")) return ["Japanese","English","Hindi","Spanish"];
+  if(c.includes("korea")) return ["Korean","English","Hindi","Japanese"];
+  if(c.includes("france")) return ["French","English","Hindi","Spanish"];
+  if(c.includes("spain")) return ["Spanish","English","Hindi","French"];
+  if(c.includes("germany")) return ["German","English","Hindi"];
+  if(c.includes("italy")) return ["Italian","English","Hindi"];
+  return ["English","Hindi","Spanish","French","German","Japanese","Korean","Tamil","Telugu"];
 }
 
 /* ---------- cards ---------- */
@@ -406,8 +450,7 @@ function renderHero(it){
 
 /* ---------- browse ---------- */
 async function openBrowse(cfg){
-  $("#hero").style.display="none";
-  $("#main").style.display="none";
+  $("#hero").style.display="none"; $("#main").style.display="none";
   $("#page").classList.add("on");
   $("#pTitle").textContent = cfg.t;
   $("#pSub").textContent = cfg.type === "tv" ? "Web series" : "Movies";
@@ -446,8 +489,8 @@ async function openDetail(it){
     if(m) full = norm(m, it.t);
   }catch{}
 
-  const langs = full.g.includes("Animation") ? ["Japanese","English","Hindi"] : ["Hindi","English","Tamil","Telugu"];
-  state.audio = LANGS.some(l=>l[0]===S.audio) ? S.audio : "hi";
+  const langs = audioSet(full);
+  state.audio = LANGS.some(l=>l[0]===S.audio) ? S.audio : "en";
   state.sub = S.sub;
 
   d.innerHTML = `
@@ -533,27 +576,45 @@ function renderEps(it, season){
 }
 
 /* ---------- player ---------- */
-function buildURL(it, si, s, e){
-  const srv = SERVERS[si] || SERVERS[0];
-  let url = srv.u(it, s, e);
-  const sep = url.includes("?") ? "&" : "?";
-  const p = [];
-  if(S.quality !== "auto") p.push("quality="+S.quality);
-  if(state.audio) p.push("ds_lang="+state.audio);
-  if(state.sub && state.sub !== "off") p.push("sub_lang="+state.sub);
-  return url + (p.length ? sep + p.join("&") : "");
+function langServers(){ return SERVERS.map((s,i)=>({s,i})).filter(x=>x.s.lang).map(x=>x.i) }
+
+function safeServer(it, idx){
+  const srv = SERVERS[idx] || SERVERS[0];
+  if(srv.tmdb && !it.tmdb){
+    const alt = SERVERS.findIndex(x=>x.lang && !x.tmdb);
+    return alt > -1 ? alt : SERVERS.findIndex(x=>!x.tmdb);
+  }
+  return idx;
 }
 
-function play(it, s=1, e=1){
-  state.item = it; state.season = s; state.episode = e;
-  $("#pTitleTxt").textContent = it.n + (it.t==="tv" ? ` · S${s}E${e}` : "");
-  $("#pServer").innerHTML = SERVERS.map((x,i)=>`<option value="${i}" ${i===S.server?"selected":""}>${esc(x.n)}</option>`).join("");
+function buildURL(it, si, s, e){
+  const idx = safeServer(it, si);
+  const srv = SERVERS[idx] || SERVERS[0];
+  return srv.u(it, s, e, {q:S.quality, a:state.audio, s:state.sub === "off" ? "" : state.sub});
+}
+
+async function play(it, s=1, e=1){
+  let item = it;
+  /* TMDB id resolve — VidLink jaise server ke liye zaroori */
+  if(!item.tmdb){
+    try{
+      const m = await meta(item.t === "tv" ? "series" : "movie", item.imdb);
+      if(m){ const n = norm(m, item.t); n.tmdb = n.tmdb || item.tmdb; item = n }
+    }catch{}
+  }
+  state.item = item; state.season = s; state.episode = e;
+
+  const active = safeServer(item, S.server);
+  if(active !== S.server){ S.server = active; save("set", S) }
+
+  $("#pTitleTxt").textContent = item.n + (item.t==="tv" ? ` · S${s}E${e}` : "");
+  $("#pServer").innerHTML = SERVERS.map((x,i)=>`<option value="${i}" ${i===S.server?"selected":""}>${esc(x.n)}${x.lang?" (audio)":""}</option>`).join("");
   $("#pQuality").innerHTML = QUALS.map(q=>`<option value="${q}" ${q===S.quality?"selected":""}>${q==="auto"?"Auto quality":q==="2160p"?"4K 2160p":q}</option>`).join("");
   $("#pAudio").innerHTML = LANGS.map(([c,n])=>`<option value="${c}" ${c===state.audio?"selected":""}>${esc(n)}</option>`).join("");
   $("#pSub").innerHTML = `<option value="off">Subs off</option>` + LANGS.slice(0,10).map(([c,n])=>`<option value="${c}" ${c===state.sub?"selected":""}>${esc(n)} subs</option>`).join("");
-  $("#pNext").style.display = it.t === "tv" ? "" : "none";
+  $("#pNext").style.display = item.t === "tv" ? "" : "none";
   $("#player").classList.add("on"); document.body.classList.add("lock");
-  loadFrame(); addProg(it, s, e);
+  loadFrame(); addProg(item, s, e);
 }
 function loadFrame(){
   $("#pLoad").style.display = "grid";
@@ -565,6 +626,14 @@ function addProg(it, s, e){
   prog = prog.filter(p=>p.id !== it.id);
   prog.unshift({...it, season:s, episode:e});
   prog = prog.slice(0,30); save("prog", prog);
+}
+
+/* language badla -> language-capable server pe jump */
+function forceLangServer(){
+  const cur = SERVERS[S.server];
+  if(cur && cur.lang) return;
+  const idx = langServers()[0];
+  if(idx !== undefined){ S.server = idx; save("set", S); $("#pServer").value = idx; toast("Audio server pe switch kiya") }
 }
 
 /* ---------- list ---------- */
@@ -621,15 +690,15 @@ function openSettings(){
 /* ---------- nav ---------- */
 function buildNav(){
   const nav = $("#nav");
-  const items = [["Home","home"],["Movies","movies"],["Web Series","series"],["Anime","anime"],["My List","list"]];
-  nav.innerHTML = items.map(([t])=>`<button data-k="${t}">${t}</button>`).join("");
+  const items = ["Home","Movies","Web Series","Anime","My List"];
+  nav.innerHTML = items.map(t=>`<button data-k="${t}">${t}</button>`).join("");
   nav.onclick = e=>{
     const b = e.target.closest("[data-k]"); if(!b) return;
     const k = b.dataset.k;
     $("#q").value = ""; doSearch("");
-    if(k === "home"){ $("#page").classList.remove("on"); $("#main").style.display=""; $("#hero").style.display=S.hero?"":"none"; window.scrollTo({top:0,behavior:"smooth"}); return }
-    if(k === "list"){ showList(); return }
-    const map = {movies:{t:"Movies",type:"movie",cat:"top"}, series:{t:"Web Series",type:"series",cat:"top"}, anime:{t:"Anime",type:"series",cat:"top",genre:"Animation"}};
+    if(k === "Home"){ $("#page").classList.remove("on"); $("#main").style.display=""; $("#hero").style.display=S.hero?"":"none"; window.scrollTo({top:0,behavior:"smooth"}); return }
+    if(k === "My List"){ showList(); return }
+    const map = {Movies:{t:"Movies",type:"movie",cat:"top"}, "Web Series":{t:"Web Series",type:"series",cat:"top"}, Anime:{t:"Anime",type:"series",cat:"top",genre:"Animation"}};
     openBrowse(map[k]);
   };
 }
@@ -655,8 +724,7 @@ $("#settingsBtn").onclick = openSettings;
 $("#sSave").onclick = ()=>{
   S.audio = $("#sAudio").value; S.sub = $("#sSub").value; S.quality = $("#sQuality").value;
   save("set", S); $("#settings").classList.remove("on"); toast("Settings saved");
-  if($("#hero").style.display === "none" && S.hero) $("#hero").style.display = "";
-  if(!S.hero) $("#hero").style.display = "none";
+  $("#hero").style.display = S.hero ? "" : "none";
 };
 $("#sReset").onclick = ()=>{
   S = {...DEF}; list = []; prog = []; save("set",S); save("list",[]); save("prog",[]);
@@ -668,8 +736,9 @@ $("#sHero").onclick = e=>{ S.hero=!S.hero; e.currentTarget.classList.toggle("on"
 $("#pClose").onclick = ()=>{ $("#player").classList.remove("on"); $("#pFrame").src="about:blank"; document.body.classList.remove("lock") };
 $("#pServer").onchange = e=>{ S.server=+e.target.value; save("set",S); loadFrame() };
 $("#pQuality").onchange = e=>{ S.quality=e.target.value; save("set",S); loadFrame() };
-$("#pAudio").onchange = e=>{ state.audio=e.target.value; loadFrame() };
-$("#pSub").onchange = e=>{ state.sub=e.target.value; loadFrame() };
+$("#pAudio").onchange = e=>{ state.audio=e.target.value; forceLangServer(); loadFrame() };
+$("#pSub").onchange = e=>{ state.sub=e.target.value; forceLangServer(); loadFrame() };
+$("#pReload").onclick = loadFrame;
 $("#pOpen").onclick = ()=> window.open(buildURL(state.item, S.server, state.season, state.episode), "_blank", "noopener");
 $("#pNext").onclick = ()=>{ state.episode++; play(state.item, state.season, state.episode) };
 $("#detail").addEventListener("click", e=>{ if(e.target.id === "detail") closeDetail() });
