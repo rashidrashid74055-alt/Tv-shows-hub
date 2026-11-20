@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NOVAFLIX</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--r:#e50914;--bg:#0b0b0f;--c:#16161d;--t:#fff;--m:#9a9aa6}
+:root{--r:#e50914;--bg:#0b0b0f;--t:#fff;--m:#9a9aa6}
 body{background:var(--bg);color:var(--t);font-family:'Segoe UI',Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .hidden{display:none!important}
 a{color:inherit;text-decoration:none}
@@ -18,7 +18,7 @@ nav a{cursor:pointer;padding:4px 0;border-bottom:2px solid transparent}
 nav a:hover,nav a.on{color:#fff;border-color:var(--r)}
 .srch{margin-left:auto;display:flex;align-items:center;background:#1c1c26;border:1px solid #2c2c3a;border-radius:8px;padding:7px 12px;gap:8px;width:260px}
 .srch input{background:none;border:0;outline:0;color:#fff;width:100%;font-size:14px}
-@media(max-width:760px){nav{display:none}.srch{width:150px}}
+@media(max-width:760px){nav{display:none}.srch{width:160px}}
 main{padding-bottom:60px}
 #hero{position:relative;height:62vh;min-height:380px;display:flex;align-items:flex-end;background-size:cover;background-position:center 20%;padding:30px 22px 40px}
 #hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,15,.15),rgba(11,11,15,.6) 55%,var(--bg))}
@@ -38,7 +38,7 @@ main{padding-bottom:60px}
 .row h2 b:hover{color:#fff}
 .track{display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
 .track::-webkit-scrollbar{display:none}
-.card{flex:0 0 148px;cursor:pointer;position:relative}
+.card{flex:0 0 148px;cursor:pointer}
 .card img{width:148px;height:222px;object-fit:cover;border-radius:7px;background:#1e1e28;display:block}
 .card:hover img{outline:2px solid var(--r)}
 .card .cn{font-size:12px;color:#c8c8d4;margin-top:6px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -57,7 +57,6 @@ main{padding-bottom:60px}
 .chip:hover{border-color:#555}
 .chip.on{background:var(--r);border-color:var(--r);color:#fff;font-weight:700}
 .lbl{font-size:12px;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-top:18px}
-select{background:#20202b;color:#fff;border:1px solid #31313f;border-radius:6px;padding:8px 10px;font-size:13px;outline:0}
 .stabs{display:flex;gap:8px;overflow-x:auto;margin:22px 0 14px;padding-bottom:6px;scrollbar-width:none}
 .stabs::-webkit-scrollbar{display:none}
 .ep{display:flex;gap:12px;padding:12px;border-radius:8px;cursor:pointer;border-bottom:1px solid #1d1d27}
@@ -71,7 +70,6 @@ select{background:#20202b;color:#fff;border:1px solid #31313f;border-radius:6px;
 .pb{background:#1d1d27;border:1px solid #2e2e3c;color:#e8e8f0;border-radius:6px;padding:7px 11px;font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .pb:hover{background:#2a2a38}
 .pb.act{background:var(--r);border-color:var(--r);color:#fff;font-weight:700}
-.pb.hi{font-size:13px;font-weight:800}
 .fwrap{flex:1;position:relative;background:#000}
 .fwrap iframe{width:100%;height:100%;border:0;display:block}
 .menu{position:absolute;top:100%;right:0;margin-top:6px;background:#15151d;border:1px solid #2c2c3a;border-radius:8px;padding:6px;min-width:150px;max-height:300px;overflow:auto;z-index:20;box-shadow:0 10px 30px #000a}
@@ -85,7 +83,6 @@ select{background:#20202b;color:#fff;border:1px solid #31313f;border-radius:6px;
 #toast.on{transform:translateX(-50%) translateY(0);opacity:1}
 .load{padding:40px;text-align:center;color:var(--m)}
 .back{position:fixed;top:14px;left:14px;z-index:80;width:40px;height:40px;border-radius:50%;background:#000b;border:0;color:#fff;font-size:19px;cursor:pointer}
-.back:hover{background:#000}
 </style>
 </head>
 <body>
@@ -93,14 +90,14 @@ select{background:#20202b;color:#fff;border:1px solid #31313f;border-radius:6px;
 <header>
   <div class="logo" onclick="goHome()">NOVA<span>FLIX</span></div>
   <nav>
-    <a onclick="goHome()">होम</a>
-    <a onclick="browse('movie')">फ़िल्में</a>
-    <a onclick="browse('series')">वेब सीरीज़</a>
-    <a onclick="showList()">मेरी लिस्ट</a>
+    <a onclick="goHome()">Home</a>
+    <a onclick="browse('movie')">Movies</a>
+    <a onclick="browse('series')">Web Series</a>
+    <a onclick="showList()">My List</a>
   </nav>
   <div class="srch">
-    <span>🔍</span>
-    <input id="q" placeholder="फ़िल्म, सीरीज़ खोजें..." autocomplete="off">
+    <span>&#128269;</span>
+    <input id="q" placeholder="Search movies, web series..." autocomplete="off">
   </div>
 </header>
 
@@ -114,263 +111,263 @@ select{background:#20202b;color:#fff;border:1px solid #31313f;border-radius:6px;
 
 <div id="player" class="hidden">
   <div class="pbar">
-    <button class="pb" onclick="closePlayer()">✕</button>
+    <button class="pb" onclick="closePlayer()">&#10005;</button>
     <div class="pt" id="pTitle"></div>
     <div class="rel">
-      <button class="pb hi act" id="pAudioBtn" onclick="toggleMenu('mAudio')">🔊 <span id="pAudioTxt">हिंदी</span> ▾</button>
+      <button class="pb" id="pAudioBtn" onclick="toggleMenu('mAudio')">&#128266; <span id="pAudioTxt">Hindi</span> &#9662;</button>
       <div class="menu hidden" id="mAudio"></div>
     </div>
     <div class="rel">
-      <button class="pb" id="pQualBtn" onclick="toggleMenu('mQual')">⚙️ <span id="pQualTxt">Auto</span> ▾</button>
+      <button class="pb" onclick="toggleMenu('mQual')">&#9881; <span id="pQualTxt">Auto</span> &#9662;</button>
       <div class="menu hidden" id="mQual"></div>
     </div>
     <div class="rel">
-      <button class="pb" onclick="toggleMenu('mSub')">💬 <span id="pSubTxt">सबटाइटल</span> ▾</button>
+      <button class="pb" onclick="toggleMenu('mSub')">&#128172; <span id="pSubTxt">Subtitles</span> &#9662;</button>
       <div class="menu hidden" id="mSub"></div>
     </div>
-    <button class="pb" id="pSrvBtn" onclick="nextServer()">⏭ अगला सर्वर</button>
-    <button class="pb" onclick="openTab()">↗ नई टैब</button>
+    <div class="rel">
+      <button class="pb" id="pSrvBtn" onclick="toggleMenu('mSrv')">Server &#9662;</button>
+      <div class="menu hidden" id="mSrv"></div>
+    </div>
+    <button class="pb" onclick="nextServer()">Next Server</button>
+    <button class="pb" onclick="openTab()">New Tab</button>
   </div>
-  <div class="fwrap"><iframe id="frame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen referrerpolicy="origin"></iframe></div>
-  <div class="tip">अगर audio अभी भी English है → player के अंदर <b>🔊 audio icon</b> दबाकर हिंदी चुनें, या <b>नई टैब</b> में खोलें। सर्वर: <b id="pSrvName">—</b></div>
+  <div class="fwrap"><iframe id="frame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe></div>
+  <div class="tip">Audio still English? Tap the &#128266; icon in the player and pick Hindi, or hit <b>New Tab</b>. Server: <b id="pSrvName">-</b></div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-/* ---------- helpers ---------- */
-const $=s=>document.querySelector(s);
-const API='https://v3-cinemeta.strem.io';
-const AUDIO=[['original','Original'],['hi','हिंदी'],['en','English'],['ta','तमिल'],['te','तेलुगु'],['ml','मलयालम'],['kn','कन्नड़'],['bn','बांग्ला'],['mr','मराठी'],['pa','पंजाबी'],['gu','गुजराती'],['ur','उर्दू']];
-const QUAL=[['','Auto'],['2160','4K'],['1080','1080p'],['720','720p'],['480','480p']];
+var $=function(s){return document.querySelector(s)};
+var API='https://v3-cinemeta.strem.io';
+var AUDIO=[['original','Original'],['hi','Hindi'],['en','English'],['ta','Tamil'],['te','Telugu'],['ml','Malayalam'],['kn','Kannada'],['bn','Bengali'],['mr','Marathi'],['pa','Punjabi'],['gu','Gujarati'],['ur','Urdu']];
+var QUAL=[['','Auto'],['2160','4K'],['1080','1080p'],['720','720p'],['480','480p']];
 
-const state={type:'movie',audio:localStorage.getItem('nfx_audio')||'hi',q:'',sub:'',srv:0,tries:0,
+var state={type:'movie',audio:localStorage.getItem('nfx_audio')||'hi',q:'',sub:'',srv:0,tries:0,
   imdb:null,tmdb:null,title:null,season:1,ep:1,open:false,gen:null,skip:0,search:''};
 
-function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600)}
-function lbl(code){const f=AUDIO.find(a=>a[0]===code);return f?f[1]:'Original'}
-function qlbl(code){const f=QUAL.find(a=>a[0]===code);return f?f[1]:'Auto'}
-async function J(u){const r=await fetch(u);if(!r.ok)throw new Error('x');return r.json()}
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on')},2600)}
+function lbl(c){for(var i=0;i<AUDIO.length;i++)if(AUDIO[i][0]===c)return AUDIO[i][1];return 'Original'}
+function qlbl(c){for(var i=0;i<QUAL.length;i++)if(QUAL[i][0]===c)return QUAL[i][1];return 'Auto'}
+function J(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()})}
 
 /* ---------- servers ---------- */
-const SERVERS=[
- {n:'Videasy',lang:1,q:1,tmdb:1,u:(id,t,s,e,q,l)=>'https://player.videasy.net/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?color=e50914'+(l?'&lang='+l+'':'')+(q?'&quality='+q:'')},
- {n:'VidFast',lang:1,q:1,tmdb:1,u:(id,t,s,e,q,l)=>'https://vidfast.pro/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?'+(l?'lang='+l+'&':'')+(q?'quality='+q:'')},
- {n:'VidLink',lang:1,q:1,tmdb:1,u:(id,t,s,e,q,l)=>'https://vidlink.pro/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?'+(l?'lang='+l+'&':'')+(q?'quality='+q:'')},
- {n:'VidSrc.to',tmdb:0,u:(id,t)=>'https://vidsrc.to/embed/'+t+'/'+id+'?ds_lang='+(state.audio==='original'?'en':state.audio)},
- {n:'VidSrc.xyz',tmdb:0,u:(id,t)=>'https://vidsrc.xyz/embed/'+t+'/'+id+'?ds_lang='+(state.audio==='original'?'en':state.audio)},
- {n:'2Embed',tmdb:0,u:(id)=>'https://www.2embed.cc/embed/'+id},
- {n:'SuperEmbed',tmdb:0,u:(id,t)=>'https://multiembed.mov/?video_id='+id+'&tmdb=0'+(t==='tv'?'&s='+state.season+'&e='+state.ep:'')}
+var SERVERS=[
+ {n:'Videasy',lang:1,q:1,tmdb:1,u:function(id,t,s,e,q,l){return 'https://player.videasy.net/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?color=e50914'+(l?'&lang='+l:'')+(q?'&quality='+q:'')}},
+ {n:'VidFast',lang:1,q:1,tmdb:1,u:function(id,t,s,e,q,l){return 'https://vidfast.pro/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?'+(l?'lang='+l+'&':'')+(q?'quality='+q:'')}},
+ {n:'VidLink',lang:1,q:1,tmdb:1,u:function(id,t,s,e,q,l){return 'https://vidlink.pro/'+t+'/'+id+(t==='tv'?'/'+s+'/'+e:'')+'?'+(l?'lang='+l+'&':'')+(q?'quality='+q:'')}},
+ {n:'VidSrc.to',tmdb:0,u:function(id,t){return 'https://vidsrc.to/embed/'+t+'/'+id+'?ds_lang='+(state.audio==='original'?'en':state.audio)}},
+ {n:'VidSrc.xyz',tmdb:0,u:function(id,t){return 'https://vidsrc.xyz/embed/'+t+'/'+id+'?ds_lang='+(state.audio==='original'?'en':state.audio)}},
+ {n:'2Embed',tmdb:0,u:function(id){return 'https://www.2embed.cc/embed/'+id}},
+ {n:'SuperEmbed',tmdb:0,u:function(id,t){return 'https://multiembed.mov/?video_id='+id+'&tmdb=0'+(t==='tv'?'&s='+state.season+'&e='+state.ep:'')}}
 ];
 
 function order(){
-  let l=SERVERS.map((s,i)=>i).filter(i=>SERVERS[i].tmdb?!!state.tmdb:true);
+  var l=[],i;
+  for(i=0;i<SERVERS.length;i++)if(SERVERS[i].tmdb?!!state.tmdb:true)l.push(i);
   if(state.audio!=='original'){
-    const L=l.filter(i=>SERVERS[i].lang), O=l.filter(i=>!SERVERS[i].lang);
-    l=[...L,...O];
+    var L=[],O=[];
+    for(i=0;i<l.length;i++)(SERVERS[l[i]].lang?L:O).push(l[i]);
+    l=L.concat(O);
   }
   return l;
 }
 
 /* ---------- catalog ---------- */
 function catURL(type,cat,genre,skip,search){
-  let u=API+'/catalog/'+type+'/'+cat;
-  if(genre)u+='/genre='+encodeURIComponent(genre);
-  u+='.json?skip='+(skip||0);
-  if(search)u+='&search='+encodeURIComponent(search);
-  return u;
+  var seg=[];
+  if(genre)seg.push('genre='+encodeURIComponent(genre));
+  if(skip)seg.push('skip='+skip);
+  if(search)seg.push('search='+encodeURIComponent(search));
+  return API+'/catalog/'+type+'/'+cat+(seg.length?'/'+seg.join('&'):'')+'.json';
 }
 
-const ROWS=[
- {t:'ट्रेंडिंग फ़िल्में',type:'movie',cat:'top'},
- {t:'ट्रेंडिंग वेब सीरीज़',type:'series',cat:'top'},
+var ROWS=[
+ {t:'Trending Movies',type:'movie',cat:'top'},
+ {t:'Trending Web Series',type:'series',cat:'top'},
  {t:'Action',type:'movie',cat:'top',g:'Action'},
  {t:'Comedy',type:'movie',cat:'top',g:'Comedy'},
- {t:'Drama सीरीज़',type:'series',cat:'top',g:'Drama'},
+ {t:'Drama Series',type:'series',cat:'top',g:'Drama'},
  {t:'Sci-Fi',type:'movie',cat:'top',g:'Sci-Fi'},
  {t:'Horror',type:'movie',cat:'top',g:'Horror'},
  {t:'Romance',type:'movie',cat:'top',g:'Romance'},
- {t:'Thriller सीरीज़',type:'series',cat:'top',g:'Thriller'},
+ {t:'Thriller Series',type:'series',cat:'top',g:'Thriller'},
  {t:'Animation',type:'movie',cat:'top',g:'Animation'},
- {t:'Crime सीरीज़',type:'series',cat:'top',g:'Crime'},
+ {t:'Crime Series',type:'series',cat:'top',g:'Crime'},
  {t:'Documentary',type:'movie',cat:'top',g:'Documentary'}
 ];
 
 function cardHTML(it,type){
-  const p=it.poster||('https://images.metahub.space/poster/medium/'+it.id+'/img');
+  var p=it.poster||('https://images.metahub.space/poster/medium/'+it.id+'/img');
   return '<div class="card" data-id="'+it.id+'" data-type="'+(it.type||type)+'">'+
     '<img loading="lazy" src="'+p+'" onerror="this.style.background=\'linear-gradient(160deg,#26263a,#12121a)\';this.removeAttribute(\'src\')">'+
     '<span class="cn">'+(it.name||'')+'</span></div>';
 }
-
 function bindCards(root){
-  root.querySelectorAll('.card').forEach(c=>{
-    c.onclick=()=>openDetail(c.dataset.id,c.dataset.type);
+  var cs=root.querySelectorAll('.card');
+  for(var i=0;i<cs.length;i++)(function(c){c.onclick=function(){openDetail(c.dataset.id,c.dataset.type)}})(cs[i]);
+}
+
+function buildRows(){
+  var rowsEl=$('#rows');rowsEl.innerHTML='';
+  var chain=Promise.resolve();
+  ROWS.forEach(function(r){
+    chain=chain.then(function(){
+      return J(catURL(r.type,r.cat,r.g,0,'')).then(function(d){
+        if(!d.metas||!d.metas.length)return;
+        var div=document.createElement('div');div.className='row';
+        div.innerHTML='<h2>'+r.t+' <b>See all &rsaquo;</b></h2><div class="track">'+d.metas.slice(0,18).map(function(m){return cardHTML(m,r.type)}).join('')+'</div>';
+        div.querySelector('b').onclick=function(){browse(r.type,r.g)};
+        rowsEl.appendChild(div);
+        bindCards(div);
+      }).catch(function(){});
+    });
   });
+  chain.then(heroPick);
 }
 
-async function buildRows(){
-  const rowsEl=$('#rows');rowsEl.innerHTML='';
-  for(const r of ROWS){
-    try{
-      const d=await J(catURL(r.type,r.cat,r.g,0,''));
-      if(!d.metas||!d.metas.length)continue;
-      const div=document.createElement('div');div.className='row';
-      div.innerHTML='<h2>'+r.t+' <b data-t="'+r.t+'" data-type="'+r.type+'" data-g="'+(r.g||'')+'">सभी देखें ›</b></h2>'+
-        '<div class="track">'+d.metas.slice(0,18).map(m=>cardHTML(m,r.type)).join('')+'</div>';
-      div.querySelector('b').onclick=()=>browse(r.type,r.g);
-      rowsEl.appendChild(div);
-      bindCards(div);
-    }catch(e){}
-  }
-  heroPick();
-}
-
-async function heroPick(){
-  try{
-    const d=await J(catURL('movie','top',null,0,''));
-    const picks=(d.metas||[]).slice(0,6);
-    if(!picks.length)return;
-    const m=picks[Math.floor(Math.random()*picks.length)];
-    const bg=m.background||('https://images.metahub.space/background/medium/'+m.id+'/img');
+function heroPick(){
+  J(catURL('movie','top',null,0,'')).then(function(d){
+    var p=(d.metas||[]).slice(0,8);
+    if(!p.length)return;
+    var m=p[Math.floor(Math.random()*p.length)];
+    var bg=m.background||('https://images.metahub.space/background/medium/'+m.id+'/img');
     $('#hero').style.backgroundImage='url('+bg+')';
     $('#hero').innerHTML='<div class="hero-in"><h1>'+m.name+'</h1>'+
-      '<div class="meta">'+(m.releaseInfo?'<span>'+m.releaseInfo+'</span>':'')+(m.imdbRating?'<span class="rate">★ '+m.imdbRating+'</span>':'')+'<span>HD</span></div>'+
+      '<div class="meta">'+(m.releaseInfo?'<span>'+m.releaseInfo+'</span>':'')+(m.imdbRating?'<span class="rate">&#9733; '+m.imdbRating+'</span>':'')+'<span>HD</span></div>'+
       '<p>'+(m.description||'')+'</p>'+
-      '<button class="btn" onclick="openDetail(\''+m.id+'\',\'movie\')">▶ चलाएं</button> '+
-      '<button class="btn ghost" onclick="openDetail(\''+m.id+'\',\'movie\')">ℹ जानकारी</button></div>';
-  }catch(e){}
+      '<button class="btn" onclick="openDetail(\''+m.id+'\',\'movie\')">&#9654; Play</button> '+
+      '<button class="btn ghost" onclick="openDetail(\''+m.id+'\',\'movie\')">More Info</button></div>';
+  }).catch(function(){});
 }
 
 function goHome(){
   state.search='';$('#q').value='';
   $('#detail').classList.add('hidden');$('#app').classList.remove('hidden');
+  $('#hero').classList.remove('hidden');
   buildRows();window.scrollTo(0,0);
 }
 
-async function browse(type,g){
+function browse(type,g){
   state.type=type;state.gen=g||null;state.skip=0;state.search='';
-  $('#hero').style.backgroundImage='';$('#hero').innerHTML='';
-  $('#detail').classList.add('hidden');
-  const app=$('#app');app.classList.remove('hidden');
-  $('#rows').innerHTML='<div class="row"><h2>'+(g?g+' — ':'')+(type==='movie'?'फ़िल्में':'वेब सीरीज़')+'</h2><div class="grid" id="gGrid"></div></div>';
-  $('#rows').className='';
-  $('#hero').classList.add('hidden');
-  await more();
-  window.scrollTo(0,0);
+  $('#hero').style.backgroundImage='';$('#hero').innerHTML='';$('#hero').classList.add('hidden');
+  $('#detail').classList.add('hidden');$('#app').classList.remove('hidden');
+  $('#rows').innerHTML='<div class="row"><h2>'+(g?g+' - ':'')+(type==='movie'?'Movies':'Web Series')+'</h2><div class="grid" id="gGrid"></div></div>';
+  more();window.scrollTo(0,0);
 }
 
-async function more(){
-  const g=$('#gGrid');if(!g)return;
-  try{
-    const d=await J(catURL(state.type,'top',state.gen,state.skip,state.search));
+function more(){
+  var g=$('#gGrid');if(!g)return;
+  J(catURL(state.type,'top',state.gen,state.skip,state.search)).then(function(d){
     if(!d.metas||!d.metas.length)return;
-    const frag=document.createElement('div');
-    frag.innerHTML=d.metas.map(m=>cardHTML(m,state.type)).join('');
-    [...frag.children].forEach(c=>g.appendChild(c));
+    var frag=document.createElement('div');
+    frag.innerHTML=d.metas.map(function(m){return cardHTML(m,state.type)}).join('');
+    while(frag.firstChild)g.appendChild(frag.firstChild);
     bindCards(g);
     state.skip+=d.metas.length;
-  }catch(e){}
+  }).catch(function(){});
 }
 
-/* search */
-let sT;
-$('#q').oninput=e=>{
+var sT;
+$('#q').oninput=function(e){
   clearTimeout(sT);
-  const v=e.target.value.trim();
-  sT=setTimeout(()=>{
-    if(!v){goHome();return}
-    doSearch(v);
-  },420);
+  var v=e.target.value.trim();
+  sT=setTimeout(function(){v?doSearch(v):goHome()},420);
 };
 
-async function doSearch(v){
+function doSearch(v){
   state.search=v;
   $('#hero').classList.add('hidden');$('#hero').innerHTML='';
   $('#detail').classList.add('hidden');$('#app').classList.remove('hidden');
-  $('#rows').innerHTML='<div class="row"><h2>"'+v+'" के नतीजे</h2><div class="grid" id="gGrid"></div></div>';
-  state.skip=0;
-  try{
-    const [a,b]=await Promise.all([J(catURL('movie','top',null,0,v)),J(catURL('series','top',null,0,v))]);
-    const all=[...(a.metas||[]),...(b.metas||[])];
-    const g=$('#gGrid');
-    if(!all.length){g.innerHTML='<div class="load">कुछ नहीं मिला</div>';return}
-    const frag=document.createElement('div');
-    frag.innerHTML=all.map(m=>cardHTML(m,m.type)).join('');
-    [...frag.children].forEach(c=>g.appendChild(c));
+  $('#rows').innerHTML='<div class="row"><h2>Results for "'+v+'"</h2><div class="grid" id="gGrid"></div></div>';
+  Promise.all([J(catURL('movie','top',null,0,v)).catch(function(){return{}}),J(catURL('series','top',null,0,v)).catch(function(){return{}})]).then(function(r){
+    var all=(r[0].metas||[]).concat(r[1].metas||[]);
+    var g=$('#gGrid');if(!g)return;
+    if(!all.length){g.innerHTML='<div class="load">No results found</div>';return}
+    var frag=document.createElement('div');
+    frag.innerHTML=all.map(function(m){return cardHTML(m,m.type)}).join('');
+    while(frag.firstChild)g.appendChild(frag.firstChild);
     bindCards(g);
-  }catch(e){}
+  });
 }
 
 /* ---------- detail ---------- */
-async function openDetail(id,type){
-  try{
-    const d=await J(API+'/meta/'+type+'/'+id+'.json');
-    const m=d.meta;if(!m)throw 0;
+function openDetail(id,type){
+  J(API+'/meta/'+type+'/'+id+'.json').then(function(d){
+    var m=d.meta;if(!m)throw 0;
     state.imdb=id;state.type=type;state.title=m.name;
     state.tmdb=m.moviedb_id||m.tmdb_id||null;
     state.season=1;state.ep=1;
 
     $('#app').classList.add('hidden');
-    const det=$('#detail');det.classList.remove('hidden');
-    const bg=m.background||('https://images.metahub.space/background/medium/'+id+'/img');
+    var det=$('#detail');det.classList.remove('hidden');
+    var bg=m.background||('https://images.metahub.space/background/medium/'+id+'/img');
+    var eps='';
+    state._vids=null;
 
-    let eps='';
     if(type==='series'&&m.videos&&m.videos.length){
-      const seasons=[...new Set(m.videos.map(v=>v.season))].filter(s=>s>0).sort((a,b)=>a-b);
-      eps='<div class="stabs">'+seasons.map(s=>'<div class="chip'+(s===1?' on':'')+'" data-s="'+s+'">सीज़न '+s+'</div>').join('')+'</div><div id="eps"></div>';
+      var seasons=[],i;
+      for(i=0;i<m.videos.length;i++)if(m.videos[i].season>0&&seasons.indexOf(m.videos[i].season)<0)seasons.push(m.videos[i].season);
+      seasons.sort(function(a,b){return a-b});
+      eps='<div class="stabs">'+seasons.map(function(s){return '<div class="chip'+(s===1?' on':'')+'" data-s="'+s+'">Season '+s+'</div>'}).join('')+'</div><div id="eps"></div>';
       state._vids=m.videos;
-    }else state._vids=null;
+    }
 
-    det.innerHTML='<button class="back" onclick="closeDetail()">←</button>'+
+    det.innerHTML='<button class="back" onclick="closeDetail()">&#8592;</button>'+
       '<div class="dback" style="background-image:url('+bg+')"></div>'+
       '<div class="dwrap"><h1>'+(m.name||'')+'</h1>'+
-      '<div class="meta">'+(m.releaseInfo?'<span>'+m.releaseInfo+'</span>':'')+(m.runtime?'<span>'+m.runtime+'</span>':'')+(m.imdbRating?'<span class="rate">★ '+m.imdbRating+'</span>':'')+'</div>'+
-      '<div class="chips">'+(m.genres||[]).map(g=>'<span class="chip">'+g+'</span>').join('')+'</div>'+
+      '<div class="meta">'+(m.releaseInfo?'<span>'+m.releaseInfo+'</span>':'')+(m.runtime?'<span>'+m.runtime+'</span>':'')+(m.imdbRating?'<span class="rate">&#9733; '+m.imdbRating+'</span>':'')+'</div>'+
+      '<div class="chips">'+(m.genres||[]).map(function(g){return '<span class="chip">'+g+'</span>'}).join('')+'</div>'+
       '<p class="desc">'+(m.description||'')+'</p>'+
-      '<div class="lbl">🔊 Audio</div><div class="chips" id="aChips"></div>'+
-      '<div class="lbl">⚙️ Quality</div><div class="chips" id="qChips"></div>'+
+      '<div class="lbl">Audio</div><div class="chips" id="aChips"></div>'+
+      '<div class="lbl">Quality</div><div class="chips" id="qChips"></div>'+
       '<div style="margin:22px 0;display:flex;gap:10px;flex-wrap:wrap">'+
-        '<button class="btn red" id="playBtn">▶ चलाएं</button>'+
-        '<button class="btn ghost" id="listBtn">＋ मेरी लिस्ट</button>'+
+        '<button class="btn red" id="playBtn">&#9654; Play</button>'+
+        '<button class="btn ghost" id="listBtn">+ My List</button>'+
       '</div>'+eps+'</div>';
 
     renderAudioChips();renderQualChips();
-    $('#playBtn').onclick=()=>play();
-    $('#listBtn').onclick=()=>toggleList(id,m.name,m.poster,type);
+    $('#playBtn').onclick=function(){play()};
+    $('#listBtn').onclick=function(){toggleList(id,m.name,m.poster,type)};
 
     if(state._vids){
-      const tabs=det.querySelectorAll('.stabs .chip');
-      tabs.forEach(t=>t.onclick=()=>{
-        tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');
-        renderEps(+t.dataset.s);
-      });
+      var tabs=det.querySelectorAll('.stabs .chip');
+      for(i=0;i<tabs.length;i++)(function(t){
+        t.onclick=function(){
+          for(var k=0;k<tabs.length;k++)tabs[k].classList.remove('on');
+          t.classList.add('on');renderEps(parseInt(t.dataset.s,10));
+        };
+      })(tabs[i]);
       renderEps(1);
     }
     window.scrollTo(0,0);
-  }catch(e){toast('जानकारी नहीं मिली')}
+  }).catch(function(){toast('Details not available')});
 }
 
 function renderAudioChips(){
-  const c=$('#aChips');if(!c)return;
-  c.innerHTML=AUDIO.map(a=>'<div class="chip'+(state.audio===a[0]?' on':'')+'" data-a="'+a[0]+'">'+a[1]+'</div>').join('');
-  c.querySelectorAll('.chip').forEach(x=>x.onclick=()=>{audioSet(x.dataset.a);renderAudioChips()});
+  var c=$('#aChips');if(!c)return;
+  c.innerHTML=AUDIO.map(function(a){return '<div class="chip'+(state.audio===a[0]?' on':'')+'" data-a="'+a[0]+'">'+a[1]+'</div>'}).join('');
+  var cs=c.querySelectorAll('.chip');
+  for(var i=0;i<cs.length;i++)(function(x){x.onclick=function(){audioSet(x.dataset.a);renderAudioChips()}})(cs[i]);
 }
 function renderQualChips(){
-  const c=$('#qChips');if(!c)return;
-  c.innerHTML=QUAL.map(a=>'<div class="chip'+(state.q===a[0]?' on':'')+'" data-q="'+a[0]+'">'+a[1]+'</div>').join('');
-  c.querySelectorAll('.chip').forEach(x=>x.onclick=()=>{state.q=x.dataset.q;renderQualChips();syncQ()});
+  var c=$('#qChips');if(!c)return;
+  c.innerHTML=QUAL.map(function(a){return '<div class="chip'+(state.q===a[0]?' on':'')+'" data-q="'+a[0]+'">'+a[1]+'</div>'}).join('');
+  var cs=c.querySelectorAll('.chip');
+  for(var i=0;i<cs.length;i++)(function(x){x.onclick=function(){state.q=x.dataset.q;renderQualChips();if(state.open)loadFrame()}})(cs[i]);
 }
 
 function renderEps(s){
-  const box=$('#eps');if(!box)return;
-  const list=state._vids.filter(v=>v.season===s).sort((a,b)=>a.number-b.number);
-  box.innerHTML=list.map(v=>'<div class="ep" data-e="'+v.number+'">'+
+  var box=$('#eps');if(!box)return;
+  var list=state._vids.filter(function(v){return v.season===s}).sort(function(a,b){return a.number-b.number});
+  box.innerHTML=list.map(function(v){
+    return '<div class="ep" data-e="'+v.number+'">'+
     '<img loading="lazy" src="'+(v.thumbnail||('https://images.metahub.space/background/medium/'+state.imdb+'/img'))+'" onerror="this.style.background=\'#22222e\'">'+
-    '<div><div class="en">'+v.number+'. '+(v.name||'Episode '+v.number)+'</div><div class="eo">'+(v.overview||'')+'</div></div></div>').join('');
-  box.querySelectorAll('.ep').forEach(e=>e.onclick=()=>{
-    state.season=s;state.ep=+e.dataset.e;play();
-  });
+    '<div><div class="en">'+v.number+'. '+(v.name||('Episode '+v.number))+'</div><div class="eo">'+(v.overview||'')+'</div></div></div>';
+  }).join('');
+  var es=box.querySelectorAll('.ep');
+  for(var i=0;i<es.length;i++)(function(e){e.onclick=function(){state.season=s;state.ep=parseInt(e.dataset.e,10);play()}})(es[i]);
 }
 
 function closeDetail(){$('#detail').classList.add('hidden');$('#app').classList.remove('hidden');goHome()}
@@ -378,105 +375,110 @@ function closeDetail(){$('#detail').classList.add('hidden');$('#app').classList.
 /* ---------- list ---------- */
 function getList(){try{return JSON.parse(localStorage.getItem('nfx_list')||'[]')}catch(e){return[]}}
 function toggleList(id,name,poster,type){
-  let l=getList();const i=l.findIndex(x=>x.id===id);
-  if(i>-1){l.splice(i,1);toast('लिस्ट से हटाया')}
-  else{l.push({id,name,poster,type});toast('लिस्ट में जोड़ा')}
+  var l=getList(),i=-1;
+  for(var k=0;k<l.length;k++)if(l[k].id===id)i=k;
+  if(i>-1){l.splice(i,1);toast('Removed from My List')}
+  else{l.push({id:id,name:name,poster:poster,type:type});toast('Added to My List')}
   localStorage.setItem('nfx_list',JSON.stringify(l));
 }
 function showList(){
-  const l=getList();
+  var l=getList();
   $('#hero').classList.add('hidden');$('#hero').innerHTML='';
   $('#detail').classList.add('hidden');$('#app').classList.remove('hidden');
-  $('#rows').innerHTML='<div class="row"><h2>मेरी लिस्ट</h2><div class="grid" id="gGrid">'+
-    (l.length?l.map(m=>cardHTML(m,m.type)).join(''):'<div class="load">खाली है</div>')+'</div></div>';
+  $('#rows').innerHTML='<div class="row"><h2>My List</h2><div class="grid" id="gGrid">'+
+    (l.length?l.map(function(m){return cardHTML(m,m.type)}).join(''):'<div class="load">Empty</div>')+'</div></div>';
   bindCards($('#rows'));
 }
 
 /* ---------- player ---------- */
 function audioSet(code){
-  state.audio=code;
-  localStorage.setItem('nfx_audio',code);
+  state.audio=code;localStorage.setItem('nfx_audio',code);
   syncAudio();
   if(state.open)reloadSmart();
 }
 function syncAudio(){
-  const t=$('#pAudioTxt');if(t)t.textContent=lbl(state.audio);
-  const b=$('#pAudioBtn');
-  if(b)b.classList.toggle('act',state.audio!=='original');
-  const m=$('#mAudio');
-  if(m)m.querySelectorAll('div').forEach(d=>d.classList.toggle('on',d.dataset.a===state.audio));
+  var t=$('#pAudioTxt');if(t)t.textContent=lbl(state.audio);
+  var b=$('#pAudioBtn');if(b)b.classList.toggle('act',state.audio!=='original');
+  var m=$('#mAudio');
+  if(m){var ds=m.querySelectorAll('div');for(var i=0;i<ds.length;i++)ds[i].classList.toggle('on',ds[i].dataset.a===state.audio)}
 }
-function syncQ(){$('#pQualTxt').textContent=qlbl(state.q);if(state.open)loadFrame()}
 
 function buildMenus(){
-  $('#mAudio').innerHTML=AUDIO.map(a=>'<div data-a="'+a[0]+'" class="'+(state.audio===a[0]?'on':'')+'">'+a[1]+'</div>').join('');
-  $('#mAudio').querySelectorAll('div').forEach(d=>d.onclick=()=>{audioSet(d.dataset.a);hideMenus()});
-  $('#mQual').innerHTML=QUAL.map(a=>'<div data-q="'+a[0]+'" class="'+(state.q===a[0]?'on':'')+'">'+a[1]+'</div>').join('');
-  $('#mQual').querySelectorAll('div').forEach(d=>d.onclick=()=>{state.q=d.dataset.q;syncQ();hideMenus()});
-  $('#mSub').innerHTML=AUDIO.filter(a=>a[0]!=='original').map(a=>'<div data-s="'+a[0]+'" class="'+(state.sub===a[0]?'on':'')+'">'+a[1]+'</div>').join('');
-  $('#mSub').querySelectorAll('div').forEach(d=>d.onclick=()=>{
-    state.sub=d.dataset.s;$('#pSubTxt').textContent=lbl(state.sub);
-    $('#mSub').querySelectorAll('div').forEach(x=>x.classList.toggle('on',x.dataset.s===state.sub));
+  var a=$('#mAudio');
+  a.innerHTML=AUDIO.map(function(x){return '<div data-a="'+x[0]+'" class="'+(state.audio===x[0]?'on':'')+'">'+x[1]+'</div>'}).join('');
+  var ds=a.querySelectorAll('div');
+  for(var i=0;i<ds.length;i++)(function(d){d.onclick=function(){audioSet(d.dataset.a);hideMenus()}})(ds[i]);
+
+  var q=$('#mQual');
+  q.innerHTML=QUAL.map(function(x){return '<div data-q="'+x[0]+'" class="'+(state.q===x[0]?'on':'')+'">'+x[1]+'</div>'}).join('');
+  var qs=q.querySelectorAll('div');
+  for(var j=0;j<qs.length;j++)(function(d){d.onclick=function(){state.q=d.dataset.q;$('#pQualTxt').textContent=qlbl(state.q);loadFrame();hideMenus()}})(qs[j]);
+
+  var s=$('#mSub');
+  s.innerHTML='<div data-s="" class="'+(state.sub===''?'on':'')+'">Off</div>'+AUDIO.filter(function(x){return x[0]!=='original'}).map(function(x){return '<div data-s="'+x[0]+'" class="'+(state.sub===x[0]?'on':'')+'">'+x[1]+'</div>'}).join('');
+  var ss=s.querySelectorAll('div');
+  for(var k=0;k<ss.length;k++)(function(d){d.onclick=function(){
+    state.sub=d.dataset.s;$('#pSubTxt').textContent=state.sub?lbl(state.sub):'Subtitles';
+    var all=s.querySelectorAll('div');for(var z=0;z<all.length;z++)all[z].classList.toggle('on',all[z].dataset.s===state.sub);
     loadFrame();hideMenus();
-  });
+  }})(ss[k]);
+
+  var v=$('#mSrv');
+  v.innerHTML=order().map(function(idx){return '<div data-i="'+idx+'" class="'+(idx===state.srv?'on':'')+'">'+SERVERS[idx].n+'</div>'}).join('');
+  var vs=v.querySelectorAll('div');
+  for(var n=0;n<vs.length;n++)(function(d){d.onclick=function(){state.srv=parseInt(d.dataset.i,10);state.tries=0;loadFrame();hideMenus()}})(vs[n]);
 }
+
 function toggleMenu(id){
-  const m=$('#'+id);const open=!m.classList.contains('hidden');
-  hideMenus();if(!open)m.classList.remove('hidden');
+  var m=$('#'+id);var wasOpen=!m.classList.contains('hidden');
+  hideMenus();if(!wasOpen)m.classList.remove('hidden');
 }
-function hideMenus(){document.querySelectorAll('.menu').forEach(m=>m.classList.add('hidden'))}
+function hideMenus(){var ms=document.querySelectorAll('.menu');for(var i=0;i<ms.length;i++)ms[i].classList.add('hidden')}
 
 function play(){
-  const o=order();
-  if(!o.length){toast('कोई सर्वर उपलब्ध नहीं');return}
+  var o=order();
+  if(!o.length){toast('No server available');return}
   state.srv=o[0];state.tries=0;state.open=true;
   $('#player').classList.remove('hidden');
-  $('#pTitle').textContent=state.title+(state.type==='series'?' · S'+state.season+'E'+state.ep:'');
+  $('#pTitle').textContent=state.title+(state.type==='series'?' - S'+state.season+'E'+state.ep:'');
   buildMenus();syncAudio();$('#pQualTxt').textContent=qlbl(state.q);
+  $('#pSubTxt').textContent=state.sub?lbl(state.sub):'Subtitles';
   loadFrame();
 }
 
 function loadFrame(){
-  const s=SERVERS[state.srv];
-  if(!s)return;
-  const l=state.audio==='original'?'':state.audio;
-  const id=s.tmdb?state.tmdb:state.imdb;
+  var s=SERVERS[state.srv];if(!s)return;
+  var l=state.audio==='original'?'':state.audio;
+  var id=s.tmdb?state.tmdb:state.imdb;
   if(!id){nextServer();return}
-  let url=s.u(id,state.type==='series'?'tv':'movie',state.season,state.ep,s.q?state.q:'',l);
+  var url=s.u(id,state.type==='series'?'tv':'movie',state.season,state.ep,s.q?state.q:'',l);
   if(state.sub&&s.lang)url+='&sub_lang='+state.sub;
   $('#pSrvName').textContent=s.n;
+  $('#pSrvBtn').classList.toggle('act',!!(s.lang&&state.audio!=='original'));
   $('#frame').src=url;
-  $('#pSrvBtn').classList.toggle('act',s.lang&&state.audio!=='original');
   clearTimeout(state._to);
-  state._to=setTimeout(()=>{if(state.tries<2){state.tries++;nextServer(true)}},11000);
+  state._to=setTimeout(function(){if(state.tries<3){state.tries++;nextServer()}},9000);
 }
 
 function reloadSmart(){
-  const s=SERVERS[state.srv];
+  var s=SERVERS[state.srv];
   if(state.audio!=='original'&&!s.lang){
-    const i=SERVERS.findIndex(x=>x.lang&&(x.tmdb?!!state.tmdb:true));
-    if(i>-1)state.srv=i;
+    var o=order();if(o.length)state.srv=o[0];
   }
-  state.tries=0;
-  loadFrame();
+  state.tries=0;loadFrame();
 }
 
-function nextServer(auto){
-  const o=order();
-  const pos=o.indexOf(state.srv);
-  const nxt=o[pos+1];
-  if(nxt===undefined){
-    if(!auto)toast('सभी सर्वर आज़माए जा चुके');
-    return;
-  }
-  state.srv=nxt;
-  loadFrame();
+function nextServer(){
+  var o=order(),pos=-1;
+  for(var i=0;i<o.length;i++)if(o[i]===state.srv)pos=i;
+  if(pos<0||pos+1>=o.length){toast('No more servers');return}
+  state.srv=o[pos+1];loadFrame();
 }
 
 function openTab(){
-  const s=SERVERS[state.srv];if(!s)return;
-  const l=state.audio==='original'?'':state.audio;
-  const id=s.tmdb?state.tmdb:state.imdb;
+  var s=SERVERS[state.srv];if(!s)return;
+  var l=state.audio==='original'?'':state.audio;
+  var id=s.tmdb?state.tmdb:state.imdb;
   window.open(s.u(id,state.type==='series'?'tv':'movie',state.season,state.ep,s.q?state.q:'',l),'_blank');
 }
 
@@ -486,20 +488,13 @@ function closePlayer(){
   $('#player').classList.add('hidden');
 }
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){if(state.open)closePlayer()}
-});
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.rel'))hideMenus();
-});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&state.open)closePlayer()});
+document.addEventListener('click',function(e){if(!e.target.closest('.rel'))hideMenus()});
 
-/* infinite scroll */
-new IntersectionObserver(es=>{
+new IntersectionObserver(function(es){
   if(es[0].isIntersecting&&$('#gGrid')&&state.search!=='')more();
 },{rootMargin:'300px'}).observe($('#sentinel'));
 
-/* init */
-state.q='';
 buildRows();
 </script>
 </body>
