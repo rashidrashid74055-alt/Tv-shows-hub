@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVAFLIX — Movies, Web Series & TV Shows</title>
+<title>TUNAmovies — Movies, Web Series & Live</title>
 <meta name="theme-color" content="#08080b">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -16,14 +16,18 @@ body.lock{overflow:hidden}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 img{display:block;max-width:100%}
+.hidden{display:none!important}
 
-header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:16px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
+header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:14px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
 header.solid{background:rgba(8,8,11,.98);box-shadow:0 1px 0 #1c1c24}
-.logo{font-size:1.5rem;font-weight:900;letter-spacing:-1.2px;color:var(--red);flex-shrink:0}
+.logo{font-size:1.5rem;font-weight:900;letter-spacing:-1.2px;color:var(--red);flex-shrink:0;cursor:pointer}
 .logo span{color:#fff}
-nav{display:flex;gap:14px;font-size:.85rem;color:#c9ccd4;overflow:hidden}
-nav button{padding:6px 2px;border-bottom:2px solid transparent;white-space:nowrap}
+nav{display:flex;gap:14px;font-size:.85rem;color:#c9ccd4;overflow-x:auto;min-width:0;flex:1;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{padding:6px 2px;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:5px}
 nav button:hover{color:#fff;border-color:var(--red)}
+nav .ld{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:pul 1.5s infinite}
+@keyframes pul{70%{box-shadow:0 0 0 6px rgba(229,9,20,0)}100%{box-shadow:0 0 0 0 rgba(229,9,20,0)}}
 .spacer{flex:1}
 .searchwrap{position:relative;display:flex;align-items:center}
 .searchwrap input{width:0;padding:0;opacity:0;border:1px solid #2a2a34;background:#14141a;color:#fff;border-radius:24px;height:36px;transition:.28s;font-size:.85rem}
@@ -32,7 +36,7 @@ nav button:hover{color:#fff;border-color:var(--red)}
 .iconbtn{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;color:#dfe2e8;transition:.2s;font-size:1.05rem}
 .iconbtn:hover{background:#20202a;color:#fff}
 .searchwrap .iconbtn{position:absolute;right:0}
-.avatar{width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#e50914,#7a0510);display:grid;place-items:center;font-weight:800;font-size:.78rem;flex-shrink:0}
+.avatar{width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#e50914,#7a0510);display:grid;place-items:center;font-weight:800;font-size:.78rem;flex-shrink:0;cursor:pointer}
 
 .hero{position:relative;height:min(80vh,640px);display:flex;align-items:flex-end;padding:0 16px 46px}
 .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 20%;z-index:0}
@@ -125,20 +129,22 @@ main{padding-bottom:70px;position:relative;z-index:3}
 .ep .tx small{font-size:.67rem;color:var(--mut);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
 .ep .pl{width:30px;height:30px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;flex-shrink:0;font-size:.7rem}
 
-#player{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column}
+#player{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column;height:100vh;height:100dvh}
 #player.on{display:flex}
 .p-bar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0c0c11;border-bottom:1px solid #1d1d26;flex-wrap:wrap}
 .p-bar .ttl{font-size:.78rem;font-weight:700;max-width:30vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p-bar .grp{display:flex;align-items:center;gap:5px;margin-left:auto;flex-wrap:wrap}
 select{background:#16161e;color:#e6e8ee;border:1px solid #2b2b38;border-radius:6px;padding:6px 8px;font-size:.72rem;cursor:pointer}
 select:focus{outline:none;border-color:var(--red)}
-.p-frame{flex:1;position:relative;background:#000}
-.p-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.p-frame{flex:1;position:relative;background:#000;min-height:0}
+.p-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.p-frame video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;object-fit:contain}
 .p-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:.85rem;pointer-events:none;z-index:1}
 .spin{width:34px;height:34px;border:3px solid #2a2a36;border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .p-foot{padding:8px 11px;background:#0c0c11;border-top:1px solid #1d1d26;display:flex;gap:8px;flex-wrap:wrap;font-size:.7rem;color:var(--mut);align-items:center}
 .p-foot b{color:#c9ccd4}
+.p-foot .fb{display:flex;gap:6px;margin-left:auto}
 
 #settings{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);z-index:250;background:#0d0d13;border-left:1px solid #23232e;transform:translateX(102%);transition:transform .3s;overflow-y:auto;padding:20px}
 #settings.on{transform:none}
@@ -146,7 +152,7 @@ select:focus{outline:none;border-color:var(--red)}
 #settings .hint{font-size:.74rem;color:var(--mut);line-height:1.55;margin-bottom:16px}
 .field{margin-bottom:15px}
 .field label{display:block;font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:6px;font-weight:700}
-.field select{width:100%;padding:9px 11px;border-radius:7px;font-size:.82rem}
+.field select,.field input{width:100%;padding:9px 11px;border-radius:7px;font-size:.82rem;background:#16161e;color:#e6e8ee;border:1px solid #2b2b38}
 .toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #1b1b24;font-size:.83rem}
 .sw{width:42px;height:23px;border-radius:20px;background:#2b2b38;position:relative;flex-shrink:0;transition:.2s}
 .sw::after{content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
@@ -159,11 +165,35 @@ select:focus{outline:none;border-color:var(--red)}
 #toast.on{transform:translate(-50%,0)}
 footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font-size:.73rem;line-height:1.8;text-align:center}
 
+/* live */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.lcard{padding:13px;border-radius:12px;background:var(--card);border:1px solid #20202a;position:relative;cursor:pointer;text-align:left}
+.lcard:hover{border-color:#3a3a4a;background:#1b1b24}
+.lb{position:absolute;top:9px;right:9px;font-size:.58rem;font-weight:800;padding:3px 7px;border-radius:4px;background:var(--red);letter-spacing:.6px}
+.lb.up{background:#2b2b38;color:#c9ccd4}
+.lt{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.lt img{width:26px;height:26px;object-fit:contain;border-radius:5px;background:#22222c}
+.lt b{font-size:.83rem;line-height:1.3}
+.lc{font-size:.62rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:450;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.86);backdrop-filter:blur(6px)}
+.modal.on{display:grid}
+.mbox{width:100%;max-width:380px;background:var(--bg2);border:1px solid #23232e;border-radius:14px;padding:20px;box-shadow:0 24px 60px #000}
+.mbox h3{font-size:1.05rem;margin-bottom:4px}
+.mbox p.s{font-size:.76rem;color:var(--mut);line-height:1.5;margin-bottom:14px}
+.mbox .err{font-size:.72rem;color:#ff6b74;min-height:14px;margin:6px 0}
+#umenu{position:fixed;top:60px;right:12px;z-index:120;background:#12121a;border:1px solid #23232e;border-radius:10px;padding:6px;min-width:180px;display:none;box-shadow:0 14px 40px #000}
+#umenu.on{display:block}
+#umenu div{padding:9px 11px;border-radius:6px;font-size:.8rem;cursor:pointer}
+#umenu div:hover{background:#1e1e28}
+#umenu .em{font-size:.7rem;color:var(--mut);padding:5px 11px 8px;border-bottom:1px solid #1e1e28;margin-bottom:5px;word-break:break-all}
+
 @media(max-width:760px){
-  nav{display:none}
+  nav{gap:11px;font-size:.78rem}
   .hero{height:74vh;padding-bottom:28px}
   .card,.sk{width:124px}
-  .searchwrap.open input{width:150px}
+  .searchwrap.open input{width:130px}
   .p-bar .ttl{max-width:100%;order:-1;width:100%}
   .p-bar .grp{margin-left:0;width:100%}
   .p-bar select{flex:1;min-width:0}
@@ -177,7 +207,7 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
 <body>
 
 <header id="hdr">
-  <div class="logo">NOVA<span>FLIX</span></div>
+  <div class="logo" id="logoBtn">TUNA<span>movies</span></div>
   <nav id="nav"></nav>
   <div class="spacer"></div>
   <div class="searchwrap" id="searchwrap">
@@ -185,7 +215,7 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
     <button class="iconbtn" id="searchBtn" aria-label="Search">&#128269;</button>
   </div>
   <button class="iconbtn" id="settingsBtn" aria-label="Settings">&#9881;</button>
-  <div class="avatar">NF</div>
+  <div class="avatar" id="avatarBtn">TM</div>
 </header>
 
 <section class="hero" id="hero"></section>
@@ -208,12 +238,17 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
       <button class="iconbtn" id="pOpen" title="New tab" aria-label="New tab">&#8599;</button>
     </div>
   </div>
-  <div class="p-frame"><div class="p-load" id="pLoad"><div class="spin"></div></div>
-    <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe></div>
+  <div class="p-frame">
+    <div class="p-load" id="pLoad"><div class="spin"></div></div>
+    <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe>
+    <video id="pVid" class="hidden" controls playsinline></video>
+  </div>
   <div class="p-foot">
-    <span>Quality/audio player ke andar <b>&#9881;</b> pe bhi milta hai. Blank ho to reload ya doosra server.</span>
-    <span class="spacer"></span>
-    <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 14px;font-size:.74rem">Next episode &#8250;</button>
+    <span>Quality/audio player ke andar <b>&#9881;</b> pe bhi milta hai. Blank ho to <b>Server badlo</b>.</span>
+    <span class="fb">
+      <button class="btn btn-ghost" id="pSrvNext" style="padding:6px 12px;font-size:.72rem">Server badlo</button>
+      <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 12px;font-size:.72rem">Next episode &#8250;</button>
+    </span>
   </div>
 </div>
 
@@ -223,7 +258,7 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
   <div class="field"><label>Default audio</label><select id="sAudio"></select></div>
   <div class="field"><label>Default subtitles</label><select id="sSub"></select></div>
   <div class="field"><label>Default quality</label><select id="sQuality">
-    <option value="auto">Auto</option><option value="2160p">4K (2160p)</option>
+    <option value="auto">Auto</option><option value="2160p">4K (2160p)</option><option value="1440p">2K (1440p)</option>
     <option value="1080p">1080p</option><option value="720p">720p</option>
     <option value="480p">480p</option><option value="360p">360p</option></select></div>
   <div class="toggle"><span>Autoplay next episode</span><div class="sw" id="sAuto"></div></div>
@@ -232,52 +267,82 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
   <div style="height:30px"></div>
 </aside>
 
+<div id="umenu"></div>
+
+<div class="modal" id="authModal">
+  <div class="mbox">
+    <h3 id="aTitle">Create account</h3>
+    <p class="s" id="aSub">List, uploads aur history apne account me save karo.</p>
+    <div class="field" id="aNameWrap"><input id="aName" placeholder="Naam"></div>
+    <div class="field"><input id="aMail" placeholder="Email ya 10-digit mobile"></div>
+    <div class="field"><input id="aPass" type="password" placeholder="Password (6+)"></div>
+    <div class="err" id="aErr"></div>
+    <div class="srow"><button class="btn btn-red" id="aGo">Sign Up</button><button class="btn btn-ghost" id="aCancel">Cancel</button></div>
+    <p class="s" style="margin:12px 0 0;text-align:center">Account hai? <b id="aSwap" style="color:#fff;cursor:pointer;text-decoration:underline">Sign In</b></p>
+  </div>
+</div>
+
+<div class="modal" id="upModal">
+  <div class="mbox">
+    <h3>Video upload</h3>
+    <p class="s">File sirf tumhare device pe rehti hai (IndexedDB).</p>
+    <div class="field"><input id="uName" placeholder="Title"></div>
+    <div class="field"><input id="uFile" type="file" accept="video/*" style="padding:8px"></div>
+    <div class="field"><input id="uLink" placeholder="ya link (.mp4 / .m3u8)"></div>
+    <div class="err" id="uErr"></div>
+    <div class="srow"><button class="btn btn-red" id="uGo">Add</button><button class="btn btn-ghost" id="uCancel">Cancel</button></div>
+  </div>
+</div>
+
 <div id="toast"></div>
-<footer><b>NOVAFLIX</b> — personal streaming front-end.<br>Metadata: Cinemeta · Playback: public embed servers · UI ad-free.</footer>
+<footer><b>TUNAmovies</b> — personal streaming front-end.<br>Metadata: Cinemeta · Playback: public embed servers · UI ad-free.</footer>
 
 <script>
 "use strict";
 const CIN = "https://v3-cinemeta.strem.io";
+const LIVEAPI = "https://api.embedse.com/v1";
 const IMGUP = u => u ? u.replace("/small/", "/medium/") : "";
 
 const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["ml","Malayalam"],["kn","Kannada"],["bn","Bengali"],["mr","Marathi"],["pa","Punjabi"],["gu","Gujarati"],["ur","Urdu"],["es","Spanish"],["fr","French"],["de","German"],["ja","Japanese"],["ko","Korean"],["zh","Chinese"],["ru","Russian"],["ar","Arabic"],["pt","Portuguese"],["tr","Turkish"],["it","Italian"]];
-const QUALS = ["auto","2160p","1080p","720p","480p","360p"];
+const QUALS = ["auto","2160p","1440p","1080p","720p","480p","360p"];
 const SPEEDS = ["1","1.25","1.5","0.75","2"];
 
-/* qp: quality param key (null = server khud handle karta hai)
-   lang: audio/sub param support
-   tmdb: sirf TMDB id chahiye */
+/* FIX: VidSrc XYZ ka domain dead tha (DNS fail) — hata diya.
+   VidLink par bahut titles missing hain (Mr. Robot type) — isliye VidFast default,
+   VidLink sabse aakhir me. Jo server quality param nahi leta usme qp nahi hai. */
 const SERVERS = [
-  { n:"Server 1 · VidLink", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
+  { n:"Server 1 · VidFast", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
       return base + qs(o);
   }},
-  { n:"Server 2 · VidSrc", lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 2 · VidSrc", lang:true, u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
       return base + qs(o);
   }},
-  { n:"Server 3 · VidSrc XYZ", lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidsrc.xyz/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.xyz/embed/movie?imdb=${it.imdb}`;
-      return base + qs(o, true);
+  { n:"Server 3 · 2Embed", lang:false, u:(it,s,e)=>{
+      return it.t==="tv" ? `https://www.2embed.skin/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.skin/embed/${it.imdb}`;
   }},
-  { n:"Server 4 · VidSrc ME", lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 4 · VidSrc ME", lang:true, u:(it,s,e,o)=>{
       const base = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
       return base + qs(o, true);
   }},
-  { n:"Server 5 · 2Embed", lang:false, u:(it,s,e)=>{
-      return it.t==="tv" ? `https://www.2embed.cc/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.cc/embed/${it.imdb}`;
+  { n:"Server 5 · Videasy", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
+      return base + qs(o);
   }},
   { n:"Server 6 · SuperEmbed", lang:false, u:(it,s,e)=>{
       return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
+  }},
+  { n:"Server 7 · VidLink", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
+      const base = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
+      return base + qs(o);
   }}
 ];
 
+/* FIX: quality sirf un servers me jata hai jo usse samajhte hain */
 function qs(o, hasQuery){
   const p = [];
-  if(o.q && o.q !== "auto"){
-    /* VidLink numeric maangta hai, baaki "1080p" */
-    p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
-  }
+  if(o.qp && o.q && o.q !== "auto") p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
   if(o.a) p.push("ds_lang=" + o.a);
   if(o.s) p.push("sub_lang=" + o.s);
   if(o.sp && o.sp !== "1") p.push("speed=" + o.sp);
@@ -306,7 +371,8 @@ const DEF = {audio:"", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:tru
 let S = load("set", DEF);
 let list = load("list", []);
 let prog = load("prog", []);
-const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null};
+const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null,
+               local:false, gen:0, tries:0, user:null};
 
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -315,7 +381,7 @@ function save(k,v){ try{localStorage.setItem("nfx_"+k, JSON.stringify(v))}catch{
 function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("on"),2000) }
 function esc(s=""){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])) }
 function hue(s){ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))%360; return h }
-const isSaved = id => list.some(w=>w.id===id);
+function isSaved(id){ return list.some(w=>w.id===id) }
 
 /* ---------- cinemeta ---------- */
 async function jget(url){ const r = await fetch(url); if(!r.ok) throw new Error(r.status); return r.json() }
@@ -445,7 +511,7 @@ function renderHero(it){
       <div class="tag"><i></i> Featured ${it.t==="tv"?"Series":"Film"}</div>
       <h1>${esc(it.n)}</h1>
       <div class="meta">${it.r?`<span>&#9733; ${esc(it.r)}</span>`:""}${it.y?`<span>${esc(it.y)}</span>`:""}
-        <span class="chip-mini">4K UHD</span><span class="chip-mini">${esc(it.g.slice(0,2).join(" · ")||"Multi-language")}</span></div>
+        <span class="chip-mini">HD</span><span class="chip-mini">${esc(it.g.slice(0,2).join(" · ")||"Multi-language")}</span></div>
       <p>${esc(it.o || "Play dabao aur dekho.")}</p>
       <div class="hero-btns">
         <button class="btn btn-play" id="hPlay">&#9654; Play</button>
@@ -464,9 +530,8 @@ async function openBrowse(cfg){
   $("#page").classList.add("on");
   $("#pTitle").textContent = cfg.t;
   $("#pSub").textContent = cfg.type === "tv" ? "Web series" : "Movies";
-  const g = $("#pGrid"); g.innerHTML = ""; g.appendChild(skeleton(12));
+  const g = $("#pGrid"); g.innerHTML = "";
   state.browse = {cfg, skip:0, busy:false, done:false};
-  g.innerHTML = "";
   await moreBrowse();
 }
 async function moreBrowse(){
@@ -529,7 +594,7 @@ async function openDetail(it){
   $("#dA").innerHTML = langs.map(l=>`<button data-c="${l.c}" class="${l.c===state.audio?"on":""}">${esc(l.n)}</button>`).join("");
   $("#dA").onclick = e=>{ const b=e.target.closest("[data-c]"); if(!b) return; state.audio=b.dataset.c; $$("#dA button").forEach(x=>x.classList.toggle("on",x===b)) };
 
-  $("#dQ").innerHTML = QUALS.map(q=>`<button data-q="${q}" class="${q===S.quality?"on":""}">${q==="auto"?"Auto":q==="2160p"?"4K (2160p)":q}</button>`).join("");
+  $("#dQ").innerHTML = QUALS.map(q=>`<button data-q="${q}" class="${q===S.quality?"on":""}">${q==="auto"?"Auto":q==="2160p"?"4K (2160p)":q==="1440p"?"2K (1440p)":q}</button>`).join("");
   $("#dQ").onclick = e=>{ const b=e.target.closest("[data-q]"); if(!b) return; S.quality=b.dataset.q; save("set",S); $$("#dQ button").forEach(x=>x.classList.toggle("on",x===b)) };
 
   $("#dS").innerHTML = `<button data-s="off" class="${S.sub==="off"?"on":""}">Off</button>` +
@@ -599,7 +664,7 @@ function buildURL(it, si, s, e){
   const idx = safeServer(it, si);
   const srv = SERVERS[idx] || SERVERS[0];
   return srv.u(it, s, e, {
-    q: S.quality, numeric: !!srv.tmdb,
+    q: S.quality, numeric: !!srv.tmdb, qp: !!srv.qp,
     a: state.audio, s: state.sub === "off" ? "" : state.sub,
     sp: S.speed
   });
@@ -613,26 +678,44 @@ async function play(it, s=1, e=1){
       if(m){ const n = norm(m, item.t); n.tmdb = n.tmdb || item.tmdb; item = n }
     }catch{}
   }
-  state.item = item; state.season = s; state.episode = e;
+  state.item = item; state.season = s; state.episode = e; state.local = false;
 
   const active = safeServer(item, S.server);
   if(active !== S.server){ S.server = active; save("set", S) }
 
+  $("#pVid").classList.add("hidden");
+  $("#pFrame").classList.remove("hidden");
   $("#pTitleTxt").textContent = item.n + (item.t==="tv" ? ` · S${s}E${e}` : "");
   $("#pServer").innerHTML = SERVERS.map((x,i)=>`<option value="${i}" ${i===S.server?"selected":""}>${esc(x.n)}</option>`).join("");
-  $("#pQuality").innerHTML = QUALS.map(q=>`<option value="${q}" ${q===S.quality?"selected":""}>${q==="auto"?"Auto quality":q==="2160p"?"4K 2160p":q}</option>`).join("");
+  $("#pQuality").innerHTML = QUALS.map(q=>`<option value="${q}" ${q===S.quality?"selected":""}>${q==="auto"?"Auto quality":q==="2160p"?"4K 2160p":q==="1440p"?"2K 1440p":q}</option>`).join("");
   $("#pAudio").innerHTML = audioSet(item).map(l=>`<option value="${l.c}" ${l.c===state.audio?"selected":""}>${esc(l.n)}</option>`).join("");
   $("#pSub").innerHTML = `<option value="off">Subs off</option>` + LANGS.slice(0,10).map(([c,n])=>`<option value="${c}" ${c===state.sub?"selected":""}>${esc(n)} subs</option>`).join("");
   $("#pSpeed").innerHTML = SPEEDS.map(v=>`<option value="${v}" ${v===S.speed?"selected":""}>${v}×</option>`).join("");
   $("#pNext").style.display = item.t === "tv" ? "" : "none";
   $("#player").classList.add("on"); document.body.classList.add("lock");
+  if(!history.state?.player){ try{ history.pushState({player:1},"") }catch{} }
   loadFrame(); addProg(item, s, e);
 }
+
+/* FIX: generation token — duplicate/race loads band, timeout par khud next server */
 function loadFrame(){
+  const g = ++state.gen;
   $("#pLoad").style.display = "grid";
-  const f = $("#pFrame");
-  f.src = buildURL(state.item, S.server, state.season, state.episode);
-  setTimeout(()=>{ $("#pLoad").style.display = "none" }, 5500);
+  const url = buildURL(state.item, S.server, state.season, state.episode);
+  $("#pFrame").src = url;
+  clearTimeout(state._t);
+  state._t = setTimeout(()=>{
+    if(g !== state.gen || !$("#player").classList.contains("on")) return;
+    $("#pLoad").style.display = "none";
+    if(state.tries < 3){ state.tries++; nextServerSilent() } else toast("Server nahi chal raha — doosra try karo");
+  }, 8000);
+}
+function nextServerSilent(){
+  const idx = safeServer(state.item, (S.server + 1) % SERVERS.length);
+  if(idx === S.server) return;
+  S.server = idx; save("set", S);
+  $("#pServer").value = idx;
+  loadFrame();
 }
 function addProg(it, s, e){
   prog = prog.filter(p=>p.id !== it.id);
@@ -687,6 +770,181 @@ async function doSearch(q){
   items.forEach(i=>g.appendChild(card(i)));
 }
 
+/* ---------- live ---------- */
+let liveSport = "", liveT = null;
+function openLive(){
+  $("#hero").style.display="none"; $("#main").style.display="none";
+  $("#page").classList.add("on");
+  $("#pTitle").textContent = "Live · Cricket, Football, UFC, Boxing";
+  $("#pSub").textContent = "Live aur upcoming events.";
+  $("#pGrid").className = "lgrid";
+  $("#pGrid").innerHTML = '<div class="empty">Loading…</div>';
+  loadSports(); loadLive();
+  clearInterval(liveT); liveT = setInterval(loadLive, 45000);
+}
+function loadSports(){
+  fetch(LIVEAPI+"/categories").then(r=>r.json()).then(d=>{
+    if(!d.ok) return;
+    const list2 = [{slug:"",name:"All"}].concat(d.categories||[]);
+    const box = document.createElement("div");
+    box.className = "chips"; box.style.gridColumn = "1/-1"; box.id = "lSp";
+    box.innerHTML = list2.map(c=>`<button data-s="${esc(c.slug)}" class="${liveSport===c.slug?"on":""}">${esc(c.name)}</button>`).join("");
+    box.onclick = e=>{ const b=e.target.closest("[data-s]"); if(!b) return; liveSport=b.dataset.s; loadSports(); loadLive() };
+    $("#pGrid").prepend(box);
+  }).catch(()=>{});
+}
+function loadLive(){
+  const url = LIVEAPI + "/matches?embeddable=1" + (liveSport ? "&category="+encodeURIComponent(liveSport) : "");
+  fetch(url).then(r=>r.json()).then(d=>{
+    const keep = $("#lSp");
+    $("#pGrid").innerHTML = "";
+    if(keep) $("#pGrid").appendChild(keep);
+    if(!d.ok || !d.matches || !d.matches.length){
+      $("#pGrid").insertAdjacentHTML("beforeend", '<div class="empty" style="grid-column:1/-1">Abhi kuch live nahi hai.</div>');
+      return;
+    }
+    d.matches.forEach(m=>{
+      const live = m.status === "live";
+      const t = new Date(m.start*1000).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+      const b = document.createElement("button");
+      b.className = "lcard";
+      b.innerHTML = `<span class="lb ${live?"":"up"}">${live?"● LIVE":t}</span>
+        <span class="lt">${m.home_logo?`<img src="${esc(m.home_logo)}" alt="">`:""}<b>${esc(m.home||m.title)}${m.away?"<br>vs "+esc(m.away):""}</b></span>
+        <span class="lc">${esc(m.league||m.category||"")}</span>`;
+      b.onclick = ()=>openLiveMatch(m.id);
+      $("#pGrid").appendChild(b);
+    });
+  }).catch(()=>{ $("#pGrid").innerHTML = '<div class="empty" style="grid-column:1/-1">Live feed unavailable.</div>' });
+}
+function openLiveMatch(id){
+  fetch(LIVEAPI+"/matches/"+id).then(r=>r.json()).then(d=>{
+    if(!d.ok || !d.match) throw 0;
+    const m = d.match;
+    const on = (m.streams||[]).filter(s=>s.status==="online");
+    const src = on.length ? on[0].embed_url : m.embed_url;
+    if(!src){ toast("Koi server online nahi"); return }
+    state.local = false;
+    $("#pVid").classList.add("hidden"); $("#pFrame").classList.remove("hidden");
+    $("#pTitleTxt").textContent = m.title;
+    $("#pServer").innerHTML = '<option>Live</option>';
+    $("#pNext").style.display = "none";
+    $("#player").classList.add("on"); document.body.classList.add("lock");
+    if(!history.state?.player){ try{ history.pushState({player:1},"") }catch{} }
+    $("#pLoad").style.display = "grid";
+    $("#pFrame").src = src;
+    setTimeout(()=>{ $("#pLoad").style.display = "none" }, 6000);
+  }).catch(()=>toast("Stream unavailable"));
+}
+
+/* ---------- uploads ---------- */
+let DB = null;
+function openDB(){
+  return new Promise((res,rej)=>{
+    if(DB) return res(DB);
+    const r = indexedDB.open("tunadb",1);
+    r.onupgradeneeded = ()=> r.result.createObjectStore("vids",{keyPath:"id"});
+    r.onsuccess = ()=>{ DB = r.result; res(DB) };
+    r.onerror = ()=> rej(r.error);
+  });
+}
+function dbPut(o){ return openDB().then(db=>new Promise((res,rej)=>{ const tx=db.transaction("vids","readwrite"); tx.objectStore("vids").put(o); tx.oncomplete=res; tx.onerror=rej })) }
+function dbAll(){ return openDB().then(db=>new Promise((res,rej)=>{
+  const out=[], tx=db.transaction("vids","readonly"), st=tx.objectStore("vids");
+  st.openCursor().onsuccess = e=>{ const c=e.target.result; if(c){ out.push(c.value); c.continue() } else res(out) };
+  tx.onerror = rej;
+})) }
+
+function openUploads(){
+  $("#hero").style.display="none"; $("#main").style.display="none";
+  $("#page").classList.add("on");
+  $("#pTitle").textContent = "My Uploads";
+  $("#pSub").textContent = "Apni video add karo — device pe hi rehti hai.";
+  $("#pGrid").className = "grid";
+  $("#pGrid").innerHTML = '<div class="empty">Loading…</div>';
+  dbAll().then(items=>{
+    const g = $("#pGrid");
+    g.innerHTML = "";
+    const add = document.createElement("button");
+    add.className = "card";
+    add.innerHTML = '<div class="poster"><div class="ph" style="--h:200"><b>+ Add video</b></div></div><div class="card-body"><h3>Naya upload</h3></div>';
+    add.onclick = ()=>openUpModal();
+    g.appendChild(add);
+    if(!items.length){ g.insertAdjacentHTML("beforeend", '<div class="empty" style="grid-column:1/-1">Abhi kuch upload nahi.</div>'); return }
+    items.forEach(v=>{
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `<div class="poster"><div class="ph" style="--h:${hue(v.name)}"><b>${esc(v.name)}</b></div></div><div class="card-body"><h3>${esc(v.name)}</h3><small>Upload</small></div>`;
+      c.onclick = ()=>playLocal(v.id);
+      g.appendChild(c);
+    });
+  });
+}
+function openUpModal(){ $("#uErr").textContent=""; $("#uName").value=""; $("#uFile").value=""; $("#uLink").value=""; $("#upModal").classList.add("on") }
+function doUpload(){
+  const name = $("#uName").value.trim(), f = $("#uFile").files[0], link = $("#uLink").value.trim(), e = $("#uErr");
+  if(!name){ e.textContent = "Title likho"; return }
+  if(!f && !link){ e.textContent = "File chuno ya link daalo"; return }
+  if(link && !/^https?:\/\//.test(link)){ e.textContent = "Link http(s) se shuru hona chahiye"; return }
+  const rec = { id:"u"+Date.now(), name, link };
+  const done = ()=>{ $("#upModal").classList.remove("on"); toast("Add ho gaya"); openUploads() };
+  if(f){ rec.blob = f; dbPut(rec).then(done).catch(()=>e.textContent="Save nahi hua") }
+  else dbPut(rec).then(done).catch(()=>e.textContent="Save nahi hua");
+}
+function playLocal(id){
+  dbAll().then(items=>{
+    const v = items.find(x=>x.id===id);
+    if(!v) return;
+    state.local = true;
+    $("#pFrame").classList.add("hidden");
+    const el = $("#pVid");
+    el.classList.remove("hidden");
+    el.src = v.blob ? URL.createObjectURL(v.blob) : v.link;
+    $("#pTitleTxt").textContent = v.name;
+    $("#player").classList.add("on"); document.body.classList.add("lock");
+    if(!history.state?.player){ try{ history.pushState({player:1},"") }catch{} }
+    el.play().catch(()=>{});
+  });
+}
+
+/* ---------- auth ---------- */
+let users = load("users", {}), authMode = 0;
+function paintUser(){
+  const u = state.user;
+  $("#avatarBtn").textContent = u ? (u.name||"U").charAt(0).toUpperCase() : "TM";
+}
+function openAuth(m){
+  authMode = m;
+  $("#aTitle").textContent = m ? "Sign In" : "Create account";
+  $("#aSub").textContent = m ? "Wapas swagat." : "List, uploads aur history save karo.";
+  $("#aNameWrap").classList.toggle("hidden", !!m);
+  $("#aGo").textContent = m ? "Sign In" : "Sign Up";
+  $("#aSwap").textContent = m ? "Create account" : "Sign In";
+  $("#aErr").textContent = "";
+  $("#aName").value = $("#aMail").value = $("#aPass").value = "";
+  $("#authModal").classList.add("on");
+}
+function validId(v){ return /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v) || /^[6-9]\d{9}$/.test(v) }
+function doAuth(){
+  const name = $("#aName").value.trim(), mail = $("#aMail").value.trim(), pass = $("#aPass").value, e = $("#aErr");
+  e.textContent = "";
+  if(!authMode && name.length < 2){ e.textContent = "Naam 2+ letters"; return }
+  if(!validId(mail)){ e.textContent = "Valid email ya 10-digit mobile daalo"; return }
+  if(pass.length < 6){ e.textContent = "Password 6+ characters"; return }
+  const key = mail.toLowerCase();
+  if(!authMode){
+    if(users[key]){ e.textContent = "Account pehle se hai — Sign In karo"; return }
+    users[key] = { name, mail, pass }; save("users", users);
+    state.user = users[key]; localStorage.setItem("nfx_session", key);
+    $("#authModal").classList.remove("on"); paintUser(); toast("Account ban gaya");
+  }else{
+    if(!users[key]){ e.textContent = "Is email/naumber ka account nahi"; return }
+    if(users[key].pass !== pass){ e.textContent = "Galat password"; return }
+    state.user = users[key]; localStorage.setItem("nfx_session", key);
+    $("#authModal").classList.remove("on"); paintUser(); toast("Signed in");
+  }
+}
+function signOut(){ localStorage.removeItem("nfx_session"); state.user = null; paintUser(); toast("Signed out") }
+
 /* ---------- settings ---------- */
 function openSettings(){
   $("#sAudio").innerHTML = `<option value="" ${S.audio===""?"selected":""}>Original</option>` +
@@ -701,14 +959,17 @@ function openSettings(){
 /* ---------- nav ---------- */
 function buildNav(){
   const nav = $("#nav");
-  const items = ["Home","Movies","Web Series","Anime","My List"];
-  nav.innerHTML = items.map(t=>`<button data-k="${t}">${t}</button>`).join("");
+  const items = ["Home","Movies","Web Series","Anime","My List","Live","Upload"];
+  nav.innerHTML = items.map(t=>`<button data-k="${t}">${t==="Live"?'<span class="ld"></span>Live':t}</button>`).join("");
   nav.onclick = e=>{
     const b = e.target.closest("[data-k]"); if(!b) return;
     const k = b.dataset.k;
     $("#q").value = ""; doSearch("");
+    clearInterval(liveT);
     if(k === "Home"){ $("#page").classList.remove("on"); $("#main").style.display=""; $("#hero").style.display=S.hero?"":"none"; window.scrollTo({top:0,behavior:"smooth"}); return }
     if(k === "My List"){ showList(); return }
+    if(k === "Live"){ openLive(); return }
+    if(k === "Upload"){ openUploads(); return }
     const map = {Movies:{t:"Movies",type:"movie",cat:"top"}, "Web Series":{t:"Web Series",type:"series",cat:"top"}, Anime:{t:"Anime",type:"series",cat:"top",genre:"Animation"}};
     openBrowse(map[k]);
   };
@@ -723,6 +984,24 @@ function showList(){
 }
 
 /* ---------- events ---------- */
+$("#logoBtn").onclick = ()=>$("#nav").querySelector("[data-k='Home']")?.click();
+$("#avatarBtn").onclick = ()=>{
+  const m = $("#umenu");
+  if(m.classList.contains("on")){ m.classList.remove("on"); return }
+  m.innerHTML = state.user
+    ? `<div class="em">${esc(state.user.mail)}</div><div data-u="list">My List</div><div data-u="up">My Uploads</div><div data-u="out">Sign Out</div>`
+    : `<div data-u="in">Sign In</div><div data-u="signup">Create account</div><div data-u="list">My List</div>`;
+  m.onclick = e=>{
+    const a = e.target.closest("[data-u]")?.dataset.u; if(!a) return;
+    m.classList.remove("on");
+    if(a==="in") openAuth(1);
+    else if(a==="signup") openAuth(0);
+    else if(a==="list") showList();
+    else if(a==="up") openUploads();
+    else if(a==="out") signOut();
+  };
+  m.classList.add("on");
+};
 $("#searchBtn").onclick = ()=>{
   const w = $("#searchwrap");
   if(!w.classList.contains("open")){ w.classList.add("open"); $("#q").focus() }
@@ -744,22 +1023,51 @@ $("#sReset").onclick = ()=>{
 $("#sAuto").onclick = e=>{ S.auto=!S.auto; e.currentTarget.classList.toggle("on", S.auto); save("set",S) };
 $("#sHero").onclick = e=>{ S.hero=!S.hero; e.currentTarget.classList.toggle("on", S.hero); save("set",S) };
 
-$("#pClose").onclick = ()=>{ $("#player").classList.remove("on"); $("#pFrame").src="about:blank"; document.body.classList.remove("lock") };
-$("#pServer").onchange = e=>{ S.server=+e.target.value; save("set",S); loadFrame() };
-$("#pQuality").onchange = e=>{ S.quality=e.target.value; save("set",S); loadFrame(); toast("Quality: "+S.quality) };
-$("#pAudio").onchange = e=>{ state.audio=e.target.value; forceLangServer(); loadFrame() };
-$("#pSub").onchange = e=>{ state.sub=e.target.value; forceLangServer(); loadFrame() };
-$("#pSpeed").onchange = e=>{ S.speed=e.target.value; save("set",S); loadFrame() };
-$("#pReload").onclick = loadFrame;
+function closePlayer(){
+  clearTimeout(state._t);
+  state.gen++;
+  $("#player").classList.remove("on");
+  $("#pFrame").src = "about:blank";
+  const el = $("#pVid"); try{ el.pause() }catch{}; el.removeAttribute("src");
+  document.body.classList.remove("lock");
+  if(history.state?.player){ try{ history.back() }catch{} }
+}
+$("#pClose").onclick = closePlayer;
+$("#pServer").onchange = e=>{ S.server=+e.target.value; save("set",S); state.tries=0; loadFrame() };
+$("#pQuality").onchange = e=>{ S.quality=e.target.value; save("set",S); state.tries=0; loadFrame(); toast("Quality: "+S.quality) };
+$("#pAudio").onchange = e=>{ state.audio=e.target.value; forceLangServer(); state.tries=0; loadFrame() };
+$("#pSub").onchange = e=>{ state.sub=e.target.value; forceLangServer(); state.tries=0; loadFrame() };
+$("#pSpeed").onchange = e=>{ S.speed=e.target.value; save("set",S); state.tries=0; loadFrame() };
+$("#pReload").onclick = ()=>{ state.tries=0; loadFrame() };
+$("#pSrvNext").onclick = ()=>{ state.tries=0; nextServerSilent() };
 $("#pOpen").onclick = ()=> window.open(buildURL(state.item, S.server, state.season, state.episode), "_blank", "noopener");
 $("#pNext").onclick = ()=>{ state.episode++; play(state.item, state.season, state.episode) };
 $("#detail").addEventListener("click", e=>{ if(e.target.id === "detail") closeDetail() });
+$("#aGo").onclick = doAuth;
+$("#aCancel").onclick = ()=>$("#authModal").classList.remove("on");
+$("#aSwap").onclick = ()=>openAuth(authMode ? 0 : 1);
+$("#uGo").onclick = doUpload;
+$("#uCancel").onclick = ()=>$("#upModal").classList.remove("on");
+$("#pFrame").addEventListener("load", ()=>clearTimeout(state._t));
+
+/* FIX: Android back / browser back player band karta hai, detail page wapas */
+window.addEventListener("popstate", ()=>{
+  if($("#player").classList.contains("on")){
+    clearTimeout(state._t); state.gen++;
+    $("#player").classList.remove("on");
+    $("#pFrame").src = "about:blank";
+    const el = $("#pVid"); try{ el.pause() }catch{}; el.removeAttribute("src");
+    document.body.classList.remove("lock");
+  }
+});
 
 document.addEventListener("keydown", e=>{
   if(e.key === "Escape"){
-    if($("#player").classList.contains("on")) $("#pClose").click();
+    if($("#player").classList.contains("on")) closePlayer();
     else if($("#detail").classList.contains("on")) closeDetail();
     else if($("#settings").classList.contains("on")) $("#settings").classList.remove("on");
+    else if($("#authModal").classList.contains("on")) $("#authModal").classList.remove("on");
+    else if($("#upModal").classList.contains("on")) $("#upModal").classList.remove("on");
   }
   if(e.key === "/" && document.activeElement.tagName !== "INPUT"){
     e.preventDefault(); $("#searchwrap").classList.add("open"); $("#q").focus();
@@ -768,6 +1076,9 @@ document.addEventListener("keydown", e=>{
 window.addEventListener("scroll", ()=> $("#hdr").classList.toggle("solid", window.scrollY > 30), {passive:true});
 
 /* boot */
+const savedSess = localStorage.getItem("nfx_session");
+if(savedSess && users[savedSess]) state.user = users[savedSess];
+paintUser();
 buildNav();
 buildHome();
 </script>
