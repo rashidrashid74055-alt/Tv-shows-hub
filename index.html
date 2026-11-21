@@ -3,11 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TUNAmovies — Movies, Web Series & Live</title>
+<title>TUNAmovies — Movies, Web Series & TV Shows</title>
 <meta name="theme-color" content="#08080b">
 <link rel="preconnect" href="https://v3-cinemeta.strem.io">
 <link rel="preconnect" href="https://images.metahub.space">
-<link rel="preconnect" href="https://vidfast.pro">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#08080b;--bg2:#0f0f14;--card:#16161d;--fg:#f3f3f6;--mut:#9aa0ad;--red:#e50914;--rad:10px;--hdr:64px}
@@ -19,9 +18,8 @@ body.lock{overflow:hidden}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 img{display:block;max-width:100%}
-.hidden{display:none!important}
 
-header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:12px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
+header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:14px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
 header.solid{background:rgba(8,8,11,.98);box-shadow:0 1px 0 #1c1c24}
 .logo{font-size:1.45rem;font-weight:900;letter-spacing:-1.2px;color:#fff;flex-shrink:0;cursor:pointer}
 .logo span{color:var(--red)}
@@ -112,6 +110,7 @@ main{padding-bottom:70px;position:relative;z-index:3}
 .sheet-body .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;color:#c5c9d1;margin-bottom:12px;align-items:center}
 .ovw{font-size:.87rem;line-height:1.62;color:#c8ccd4;margin-bottom:14px}
 .lbl{font-size:.67rem;letter-spacing:1.3px;text-transform:uppercase;color:var(--mut);margin:14px 0 7px;font-weight:700}
+.lbl span{color:#d3d6dd;letter-spacing:0;text-transform:none;font-weight:600;margin-left:6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button{padding:6px 12px;border:1px solid #2e2e3a;border-radius:20px;font-size:.75rem;color:#d3d6dd;transition:.16s}
 .chips button:hover{border-color:#5a5a6c;color:#fff}
@@ -153,7 +152,7 @@ select:focus{outline:none;border-color:var(--red)}
 #settings .hint{font-size:.74rem;color:var(--mut);line-height:1.55;margin-bottom:16px}
 .field{margin-bottom:15px}
 .field label{display:block;font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:6px;font-weight:700}
-.field select,.field input{width:100%;padding:9px 11px;border-radius:7px;font-size:.82rem;background:#16161e;color:#e6e8ee;border:1px solid #2b2b38}
+.field select{width:100%;padding:9px 11px;border-radius:7px;font-size:.82rem}
 .toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #1b1b24;font-size:.83rem}
 .sw{width:42px;height:23px;border-radius:20px;background:#2b2b38;position:relative;flex-shrink:0;transition:.2s}
 .sw::after{content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
@@ -236,11 +235,9 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
       <button class="iconbtn" id="pOpen" title="New tab" aria-label="New tab">&#8599;</button>
     </div>
   </div>
-  <div class="p-frame">
-    <div class="p-load" id="pLoad"><div class="spin"></div></div>
+  <div class="p-frame"><div class="p-load" id="pLoad"><div class="spin"></div></div>
     <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe>
-    <video id="pVid" class="hidden" controls playsinline></video>
-  </div>
+    <video id="pVid" class="hidden" controls playsinline></video></div>
   <div class="p-foot">
     <span>Blank ho to <b>Server badlo</b> ya reload. Quality/audio player ke andar <b>&#9881;</b> pe bhi hai.</span>
     <span class="fb">
@@ -302,52 +299,48 @@ const LIVEAPI = "https://api.embedse.com/v1";
 const IMGUP = u => u ? u.replace("/small/", "/medium/") : "";
 
 const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["ml","Malayalam"],["kn","Kannada"],["bn","Bengali"],["mr","Marathi"],["pa","Punjabi"],["gu","Gujarati"],["ur","Urdu"],["es","Spanish"],["fr","French"],["de","German"],["ja","Japanese"],["ko","Korean"],["zh","Chinese"],["ru","Russian"],["ar","Arabic"],["pt","Portuguese"],["tr","Turkish"],["it","Italian"]];
-/* 4K aur 2K dono — numeric quality sirf un servers me jata hai jo usse samajhte hain */
 const QUALS = ["auto","2160p","1440p","1080p","720p","480p","360p"];
 const SPEEDS = ["1","1.25","1.5","0.75","2"];
 
-/* ===== FIX 1: server order =====
-   vidsrc.xyz ka domain dead tha -> hata diya
-   VidLink par bahut titles missing (Mr. Robot etc.) -> VidFast pehle
-   VidFast = TMDB id + quality param + language param, verified working */
+/* qp: quality param key | lang: audio/sub | tmdb: sirf TMDB id | seek: t param
+   Order = TV aur movie dono ke liye: VidFast (HD + lang + quality) sabse pehle */
 const SERVERS = [
-  { n:"Server 1 · VidFast", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 1 · VidFast", tmdb:true, lang:true, qp:"quality", seek:true, u:(it,s,e,o)=>{
       const b = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
       return b + qs(o);
   }},
-  { n:"Server 2 · VidSrc", lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const b = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
-      return b + qs(o);
-  }},
-  { n:"Server 3 · 2Embed", u:(it,s,e)=>{
-      return it.t==="tv" ? `https://www.2embed.skin/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.skin/embed/${it.imdb}`;
-  }},
-  { n:"Server 4 · VidSrc ME", lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const b = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
-      return b + qs(o, true);
-  }},
-  { n:"Server 5 · Videasy", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 2 · Videasy", tmdb:true, lang:true, qp:"quality", seek:true, u:(it,s,e,o)=>{
       const b = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
       return b + qs(o);
   }},
-  { n:"Server 6 · SuperEmbed", u:(it,s,e)=>{
-      return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
+  { n:"Server 3 · VidSrc", lang:true, qp:"quality", u:(it,s,e,o)=>{
+      const b = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
+      return b + qs(o);
   }},
-  { n:"Server 7 · VidLink", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 4 · VidLink", tmdb:true, lang:true, qp:"quality", seek:true, u:(it,s,e,o)=>{
       const b = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
       return b + qs(o);
+  }},
+  { n:"Server 5 · 2Embed", u:(it,s,e)=>{
+      return it.t==="tv" ? `https://www.2embed.skin/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.skin/embed/${it.imdb}`;
+  }},
+  { n:"Server 6 · VidSrc ME", lang:true, qp:"quality", u:(it,s,e,o)=>{
+      const b = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
+      return b + qs(o, true);
+  }},
+  { n:"Server 7 · SuperEmbed", u:(it,s,e)=>{
+      return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
   }}
 ];
 
-/* FIX 2: quality sirf qp wale server me, aur numeric jahan zaroori */
+/* quality hamesha jata hai (jo server samajhta hai usme), audio + subs + seek time bhi */
 function qs(o, hasQuery){
   const p = [];
-  if(o.q && o.q !== "auto" && o.qp){
-    p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
-  }
+  if(o.q && o.q !== "auto" && o.qp) p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
   if(o.a) p.push("ds_lang=" + o.a);
   if(o.s) p.push("sub_lang=" + o.s);
   if(o.sp && o.sp !== "1") p.push("speed=" + o.sp);
+  if(o.t) p.push("t=" + o.t);
   if(!p.length) return "";
   return (hasQuery ? "&" : "?") + p.join("&");
 }
@@ -372,7 +365,7 @@ const DEF = {audio:"", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:tru
 let S = load("set", DEF);
 let list = load("list", []);
 let prog = load("prog", []);
-const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null, gen:0, tries:0, local:false};
+const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null, t:0, gen:0, tries:0};
 
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -383,16 +376,13 @@ function esc(s=""){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&l
 function hue(s){ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))%360; return h }
 const isSaved = id => list.some(w=>w.id===id);
 
-/* ===== cache: wapas aane par instant ===== */
-const CACHE = new Map();
+/* ---------- cinemeta (cached) ---------- */
+const MEM = new Map();
 async function jget(url){
-  const hit = CACHE.get(url);
-  if(hit && Date.now() - hit.t < 180000) return hit.v;
-  const r = await fetch(url);
-  if(!r.ok) throw new Error(r.status);
-  const v = await r.json();
-  CACHE.set(url, {v, t:Date.now()});
-  return v;
+  const hit = MEM.get(url);
+  if(hit && Date.now()-hit.t < 180000) return hit.v;
+  const r = await fetch(url); if(!r.ok) throw new Error(r.status);
+  const v = await r.json(); MEM.set(url,{v,t:Date.now()}); return v;
 }
 async function catalog(type, cat, opts={}){
   const parts = [];
@@ -486,29 +476,28 @@ function fillRow(s, items){
   s._track.innerHTML = ""; items.forEach(i=>s._track.appendChild(card(i)));
 }
 
-/* ===== FIX 3: home parallel load (pehle ek-ek row wait karta tha = slow) ===== */
+/* ---------- home: sab rows parallel (fast) ---------- */
 function buildHome(){
   const main = $("#main");
   main.innerHTML = "";
   if(prog.length) main.appendChild(row("Continue Watching", prog.slice(0,14)));
   if(list.length) main.appendChild(row("My List", list.slice()));
-  const heroPool = [];
-  const sections = [];
+  const heroPool = [], jobs = [];
 
   ROWS.forEach(cfg=>{
     const s = row(cfg.t, null, cfg);
-    main.appendChild(s); sections.push({s, cfg});
+    main.appendChild(s);
+    jobs.push(
+      catalog(cfg.type, cfg.cat, {genre:cfg.genre})
+        .then(raw=>{
+          const items = raw.map(m=>norm(m, cfg.type));
+          if(!heroPool.length && items.length) heroPool.push(...items.slice(0,10));
+          fillRow(s, items.slice(0,24));
+        })
+        .catch(()=>fillRow(s, []))
+    );
   });
-
-  Promise.all(sections.map(({s, cfg}) =>
-    catalog(cfg.type, cfg.cat, {genre:cfg.genre})
-      .then(raw => {
-        const items = raw.map(m=>norm(m, cfg.type));
-        if(!heroPool.length && items.length) heroPool.push(...items.slice(0,10));
-        fillRow(s, items.slice(0,24));
-      })
-      .catch(()=>fillRow(s, []))
-  )).then(()=>renderHero(heroPool[Math.floor(Math.random()*Math.max(heroPool.length,1))]));
+  Promise.all(jobs).then(()=>renderHero(heroPool[Math.floor(Math.random()*Math.max(heroPool.length,1))]));
 }
 
 function renderHero(it){
@@ -540,7 +529,7 @@ async function openBrowse(cfg){
   $("#page").classList.add("on");
   $("#pTitle").textContent = cfg.t;
   $("#pSub").textContent = cfg.type === "tv" ? "Web series" : "Movies";
-  const g = $("#pGrid"); g.innerHTML = ""; g.appendChild(skeleton(12));
+  const g = $("#pGrid"); g.className="grid"; g.innerHTML = ""; g.appendChild(skeleton(12));
   state.browse = {cfg, skip:0, busy:false, done:false};
   await moreBrowse();
 }
@@ -552,7 +541,7 @@ async function moreBrowse(){
     b.skip += raw.length;
     if(!raw.length) b.done = true;
     const g = $("#pGrid");
-    if(b.skip === raw.length) g.innerHTML = "";
+    if(g.querySelector(".sk")) g.innerHTML = "";
     raw.forEach(m=>g.appendChild(card(norm(m, b.cfg.type))));
     if(raw.length < 20) b.done = true;
   }catch{ b.done = true }
@@ -560,8 +549,9 @@ async function moreBrowse(){
 }
 new IntersectionObserver(e=>{ if(e[0].isIntersecting) moreBrowse() }, {rootMargin:"400px"}).observe($("#pSentinel"));
 
+/* ---------- detail ---------- */
 async function openDetail(it){
-  state.item = it; state.season = 1; state.episode = 1;
+  state.item = it; state.season = 1; state.episode = 1; state.t = 0;
   $("#detail").classList.add("on"); document.body.classList.add("lock");
   const d = $("#detailSheet");
   d.innerHTML = `<div class="sheet-hero" style="${it.back?`background-image:url('${it.back}')`:""}">
@@ -580,12 +570,16 @@ async function openDetail(it){
   state.audio = langs.find(l=>l.c === prefs[0])?.c ?? "";
   state.sub = S.sub;
 
+  const totalEps = (full.vids||[]).filter(v=>Number(v.season ?? v.number) > 0).length;
+  const seasonCount = new Set((full.vids||[]).filter(v=>Number(v.season ?? v.number) > 0).map(v=>Number(v.season ?? v.number))).size;
+
   d.innerHTML = `
     <div class="sheet-hero" style="${full.back?`background-image:url('${full.back}')`:""}">
       <button class="x" id="dX">&#10005;</button><div class="inner"><h2>${esc(full.n)}</h2></div></div>
     <div class="sheet-body">
       <div class="meta">${full.r?`<span>&#9733; ${esc(full.r)}</span>`:""}${full.y?`<span>${esc(full.y)}</span>`:""}
         <span class="chip-mini">${full.t==="tv"?"Web Series":"Movie"}</span>
+        ${full.t==="tv"&&totalEps?`<span class="chip-mini">${seasonCount} Season · ${totalEps} Episodes</span>`:""}
         ${full.g.map(g=>`<span class="chip-mini">${esc(g)}</span>`).join("")}</div>
       <p class="ovw">${esc(full.o || "Description available nahi hai.")}</p>
       ${full.cast.length?`<p class="ovw" style="font-size:.8rem;color:#9aa0ad">Cast: ${esc(full.cast.join(", "))}</p>`:""}
@@ -595,7 +589,7 @@ async function openDetail(it){
       <div class="lbl">Quality</div><div class="chips" id="dQ"></div>
       <div class="lbl">Subtitles</div><div class="chips" id="dS"></div>
       <div class="lbl">Server</div><div class="chips" id="dV"></div>
-      ${full.t==="tv" ? `<div class="lbl">Seasons</div><div class="seasons" id="dSeasons"></div><div class="eps" id="dEps"></div>` : ""}
+      ${full.t==="tv" ? `<div class="lbl">Seasons <span>${seasonCount} seasons · ${totalEps} episodes</span></div><div class="seasons" id="dSeasons"></div><div class="eps" id="dEps"></div>` : ""}
     </div>`;
 
   $("#dX").onclick = closeDetail;
@@ -630,10 +624,14 @@ function buildSeasons(it){
   if(!seasons.length) seasons = [1];
 
   const box = $("#dSeasons");
-  box.innerHTML = seasons.map((s,i)=>`<button data-s="${s}" class="${i===0?"on":""}">Season ${s}</button>`).join("");
+  /* har season par episode count */
+  box.innerHTML = seasons.map((s,i)=>{
+    const n = (groups[s]||[]).length;
+    return `<button data-s="${s}" class="${i===0?"on":""}">Season ${s} · ${n} ep</button>`;
+  }).join("");
   box.onclick = e=>{
     const b = e.target.closest("[data-s]"); if(!b) return;
-    state.season = +b.dataset.s;
+    state.season = +b.dataset.s; state.t = 0;
     $$("#dSeasons button").forEach(x=>x.classList.toggle("on", x===b));
     renderEps(it, state.season);
   };
@@ -673,7 +671,8 @@ function buildURL(it, si, s, e){
   const srv = SERVERS[idx] || SERVERS[0];
   return srv.u(it, s, e, {
     q: S.quality, qp: !!srv.qp, numeric: !!srv.tmdb,
-    a: state.audio, s: state.sub === "off" ? "" : state.sub, sp: S.speed
+    a: state.audio, s: state.sub === "off" ? "" : state.sub,
+    sp: S.speed, t: srv.seek ? state.t : 0
   });
 }
 
@@ -685,7 +684,7 @@ async function play(it, s=1, e=1){
       if(m){ const n = norm(m, item.t); n.tmdb = n.tmdb || item.tmdb; item = n }
     }catch{}
   }
-  state.item = item; state.season = s; state.episode = e; state.local = false; state.tries = 0;
+  state.item = item; state.season = s; state.episode = e; state.t = 0; state.tries = 0;
   const active = safeServer(item, S.server);
   if(active !== S.server){ S.server = active; save("set", S) }
 
@@ -702,17 +701,17 @@ async function play(it, s=1, e=1){
   loadFrame(); addProg(item, s, e);
 }
 
-/* FIX 4: gen token — duplicate load band, 7s par khud next server, max 4 */
-function loadFrame(){
+/* gen token: duplicate load band, 9s par khud next server (max 2 auto) */
+function loadFrame(quiet){
   const g = ++state.gen;
-  $("#pLoad").style.display = "grid";
+  if(!quiet) $("#pLoad").style.display = "grid";
   $("#pFrame").src = buildURL(state.item, S.server, state.season, state.episode);
   clearTimeout(state._t);
   state._t = setTimeout(()=>{
     if(g !== state.gen || !$("#player").classList.contains("on")) return;
     $("#pLoad").style.display = "none";
-    if(state.tries < 4){ state.tries++; nextSrv() } else toast("Server nahi chal raha — doosra try karo");
-  }, 7000);
+    if(state.tries < 2){ state.tries++; nextSrv() } else toast("Server nahi chal raha — Server badlo dabao");
+  }, 9000);
 }
 function nextSrv(){
   const idx = safeServer(state.item, (S.server + 1) % SERVERS.length);
@@ -753,7 +752,7 @@ async function doSearch(q){
   page.classList.add("on");
   $("#pTitle").textContent = `Results for "${q}"`;
   $("#pSub").textContent = "Movies, series aur shows.";
-  const g = $("#pGrid"); g.innerHTML = ""; g.appendChild(skeleton(8));
+  const g = $("#pGrid"); g.className="grid"; g.innerHTML = ""; g.appendChild(skeleton(8));
 
   let items = [];
   try{
@@ -777,8 +776,7 @@ function openLive(){
   $("#page").classList.add("on");
   $("#pTitle").textContent = "Live · Cricket, Football, UFC, Boxing";
   $("#pSub").textContent = "Live aur upcoming events.";
-  $("#pGrid").className = "lgrid";
-  $("#pGrid").innerHTML = '<div class="empty">Loading…</div>';
+  const g = $("#pGrid"); g.className="lgrid"; g.innerHTML = '<div class="empty">Loading…</div>';
   loadSports(); loadLive();
   clearInterval(liveT); liveT = setInterval(loadLive, 45000);
 }
@@ -858,10 +856,9 @@ function openUploads(){
   $("#page").classList.add("on");
   $("#pTitle").textContent = "My Uploads";
   $("#pSub").textContent = "Apni video add karo — device pe hi rehti hai.";
-  $("#pGrid").className = "grid";
-  $("#pGrid").innerHTML = '<div class="empty">Loading…</div>';
+  const g = $("#pGrid"); g.className="grid"; g.innerHTML = '<div class="empty">Loading…</div>';
   dbAll().then(items=>{
-    const g = $("#pGrid"); g.innerHTML = "";
+    g.innerHTML = "";
     const add = document.createElement("button");
     add.className = "card";
     add.innerHTML = '<div class="poster"><div class="ph" style="--h:200"><b>+ Add video</b></div></div><div class="card-body"><h3>Naya upload</h3></div>';
@@ -973,7 +970,7 @@ function showList(){
   $("#hero").style.display="none"; $("#main").style.display="none";
   $("#page").classList.add("on");
   $("#pTitle").textContent = "My List"; $("#pSub").textContent = list.length ? `${list.length} titles` : "Khaali hai — card pe + dabao.";
-  const g = $("#pGrid"); g.className = "grid"; g.innerHTML = "";
+  const g = $("#pGrid"); g.className="grid"; g.innerHTML = "";
   if(!list.length) g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>List khaali hai</b>Kisi bhi card pe + dabao.</div>`;
   list.forEach(i=>g.appendChild(card(i)));
 }
@@ -1044,7 +1041,6 @@ $("#uGo").onclick = doUpload;
 $("#uCancel").onclick = ()=>$("#upModal").classList.remove("on");
 $("#pFrame").addEventListener("load", ()=>{ clearTimeout(state._t); $("#pLoad").style.display = "none" });
 
-/* FIX 5: Android back — player band, detail page wapas */
 window.addEventListener("popstate", ()=>{
   if($("#player").classList.contains("on")){
     clearTimeout(state._t); state.gen++;
