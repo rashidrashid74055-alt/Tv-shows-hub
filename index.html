@@ -136,11 +136,11 @@ main{padding-bottom:70px;position:relative;z-index:3}
 .p-bar .grp{display:flex;align-items:center;gap:5px;margin-left:auto;flex-wrap:wrap}
 select{background:#16161e;color:#e6e8ee;border:1px solid #2b2b38;border-radius:6px;padding:6px 8px;font-size:.72rem;cursor:pointer}
 select:focus{outline:none;border-color:var(--red)}
-.p-frame{flex:1;position:relative;background:#000;min-height:0;overflow:hidden}
-.p-back{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.42;z-index:0}
+.p-frame{flex:1;position:relative;background:#0e0e13;min-height:0;overflow:hidden}
+.p-back{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;z-index:0}
 .p-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;z-index:1}
 .p-frame video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;object-fit:contain;z-index:1}
-.p-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:.85rem;pointer-events:none;z-index:2}
+.p-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:.85rem;pointer-events:none;z-index:2;background:rgba(8,8,12,.55)}
 .spin{width:34px;height:34px;border:3px solid #2a2a36;border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .p-foot{padding:8px 11px;background:#0c0c11;border-top:1px solid #1d1d26;display:flex;gap:8px;flex-wrap:wrap;font-size:.7rem;color:var(--mut);align-items:center}
@@ -240,7 +240,7 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
     <iframe id="pFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin"></iframe>
     <video id="pVid" class="hidden" controls playsinline></video></div>
   <div class="p-foot">
-    <span>Blank ho to <b>Server badlo</b>. Quality player ke andar <b>&#9881;</b> pe bhi hai.</span>
+    <span id="pInfo">Blank ho to <b>Server badlo</b>.</span>
     <span class="fb">
       <button class="btn btn-ghost" id="pSrvNext" style="padding:6px 12px;font-size:.72rem">Server badlo</button>
       <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 12px;font-size:.72rem">Next ep &#8250;</button>
@@ -303,49 +303,47 @@ const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["
 const QUALS = ["auto","2160p","1440p","1080p","720p","480p","360p"];
 const SPEEDS = ["1","1.25","1.5","0.75","2"];
 
-/* FIX: 4K/2K source na ho to player khaali grey deta hai -> quality fallback chain */
+/* quality girawat chain */
 const QFALL = {"2160p":["1440p","1080p","auto"], "1440p":["1080p","auto"]};
 
+/* har server ke apne param — faltu param se player kharab hota tha */
 const SERVERS = [
-  { n:"Server 1 · VidFast", tmdb:true, lang:true, qp:"quality", seek:true, u:(it,s,e,o)=>{
-      const b = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
-      return b + qs(o);
-  }},
-  { n:"Server 2 · Videasy", tmdb:true, lang:true, qp:"quality", seek:true, u:(it,s,e,o)=>{
-      const b = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
-      return b + qs(o);
-  }},
-  { n:"Server 3 · VidSrc", lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 1 · VidSrc", lang:true, u:(it,s,e,o)=>{
       const b = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
-      return b + qs(o);
+      return b + (o.a ? `?ds_lang=${o.a}` : "");
   }},
-  { n:"Server 4 · VidLink", tmdb:true, lang:true, qp:"quality", seek:true, u:(it,s,e,o)=>{
+  { n:"Server 2 · VidFast", tmdb:true, lang:true, u:(it,s,e,o)=>{
+      const b = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
+      const p = [];
+      if(o.q && o.q !== "auto") p.push("quality=" + o.q);
+      if(o.a) p.push("lang=" + o.a);
+      return b + (p.length ? "?" + p.join("&") : "");
+  }},
+  { n:"Server 3 · VidLink", tmdb:true, lang:true, u:(it,s,e,o)=>{
       const b = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
-      return b + qs(o);
+      const p = [];
+      if(o.q && o.q !== "auto") p.push("quality=" + o.q.replace("p",""));
+      if(o.a) p.push("lang=" + o.a);
+      return b + (p.length ? "?" + p.join("&") : "");
   }},
-  { n:"Server 5 · 2Embed", u:(it,s,e)=>{
-      return it.t==="tv" ? `https://www.2embed.skin/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.skin/embed/${it.imdb}`;
-  }},
-  { n:"Server 6 · VidSrc ME", lang:true, qp:"quality", u:(it,s,e,o)=>{
+  { n:"Server 4 · VidSrc ME", lang:true, u:(it,s,e,o)=>{
       const b = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
-      return b + qs(o, true);
+      return b + (o.a ? `&ds_lang=${o.a}` : "");
+  }},
+  { n:"Server 5 · Videasy", tmdb:true, lang:true, u:(it,s,e,o)=>{
+      const b = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
+      const p = [];
+      if(o.a) p.push("lang=" + o.a);
+      if(o.q && o.q !== "auto") p.push("quality=" + o.q);
+      return b + (p.length ? "?" + p.join("&") : "");
+  }},
+  { n:"Server 6 · 2Embed", u:(it,s,e)=>{
+      return it.t==="tv" ? `https://www.2embed.skin/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.skin/embed/${it.imdb}`;
   }},
   { n:"Server 7 · SuperEmbed", u:(it,s,e)=>{
       return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
   }}
 ];
-
-/* lang + ds_lang dono (server jo samajhta hai wo le lega), seek time, speed */
-function qs(o, hasQuery){
-  const p = [];
-  if(o.q && o.q !== "auto" && o.qp) p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
-  if(o.a){ p.push("lang=" + o.a); p.push("ds_lang=" + o.a) }
-  if(o.s) p.push("sub_lang=" + o.s);
-  if(o.sp && o.sp !== "1") p.push("speed=" + o.sp);
-  if(o.t) p.push("t=" + o.t);
-  if(!p.length) return "";
-  return (hasQuery ? "&" : "?") + p.join("&");
-}
 
 const ROWS = [
   {t:"Trending Now", type:"movie", cat:"top"},
@@ -367,7 +365,8 @@ const DEF = {audio:"", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:tru
 let S = load("set", DEF);
 let list = load("list", []);
 let prog = load("prog", []);
-const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null, t:0, gen:0, tries:0, qFix:null, qStep:0};
+const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null, gen:0, tries:0,
+               qFix:null, qStep:0, aFix:false, touched:false};
 
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -550,7 +549,7 @@ async function moreBrowse(){
 new IntersectionObserver(e=>{ if(e[0].isIntersecting) moreBrowse() }, {rootMargin:"400px"}).observe($("#pSentinel"));
 
 async function openDetail(it){
-  state.item = it; state.season = 1; state.episode = 1; state.t = 0;
+  state.item = it; state.season = 1; state.episode = 1;
   $("#detail").classList.add("on"); document.body.classList.add("lock");
   const d = $("#detailSheet");
   d.innerHTML = `<div class="sheet-hero" style="${it.back?`background-image:url('${it.back}')`:""}">
@@ -629,7 +628,7 @@ function buildSeasons(it){
   }).join("");
   box.onclick = e=>{
     const b = e.target.closest("[data-s]"); if(!b) return;
-    state.season = +b.dataset.s; state.t = 0;
+    state.season = +b.dataset.s;
     $$("#dSeasons button").forEach(x=>x.classList.toggle("on", x===b));
     renderEps(it, state.season);
   };
@@ -665,14 +664,11 @@ function safeServer(it, idx){
   return idx;
 }
 function curQ(){ return state.qFix || S.quality }
+function curA(){ return state.aFix ? "" : state.audio }
 function buildURL(it, si, s, e){
   const idx = safeServer(it, si);
   const srv = SERVERS[idx] || SERVERS[0];
-  return srv.u(it, s, e, {
-    q: curQ(), qp: !!srv.qp, numeric: !!srv.tmdb,
-    a: state.audio, s: state.sub === "off" ? "" : state.sub,
-    sp: S.speed, t: srv.seek ? state.t : 0
-  });
+  return srv.u(it, s, e, { q: curQ(), a: curA() });
 }
 
 async function play(it, s=1, e=1){
@@ -683,8 +679,8 @@ async function play(it, s=1, e=1){
       if(m){ const n = norm(m, item.t); n.tmdb = n.tmdb || item.tmdb; item = n }
     }catch{}
   }
-  state.item = item; state.season = s; state.episode = e; state.t = 0;
-  state.tries = 0; state.qFix = null; state.qStep = 0;
+  state.item = item; state.season = s; state.episode = e;
+  state.tries = 0; state.qFix = null; state.qStep = 0; state.aFix = false;
   const active = safeServer(item, S.server);
   if(active !== S.server){ S.server = active; save("set", S) }
 
@@ -702,30 +698,48 @@ async function play(it, s=1, e=1){
   loadFrame(); addProg(item, s, e);
 }
 
-/* gen token; 8s par pehle quality girayo, phir server badlo */
+/* ===== core fix: page load hone par bhi timer zinda rehta hai =====
+   agar user ne player ke andar tap nahi kiya -> matlab video nahi chali -> aage badho */
 function loadFrame(quiet){
   const g = ++state.gen;
+  state.touched = false;
   if(!quiet) $("#pLoad").style.display = "grid";
   $("#pFrame").src = buildURL(state.item, S.server, state.season, state.episode);
-  clearTimeout(state._t);
+  clearTimeout(state._t); clearTimeout(state._s);
+  // hard: page hi nahi khula
   state._t = setTimeout(()=>{
-    if(g !== state.gen || !$("#player").classList.contains("on")) return;
+    if(g !== state.gen) return;
     $("#pLoad").style.display = "none";
-    const chain = QFALL[state.qFix || S.quality];
-    if(chain && state.qStep < chain.length){
-      state.qFix = chain[state.qStep++];
-      toast("Is title par " + state.qFix + " nahi — " + state.qFix);
-      loadFrame(true);
-      return;
-    }
-    if(state.tries < 3){ state.tries++; nextSrv() } else toast("Server nahi chal raha — Server badlo dabao");
-  }, 8000);
+    advance();
+  }, 9000);
+  // soft: page khul gaya par video nahi chali
+  state._s = setTimeout(()=>{
+    if(g !== state.gen || state.touched) return;
+    $("#pLoad").style.display = "none";
+    advance();
+  }, 14000);
+}
+function advance(){
+  if(!$("#player").classList.contains("on")) return;
+  const chain = QFALL[state.qFix || S.quality];
+  if(chain && state.qStep < chain.length){
+    state.qFix = chain[state.qStep++];
+    $("#pInfo").textContent = "Is title par " + state.qFix + " nahi mila — " + state.qFix + " try kar raha hoon.";
+    loadFrame(true); return;
+  }
+  if(!state.aFix && state.audio){
+    state.aFix = true;
+    $("#pInfo").textContent = "Hindi audio nahi mila — Original audio try kar raha hoon.";
+    loadFrame(true); return;
+  }
+  if(state.tries < 4){ state.tries++; nextSrv() }
+  else { $("#pInfo").textContent = "Kuch nahi chal raha — neeche 'Server badlo' dabao."; toast("Server nahi chal raha") }
 }
 function nextSrv(){
   const idx = safeServer(state.item, (S.server + 1) % SERVERS.length);
   if(idx === S.server) return;
   S.server = idx; save("set", S); $("#pServer").value = idx;
-  state.qFix = null; state.qStep = 0;
+  state.qFix = null; state.qStep = 0; state.aFix = false;
   loadFrame();
 }
 function addProg(it, s, e){
@@ -1026,7 +1040,7 @@ $("#sAuto").onclick = e=>{ S.auto=!S.auto; e.currentTarget.classList.toggle("on"
 $("#sHero").onclick = e=>{ S.hero=!S.hero; e.currentTarget.classList.toggle("on", S.hero); save("set",S) };
 
 function closePlayer(){
-  clearTimeout(state._t); state.gen++;
+  clearTimeout(state._t); clearTimeout(state._s); state.gen++;
   $("#player").classList.remove("on");
   $("#pFrame").src = "about:blank";
   const el = $("#pVid"); try{ el.pause() }catch{}; el.removeAttribute("src");
@@ -1034,12 +1048,12 @@ function closePlayer(){
   if(history.state?.player){ try{ history.back() }catch{} }
 }
 $("#pClose").onclick = closePlayer;
-$("#pServer").onchange = e=>{ S.server=+e.target.value; save("set",S); state.tries=0; state.qFix=null; state.qStep=0; loadFrame() };
+$("#pServer").onchange = e=>{ S.server=+e.target.value; save("set",S); state.tries=0; state.qFix=null; state.qStep=0; state.aFix=false; loadFrame() };
 $("#pQuality").onchange = e=>{ S.quality=e.target.value; save("set",S); state.tries=0; state.qFix=null; state.qStep=0; loadFrame(); toast("Quality: "+S.quality) };
-$("#pAudio").onchange = e=>{ state.audio=e.target.value; forceLangServer(); state.tries=0; loadFrame() };
-$("#pSub").onchange = e=>{ state.sub=e.target.value; forceLangServer(); state.tries=0; loadFrame() };
+$("#pAudio").onchange = e=>{ state.audio=e.target.value; state.aFix=false; forceLangServer(); state.tries=0; loadFrame() };
+$("#pSub").onchange = e=>{ state.sub=e.target.value; state.tries=0; loadFrame() };
 $("#pSpeed").onchange = e=>{ S.speed=e.target.value; save("set",S); state.tries=0; loadFrame() };
-$("#pReload").onclick = ()=>{ state.tries=0; state.qFix=null; state.qStep=0; loadFrame() };
+$("#pReload").onclick = ()=>{ state.tries=0; state.qFix=null; state.qStep=0; state.aFix=false; loadFrame() };
 $("#pSrvNext").onclick = ()=>{ state.tries=0; nextSrv() };
 $("#pOpen").onclick = ()=> window.open(buildURL(state.item, S.server, state.season, state.episode), "_blank", "noopener");
 $("#pNext").onclick = ()=>{ state.episode++; play(state.item, state.season, state.episode) };
@@ -1049,11 +1063,15 @@ $("#aCancel").onclick = ()=>$("#authModal").classList.remove("on");
 $("#aSwap").onclick = ()=>openAuth(authMode ? 0 : 1);
 $("#uGo").onclick = doUpload;
 $("#uCancel").onclick = ()=>$("#upModal").classList.remove("on");
+
+/* load hone par hard timer band, par soft timer chalta rehta hai */
 $("#pFrame").addEventListener("load", ()=>{ clearTimeout(state._t); $("#pLoad").style.display = "none" });
+/* user player ke andar tap kare to matlab video chal rahi hai */
+window.addEventListener("blur", ()=>{ if($("#player").classList.contains("on")) state.touched = true });
 
 window.addEventListener("popstate", ()=>{
   if($("#player").classList.contains("on")){
-    clearTimeout(state._t); state.gen++;
+    clearTimeout(state._t); clearTimeout(state._s); state.gen++;
     $("#player").classList.remove("on");
     $("#pFrame").src = "about:blank";
     const el = $("#pVid"); try{ el.pause() }catch{}; el.removeAttribute("src");
