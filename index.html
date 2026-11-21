@@ -94,6 +94,7 @@ h3.sec{font-size:17px;padding:14px 14px 0;margin:0}
 #plBot .gh{flex:0 0 auto;padding:9px 13px;border-radius:11px;font-size:12.5px;font-weight:800;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);white-space:nowrap}
 #plBot button:active,#plBot .nx:active{transform:scale(.95)}
 #plHint{flex:0 0 auto;font-size:11.5px;color:#8b90a0;padding:0 4px;white-space:nowrap}
+#plAud{box-shadow:inset 0 0 0 1px rgba(229,9,20,.55)}
 .sheet{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.6);display:flex;align-items:flex-end}
 .sheet .in{width:100%;max-height:86vh;overflow-y:auto;border-radius:22px 22px 0 0;background:#12141c;border-top:1px solid rgba(255,255,255,.1);padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
 .sheet h3{margin:0 0 14px;font-size:17px}
@@ -216,15 +217,25 @@ const state={
   view:"home", cache:{}, prog:LS.get("nfx_prog",{}), list:LS.get("nfx_list",[]),
   set:Object.assign({qual:"1080",aud:"auto",srv:"vidfast"},LS.get("nfx_set",{})),
   item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", qFall:0, touched:false, timer:null,
-  playId:null, playType:"movie", orig:"", origName:"", audioList:[]
+  playId:null, playType:"movie", orig:"", origName:"", audioList:[], tmdb:"", pos:0, posTimer:null, mounted:0
 };
 
-/* servers: lang:true = server audio param support karta hai */
+/* audio:true = server audio-lang param support karta hai
+   resume:true = server startAt/t param se position le sakta hai
+   need:"tmdb" = TMDB id chahiye */
 const SRV=[
- {id:"vidfast",name:"VidFast",lang:true,u:(t,id,s,e,q,l)=>"https://vidfast.pro/"+(t==="movie"?"movie/"+id:"tv/"+id+"/"+s+"/"+e)+"?autoPlay=true&quality="+(q==="auto"?"auto":q)+"&lang="+l},
- {id:"vidsrcme",name:"VidSrc",lang:true,u:(t,id,s,e,q,l)=>"https://vidsrc.me/embed/"+(t==="movie"?"movie?imdb="+id:"tv?imdb="+id+"&season="+s+"&episode="+e)+"&ds_lang="+l+"&quality="+(q==="auto"?"1080":q)},
- {id:"multiembed",name:"MultiEmbed",lang:false,u:(t,id,s,e,q,l)=>"https://multiembed.mov/?video_id="+id+"&tmdb=0"+(t==="movie"?"":"&s="+s+"&e="+e)},
- {id:"2embed",name:"2Embed",lang:false,u:(t,id,s,e,q,l)=>"https://www.2embed.cc/"+(t==="movie"?"embed/"+id:"embedtv/"+id+"&s="+s+"&e="+e)}
+ {id:"vidfast",name:"VidFast",audio:true,resume:false,need:"imdb",
+  u:(c,l)=>"https://vidfast.pro/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true&quality="+(c.q==="auto"?"auto":c.q)+"&lang="+l},
+ {id:"vidcore",name:"VidCore",audio:true,resume:false,need:"tmdb",
+  u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&audio="+l+"&lang="+l+"&quality="+(c.q==="auto"?"auto":c.q)},
+ {id:"apiplayer",name:"APIPlayer",audio:true,resume:false,need:"tmdb",
+  u:(c,l)=>"https://apiplayer.ru/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l+"&audio="+l},
+ {id:"vidsrcme",name:"VidSrc",audio:true,resume:true,need:"imdb",
+  u:(c,l)=>"https://vidsrc.me/embed/"+(c.t==="movie"?"movie?imdb="+c.id:"tv?imdb="+c.id+"&season="+c.s+"&episode="+c.e)+"&ds_lang="+l+"&audio="+l+"&autoplay=1&startAt="+Math.max(0,Math.floor(c.pos))},
+ {id:"multiembed",name:"MultiEmbed",audio:false,resume:false,need:"imdb",
+  u:(c)=>">https://multiembed.mov/?video_id="+c.id+"&tmdb=0"+(c.t==="movie"?"":"&s="+c.s+"&e="+c.e)},
+ {id:"2embed",name:"2Embed",audio:false,resume:false,need:"imdb",
+  u:(c)=>"https://www.2embed.cc/"+(c.t==="movie"?"embed/"+c.id:"embedtv/"+c.id+"&s="+c.s+"&e="+c.e)}
 ];
 const QL=[["2160","4K"],["1440","2K"],["1080","1080p"],["720","720p"],["auto","Auto"]];
 const LNAME={hi:"\u0939\u093f\u0928\u094d\u0926\u0940",en:"English",es:"Espa\u00f1ol",fr:"Fran\u00e7ais",de:"Deutsch",it:"Italiano",pt:"Portugu\u00eas",ru:"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",ja:"\u65e5\u672c\u8a9e",ko:"\ud55c\uad6d\uc5b4",zh:"\u4e2d\u6587",ar:"\u0627\u0644\u0639\u0631\u0628\u064a\u0629",tr:"T\u00fcrk\u00e7e",ta:"\u0ba4\u0bae\u0bbf\u0bb4\u0bcd",te:"\u0c24\u0c46\u0c32\u0c41\u0c17\u0c41",ml:"\u0d2e\u0d32\u0d2f\u0d3e\u0d32\u0d02",kn:"\u0c95\u0ca8\u0ccd\u0ca8\u0ca1",bn:"\u09ac\u09be\u0982\u09b2\u09be",mr:"\u092e\u0930\u093e\u0920\u0940",pa:"\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40",nl:"Nederlands",pl:"Polski",sv:"Svenska",id:"Bahasa",th:"\u0e44\u0e17\u0e22",fa:"\u0641\u0627\u0631\u0633\u06cc",he:"\u05e2\u05d1\u05e8\u05d9\u05ea",el:"\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac",uk:"\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430",ro:"Rom\u00e2n\u0103",cs:"\u010ce\u0161tina",hu:"Magyar",da:"Dansk",fi:"Suomi",no:"Norsk"};
@@ -251,24 +262,24 @@ async function catalog(type,cat,extra){
 }
 const meta=(t,id)=>jget(API+"/meta/"+(t||"movie")+"/"+id+".json").then(d=>d.meta||null);
 
-/* ---------- ORIGINAL LANGUAGE (real data, IMDb id se, cached) ---------- */
+/* ---- language + TMDB id, ek hi exact query, cached ---- */
 const LANG_CACHE=LS.get("nfx_lang",{});
 async function loadLang(id){
   if(LANG_CACHE[id])return LANG_CACHE[id];
-  const q='SELECT ?code WHERE { ?f wdt:P345 "'+id+'". ?f wdt:P364 ?l. OPTIONAL { ?l wdt:P218 ?code. } } LIMIT 1';
+  const q='SELECT ?code ?tmdbM ?tmdbT WHERE { ?f wdt:P345 "'+id+'". '+
+    'OPTIONAL { ?f wdt:P364 ?l. ?l wdt:P218 ?code. } '+
+    'OPTIONAL { ?f wdt:P4947 ?tmdbM. } OPTIONAL { ?f wdt:P4983 ?tmdbT. } } LIMIT 1';
   try{
     const r=await fetch("https://query.wikidata.org/sparql?format=json&query="+encodeURIComponent(q),{headers:{Accept:"application/sparql-results+json"}});
     if(!r.ok)return null;
     const d=await r.json();
-    const b=d.results&&d.results.bindings&&d.results.bindings[0];
-    const code=b&&b.code?b.code.value.toLowerCase():"";
-    const out=code?{code}:{code:"",name:""};
+    const b=(d.results&&d.results.bindings&&d.results.bindings[0])||{};
+    const out={code:b.code?b.code.value.toLowerCase():"",tmdb:(b.tmdbM||b.tmdbT||{}).value||""};
     LANG_CACHE[id]=out;LS.set("nfx_lang",LANG_CACHE);
     return out;
   }catch(e){return null}
 }
 
-/* audio list sirf wahi jo title ke saath sense banaaye */
 function buildAudio(orig){
   const L=[];
   if(orig)L.push({v:orig,label:(LNAME[orig]||orig.toUpperCase()),orig:true});
@@ -286,6 +297,7 @@ function defaultAudio(orig){
   if(orig==="en")return "en";
   return orig||"original";
 }
+const srvOk=s=>s.need!=="tmdb"||!!state.tmdb;
 
 function go(v){
   state.view=v;window.onscroll=null;
@@ -309,12 +321,7 @@ $("#q").addEventListener("input",e=>{
   if(v.length<2){if(state.view==="search")go("home");return}
   sT=setTimeout(()=>renderSearch(v),320);
 });
-
-$("#bAcc").onclick=()=>{
-  const u=LS.get("nfx_session",null);
-  if(!u)return openAuth();
-  openSettings();
-};
+$("#bAcc").onclick=()=>{const u=LS.get("nfx_session",null);if(!u)return openAuth();openSettings()};
 
 const ROWS=[
  ["Trending Movies","movie","top",null],
@@ -344,7 +351,6 @@ async function renderHome(){
   }
   const rowsHost=el("div"),heroHost=el("div");
   m.appendChild(heroHost);m.appendChild(rowsHost);
-
   ROWS.forEach(([title,type,cat,genre])=>{
     const r=el("div","row");r.appendChild(el("h2",null,title));
     const st=el("div","strip");
@@ -368,7 +374,6 @@ async function renderHome(){
       }
     });
   });
-
   try{
     const first=await catalog("movie","top");
     const hero=first[Math.floor(Math.random()*Math.min(8,first.length))];
@@ -402,10 +407,7 @@ async function renderBrowse(type){
       skip+=list.length;
       if(!list.length&&reset)g.appendChild(el("div","empty","Nothing here."));
     }catch(e){
-      if(reset){
-        const b=el("div","empty",'Load failed.<br><button class="retry">Retry</button>');
-        g.appendChild(b);$(".retry",b).onclick=()=>load(1);
-      }
+      if(reset){const b=el("div","empty",'Load failed.<br><button class="retry">Retry</button>');g.appendChild(b);$(".retry",b).onclick=()=>load(1)}
     }
     busy=false;
   }
@@ -459,6 +461,7 @@ async function openDetail(type,id,startS,startE){
   state.item=d;
   const lg=await loadLang(id);
   state.orig=lg&&lg.code?lg.code:"";
+  state.tmdb=lg&&lg.tmdb?lg.tmdb:"";
   state.origName=state.orig?(LNAME[state.orig]||state.orig.toUpperCase()):"";
   state.audioList=buildAudio(state.orig);
 
@@ -524,8 +527,11 @@ function play(type,id,s,e){
   const it=state.item&&state.item.id===id?state.item:null;
   const name=it?it.name:(state.prog[id]&&state.prog[id].name)||"Playing";
   state.item=it||{id,name,poster:(state.prog[id]||{}).poster};
-  state.s=s;state.e=e;state.touched=false;state.qFall=0;
-  state.srv=Math.max(0,SRV.findIndex(x=>x.id===state.set.srv));
+  state.s=s;state.e=e;state.touched=false;state.qFall=0;state.pos=0;
+  let i=SRV.findIndex(x=>x.id===state.set.srv);
+  if(i<0)i=0;
+  if(!srvOk(SRV[i]))i=SRV.findIndex(srvOk);
+  state.srv=i;
   state.qual=state.set.qual;
   state.aud=defaultAudio(state.orig);
   state.playId=id;state.playType=type;
@@ -540,7 +546,7 @@ function play(type,id,s,e){
 
 function fillSelects(){
   const sv=$("#plSrv");sv.innerHTML="";
-  SRV.forEach((x,i)=>sv.add(new Option(x.name,i)));
+  SRV.forEach((x,i)=>{if(srvOk(x))sv.add(new Option(x.name,i))});
   sv.value=state.srv;
   sv.onchange=()=>{state.srv=+sv.value;state.qFall=0;state.touched=true;mount()};
 
@@ -550,15 +556,17 @@ function fillSelects(){
   q.onchange=()=>{state.qual=q.value;state.qFall=0;state.touched=true;mount()};
 
   const a=$("#plAud");a.innerHTML="";
-  (state.audioList.length?state.audioList:buildAudio(state.orig)).forEach(o=>a.add(new Option(o.label+(o.orig?" (original)":""),o.v)));
+  (state.audioList.length?state.audioList:buildAudio(state.orig)).forEach(o=>a.add(new Option(o.label+(o.orig?" \u2022 original":""),o.v)));
   a.value=state.aud;
   a.onchange=()=>{
     state.aud=a.value;state.touched=true;state.qFall=0;
     const isOrig=state.aud===state.orig||state.aud==="original";
-    if(!isOrig&&!SRV[state.srv].lang){
-      const i=SRV.findIndex(x=>x.lang);
-      if(i>=0){state.srv=i;sv.value=i;$("#plHint").textContent=SRV[i].name+" audio track ke liye" }
+    if(!isOrig&&!SRV[state.srv].audio){
+      const k=SRV.findIndex(x=>x.audio&&srvOk(x));
+      if(k>=0){state.srv=k;sv.value=k}
     }
+    const lbl=(state.audioList.find(o=>o.v===state.aud)||{}).label||state.aud;
+    $("#plHint").textContent="Audio: "+lbl;
     mount();
   };
 
@@ -577,11 +585,11 @@ function curUrl(){
   const s=SRV[state.srv];
   const q=state.qFall>0?QL[Math.min(state.qFall,3)][0]:state.qual;
   const l=state.aud||state.orig||"original";
-  return s.u(state.playType,state.playId,state.s,state.e,q,l);
+  return s.u({t:state.playType,id:state.playId,s:state.s,e:state.e,q,pos:state.pos,tmdb:state.tmdb},l);
 }
 
 function mount(){
-  clearTimeout(state.timer);
+  clearTimeout(state.timer);clearInterval(state.posTimer);
   const st=$("#stage");st.innerHTML="";
   const f=document.createElement("iframe");
   f.setAttribute("allowfullscreen","");
@@ -589,7 +597,10 @@ function mount(){
   f.setAttribute("referrerpolicy","origin");
   f.src=curUrl();
   st.appendChild(f);
-  $("#plHint").textContent="If grey, tap Next";
+  state.mounted=Date.now();
+  // position tracker (cross-origin iframe se time nahi padh sakte)
+  state.posTimer=setInterval(()=>{ if(!document.hidden)state.pos++ },1000);
+  $("#plHint").textContent="Audio: "+((state.audioList.find(o=>o.v===state.aud)||{}).label||state.aud);
   state.timer=setTimeout(()=>{if(!state.touched)next()},22000);
 }
 
@@ -597,17 +608,19 @@ function next(){
   clearTimeout(state.timer);
   if(state.qFall<3&&state.qual!=="auto"){state.qFall++;$("#plHint").textContent="Lowering quality...";mount();return}
   state.qFall=0;
-  if(state.srv<SRV.length-1){
-    state.srv++;$("#plSrv").value=state.srv;
+  const avail=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
+  const at=avail.indexOf(state.srv);
+  if(at>=0&&at<avail.length-1){
+    state.srv=avail[at+1];$("#plSrv").value=state.srv;
     $("#plHint").textContent="Switched to "+SRV[state.srv].name;mount();return;
   }
-  state.srv=0;$("#plSrv").value=0;
+  state.srv=avail[0]||0;$("#plSrv").value=state.srv;
   $("#plHint").textContent="All servers tried \u2014 use New tab";
   mount();
 }
 
 function closePlayer(){
-  clearTimeout(state.timer);
+  clearTimeout(state.timer);clearInterval(state.posTimer);
   $("#stage").innerHTML="";
   $("#pl").classList.add("hidden");
   document.body.style.overflow="";
@@ -701,12 +714,10 @@ $("#aGo").onclick=()=>{
   if(authMode==="email"&&!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(id))return fail("Enter a valid email.");
   if(authMode==="phone"&&!/^[6-9]\d{9}$/.test(id))return fail("Enter a valid 10-digit mobile.");
   if(pw.length<6)return fail("Password must be 6+ characters.");
-  const users=LS.get("nfx_users",{});
-  const key=authMode+":"+id;
+  const users=LS.get("nfx_users",{}),key=authMode+":"+id;
   if(!users[key])users[key]={pw,mode:authMode,id};
   else if(users[key].pw!==pw)return fail("Wrong password.");
-  LS.set("nfx_users",users);
-  LS.set("nfx_session",{mode:authMode,id});
+  LS.set("nfx_users",users);LS.set("nfx_session",{mode:authMode,id});
   $("#bAcc").textContent=id[0].toUpperCase();
   $("#auth").classList.add("hidden");
 };
