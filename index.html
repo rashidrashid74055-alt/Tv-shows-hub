@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TUNAmovies — Movies, Web Series & Live</title>
 <meta name="theme-color" content="#08080b">
+<link rel="preconnect" href="https://v3-cinemeta.strem.io">
+<link rel="preconnect" href="https://images.metahub.space">
+<link rel="preconnect" href="https://vidfast.pro">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#08080b;--bg2:#0f0f14;--card:#16161d;--fg:#f3f3f6;--mut:#9aa0ad;--red:#e50914;--rad:10px;--hdr:64px}
@@ -18,20 +21,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 img{display:block;max-width:100%}
 .hidden{display:none!important}
 
-header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:14px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
+header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:80;display:flex;align-items:center;gap:12px;padding:0 16px;background:linear-gradient(180deg,rgba(8,8,11,.97),rgba(8,8,11,.6) 72%,transparent);transition:background .3s}
 header.solid{background:rgba(8,8,11,.98);box-shadow:0 1px 0 #1c1c24}
-.logo{font-size:1.5rem;font-weight:900;letter-spacing:-1.2px;color:var(--red);flex-shrink:0;cursor:pointer}
-.logo span{color:#fff}
-nav{display:flex;gap:14px;font-size:.85rem;color:#c9ccd4;overflow-x:auto;min-width:0;flex:1;scrollbar-width:none}
+.logo{font-size:1.45rem;font-weight:900;letter-spacing:-1.2px;color:#fff;flex-shrink:0;cursor:pointer}
+.logo span{color:var(--red)}
+nav{display:flex;gap:13px;font-size:.85rem;color:#c9ccd4;overflow-x:auto;min-width:0;flex:1;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
 nav button{padding:6px 2px;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:5px}
 nav button:hover{color:#fff;border-color:var(--red)}
 nav .ld{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:pul 1.5s infinite}
 @keyframes pul{70%{box-shadow:0 0 0 6px rgba(229,9,20,0)}100%{box-shadow:0 0 0 0 rgba(229,9,20,0)}}
-.spacer{flex:1}
 .searchwrap{position:relative;display:flex;align-items:center}
 .searchwrap input{width:0;padding:0;opacity:0;border:1px solid #2a2a34;background:#14141a;color:#fff;border-radius:24px;height:36px;transition:.28s;font-size:.85rem}
-.searchwrap.open input{width:220px;padding:0 36px 0 14px;opacity:1}
+.searchwrap.open input{width:200px;padding:0 36px 0 14px;opacity:1}
 .searchwrap input:focus{outline:none;border-color:var(--red)}
 .iconbtn{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;color:#dfe2e8;transition:.2s;font-size:1.05rem}
 .iconbtn:hover{background:#20202a;color:#fff}
@@ -71,7 +73,6 @@ main{padding-bottom:70px;position:relative;z-index:3}
 .ph b{font-size:.78rem;font-weight:800;line-height:1.2;color:#fff;text-shadow:0 2px 10px #000}
 .card-top{position:absolute;top:6px;left:6px;right:6px;display:flex;gap:5px;align-items:flex-start}
 .badge{font-size:.6rem;font-weight:800;padding:3px 6px;border-radius:4px;letter-spacing:.5px;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);text-transform:uppercase}
-.badge.q{background:rgba(229,9,20,.92);color:#fff}
 .badge.r{background:rgba(20,20,26,.88);color:#ffd166}
 .badge.t{background:rgba(20,20,26,.88);color:#8ec5ff}
 .card-body{padding:8px 9px 10px}
@@ -165,7 +166,6 @@ select:focus{outline:none;border-color:var(--red)}
 #toast.on{transform:translate(-50%,0)}
 footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font-size:.73rem;line-height:1.8;text-align:center}
 
-/* live */
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
 .lcard{padding:13px;border-radius:12px;background:var(--card);border:1px solid #20202a;position:relative;cursor:pointer;text-align:left}
 .lcard:hover{border-color:#3a3a4a;background:#1b1b24}
@@ -176,7 +176,6 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
 .lt b{font-size:.83rem;line-height:1.3}
 .lc{font-size:.62rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
 
-/* modal */
 .modal{position:fixed;inset:0;z-index:450;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.86);backdrop-filter:blur(6px)}
 .modal.on{display:grid}
 .mbox{width:100%;max-width:380px;background:var(--bg2);border:1px solid #23232e;border-radius:14px;padding:20px;box-shadow:0 24px 60px #000}
@@ -209,7 +208,6 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
 <header id="hdr">
   <div class="logo" id="logoBtn">TUNA<span>movies</span></div>
   <nav id="nav"></nav>
-  <div class="spacer"></div>
   <div class="searchwrap" id="searchwrap">
     <input id="q" type="search" placeholder="Movies, series, shows..." autocomplete="off" aria-label="Search">
     <button class="iconbtn" id="searchBtn" aria-label="Search">&#128269;</button>
@@ -244,10 +242,10 @@ footer{padding:30px 16px 60px;border-top:1px solid #1a1a22;color:var(--mut);font
     <video id="pVid" class="hidden" controls playsinline></video>
   </div>
   <div class="p-foot">
-    <span>Quality/audio player ke andar <b>&#9881;</b> pe bhi milta hai. Blank ho to <b>Server badlo</b>.</span>
+    <span>Blank ho to <b>Server badlo</b> ya reload. Quality/audio player ke andar <b>&#9881;</b> pe bhi hai.</span>
     <span class="fb">
       <button class="btn btn-ghost" id="pSrvNext" style="padding:6px 12px;font-size:.72rem">Server badlo</button>
-      <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 12px;font-size:.72rem">Next episode &#8250;</button>
+      <button class="btn btn-ghost" id="pNext" style="display:none;padding:6px 12px;font-size:.72rem">Next ep &#8250;</button>
     </span>
   </div>
 </div>
@@ -304,45 +302,49 @@ const LIVEAPI = "https://api.embedse.com/v1";
 const IMGUP = u => u ? u.replace("/small/", "/medium/") : "";
 
 const LANGS = [["hi","Hindi"],["en","English"],["ta","Tamil"],["te","Telugu"],["ml","Malayalam"],["kn","Kannada"],["bn","Bengali"],["mr","Marathi"],["pa","Punjabi"],["gu","Gujarati"],["ur","Urdu"],["es","Spanish"],["fr","French"],["de","German"],["ja","Japanese"],["ko","Korean"],["zh","Chinese"],["ru","Russian"],["ar","Arabic"],["pt","Portuguese"],["tr","Turkish"],["it","Italian"]];
+/* 4K aur 2K dono — numeric quality sirf un servers me jata hai jo usse samajhte hain */
 const QUALS = ["auto","2160p","1440p","1080p","720p","480p","360p"];
 const SPEEDS = ["1","1.25","1.5","0.75","2"];
 
-/* FIX: VidSrc XYZ ka domain dead tha (DNS fail) — hata diya.
-   VidLink par bahut titles missing hain (Mr. Robot type) — isliye VidFast default,
-   VidLink sabse aakhir me. Jo server quality param nahi leta usme qp nahi hai. */
+/* ===== FIX 1: server order =====
+   vidsrc.xyz ka domain dead tha -> hata diya
+   VidLink par bahut titles missing (Mr. Robot etc.) -> VidFast pehle
+   VidFast = TMDB id + quality param + language param, verified working */
 const SERVERS = [
   { n:"Server 1 · VidFast", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
-      return base + qs(o);
+      const b = it.t==="tv" ? `https://vidfast.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidfast.pro/movie/${it.tmdb}`;
+      return b + qs(o);
   }},
-  { n:"Server 2 · VidSrc", lang:true, u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
-      return base + qs(o);
+  { n:"Server 2 · VidSrc", lang:true, qp:"quality", u:(it,s,e,o)=>{
+      const b = it.t==="tv" ? `https://vidsrc.to/embed/tv/${it.imdb}/${s}/${e}` : `https://vidsrc.to/embed/movie/${it.imdb}`;
+      return b + qs(o);
   }},
-  { n:"Server 3 · 2Embed", lang:false, u:(it,s,e)=>{
+  { n:"Server 3 · 2Embed", u:(it,s,e)=>{
       return it.t==="tv" ? `https://www.2embed.skin/embedtv/${it.imdb}&s=${s}&e=${e}` : `https://www.2embed.skin/embed/${it.imdb}`;
   }},
-  { n:"Server 4 · VidSrc ME", lang:true, u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
-      return base + qs(o, true);
+  { n:"Server 4 · VidSrc ME", lang:true, qp:"quality", u:(it,s,e,o)=>{
+      const b = it.t==="tv" ? `https://vidsrc.me/embed/tv?imdb=${it.imdb}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?imdb=${it.imdb}`;
+      return b + qs(o, true);
   }},
   { n:"Server 5 · Videasy", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
-      return base + qs(o);
+      const b = it.t==="tv" ? `https://player.videasy.net/tv/${it.tmdb}/${s}/${e}` : `https://player.videasy.net/movie/${it.tmdb}`;
+      return b + qs(o);
   }},
-  { n:"Server 6 · SuperEmbed", lang:false, u:(it,s,e)=>{
+  { n:"Server 6 · SuperEmbed", u:(it,s,e)=>{
       return it.t==="tv" ? `https://multiembed.mov/?video_id=${it.imdb}&s=${s}&e=${e}` : `https://multiembed.mov/?video_id=${it.imdb}`;
   }},
   { n:"Server 7 · VidLink", tmdb:true, lang:true, qp:"quality", u:(it,s,e,o)=>{
-      const base = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
-      return base + qs(o);
+      const b = it.t==="tv" ? `https://vidlink.pro/tv/${it.tmdb}/${s}/${e}` : `https://vidlink.pro/movie/${it.tmdb}`;
+      return b + qs(o);
   }}
 ];
 
-/* FIX: quality sirf un servers me jata hai jo usse samajhte hain */
+/* FIX 2: quality sirf qp wale server me, aur numeric jahan zaroori */
 function qs(o, hasQuery){
   const p = [];
-  if(o.qp && o.q && o.q !== "auto") p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
+  if(o.q && o.q !== "auto" && o.qp){
+    p.push("quality=" + (o.numeric ? o.q.replace("p","") : o.q));
+  }
   if(o.a) p.push("ds_lang=" + o.a);
   if(o.s) p.push("sub_lang=" + o.s);
   if(o.sp && o.sp !== "1") p.push("speed=" + o.sp);
@@ -363,16 +365,14 @@ const ROWS = [
   {t:"Crime",        type:"series",cat:"top", genre:"Crime"},
   {t:"Anime",        type:"series",cat:"top", genre:"Animation"},
   {t:"Animation",    type:"movie", cat:"top", genre:"Animation"},
-  {t:"Documentary",  type:"movie", cat:"top", genre:"Documentary"},
-  {t:"Fantasy",      type:"series",cat:"top", genre:"Fantasy"}
+  {t:"Documentary",  type:"movie", cat:"top", genre:"Documentary"}
 ];
 
 const DEF = {audio:"", sub:"hi", quality:"1080p", speed:"1", auto:true, hero:true, server:0};
 let S = load("set", DEF);
 let list = load("list", []);
 let prog = load("prog", []);
-const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null,
-               local:false, gen:0, tries:0, user:null};
+const state = {audio:"", sub:"", season:1, episode:1, item:null, heroItem:null, browse:null, gen:0, tries:0, local:false};
 
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -381,10 +381,19 @@ function save(k,v){ try{localStorage.setItem("nfx_"+k, JSON.stringify(v))}catch{
 function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("on"),2000) }
 function esc(s=""){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])) }
 function hue(s){ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))%360; return h }
-function isSaved(id){ return list.some(w=>w.id===id) }
+const isSaved = id => list.some(w=>w.id===id);
 
-/* ---------- cinemeta ---------- */
-async function jget(url){ const r = await fetch(url); if(!r.ok) throw new Error(r.status); return r.json() }
+/* ===== cache: wapas aane par instant ===== */
+const CACHE = new Map();
+async function jget(url){
+  const hit = CACHE.get(url);
+  if(hit && Date.now() - hit.t < 180000) return hit.v;
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(r.status);
+  const v = await r.json();
+  CACHE.set(url, {v, t:Date.now()});
+  return v;
+}
 async function catalog(type, cat, opts={}){
   const parts = [];
   if(opts.genre) parts.push("genre="+encodeURIComponent(opts.genre));
@@ -410,7 +419,6 @@ function norm(m, type){
   };
 }
 
-/* title ke hisaab se audio list — "Original" sabse pehle */
 function audioSet(it){
   const c = String(it.country || "").toLowerCase();
   const orig = (it.g||[]).includes("Animation") ? "Japanese" : "";
@@ -432,13 +440,12 @@ function audioSet(it){
   return out;
 }
 
-/* ---------- cards ---------- */
 function card(it){
   const el = document.createElement("div");
   el.className = "card";
   el.innerHTML = `
     <div class="poster">
-      ${it.poster ? `<img loading="lazy" src="${it.poster}" alt="${esc(it.n)}">` : `<div class="ph" style="--h:${hue(it.n)}"><b>${esc(it.n)}</b></div>`}
+      ${it.poster ? `<img loading="lazy" decoding="async" src="${it.poster}" alt="${esc(it.n)}">` : `<div class="ph" style="--h:${hue(it.n)}"><b>${esc(it.n)}</b></div>`}
       <div class="card-top">
         ${it.r ? `<span class="badge r">&#9733; ${esc(it.r)}</span>` : ""}
         <span class="badge t">${it.t==="tv"?"Series":"Movie"}</span>
@@ -479,25 +486,29 @@ function fillRow(s, items){
   s._track.innerHTML = ""; items.forEach(i=>s._track.appendChild(card(i)));
 }
 
-/* ---------- home ---------- */
-async function buildHome(){
+/* ===== FIX 3: home parallel load (pehle ek-ek row wait karta tha = slow) ===== */
+function buildHome(){
   const main = $("#main");
   main.innerHTML = "";
   if(prog.length) main.appendChild(row("Continue Watching", prog.slice(0,14)));
   if(list.length) main.appendChild(row("My List", list.slice()));
   const heroPool = [];
+  const sections = [];
 
-  for(const cfg of ROWS){
+  ROWS.forEach(cfg=>{
     const s = row(cfg.t, null, cfg);
-    main.appendChild(s);
-    try{
-      const raw = await catalog(cfg.type, cfg.cat, {genre:cfg.genre});
-      const items = raw.map(m=>norm(m, cfg.type));
-      if(!heroPool.length && items.length) heroPool.push(...items.slice(0,10));
-      fillRow(s, items.slice(0,24));
-    }catch{ fillRow(s, []) }
-  }
-  renderHero(heroPool[Math.floor(Math.random()*Math.max(heroPool.length,1))]);
+    main.appendChild(s); sections.push({s, cfg});
+  });
+
+  Promise.all(sections.map(({s, cfg}) =>
+    catalog(cfg.type, cfg.cat, {genre:cfg.genre})
+      .then(raw => {
+        const items = raw.map(m=>norm(m, cfg.type));
+        if(!heroPool.length && items.length) heroPool.push(...items.slice(0,10));
+        fillRow(s, items.slice(0,24));
+      })
+      .catch(()=>fillRow(s, []))
+  )).then(()=>renderHero(heroPool[Math.floor(Math.random()*Math.max(heroPool.length,1))]));
 }
 
 function renderHero(it){
@@ -524,13 +535,12 @@ function renderHero(it){
   $("#hInfo").onclick = ()=>openDetail(it);
 }
 
-/* ---------- browse ---------- */
 async function openBrowse(cfg){
   $("#hero").style.display="none"; $("#main").style.display="none";
   $("#page").classList.add("on");
   $("#pTitle").textContent = cfg.t;
   $("#pSub").textContent = cfg.type === "tv" ? "Web series" : "Movies";
-  const g = $("#pGrid"); g.innerHTML = "";
+  const g = $("#pGrid"); g.innerHTML = ""; g.appendChild(skeleton(12));
   state.browse = {cfg, skip:0, busy:false, done:false};
   await moreBrowse();
 }
@@ -541,14 +551,15 @@ async function moreBrowse(){
     const raw = await catalog(b.cfg.type, b.cfg.cat, {genre:b.cfg.genre, skip:b.skip});
     b.skip += raw.length;
     if(!raw.length) b.done = true;
-    raw.forEach(m=>$("#pGrid").appendChild(card(norm(m, b.cfg.type))));
+    const g = $("#pGrid");
+    if(b.skip === raw.length) g.innerHTML = "";
+    raw.forEach(m=>g.appendChild(card(norm(m, b.cfg.type))));
     if(raw.length < 20) b.done = true;
   }catch{ b.done = true }
   b.busy = false;
 }
 new IntersectionObserver(e=>{ if(e[0].isIntersecting) moreBrowse() }, {rootMargin:"400px"}).observe($("#pSentinel"));
 
-/* ---------- detail ---------- */
 async function openDetail(it){
   state.item = it; state.season = 1; state.episode = 1;
   $("#detail").classList.add("on"); document.body.classList.add("lock");
@@ -640,7 +651,7 @@ function renderEps(it, season){
     const num = Number(ep.episode ?? ep.number);
     const b = document.createElement("button");
     b.className = "ep";
-    b.innerHTML = `${ep.thumbnail?`<img loading="lazy" src="${ep.thumbnail}" alt="">`:""}
+    b.innerHTML = `${ep.thumbnail?`<img loading="lazy" decoding="async" src="${ep.thumbnail}" alt="">`:""}
       <span class="tx"><b>${num}. ${esc(ep.name || ep.title || "Episode "+num)}</b><small>${esc((ep.overview || ep.description || "").slice(0,110))}</small></span>
       <span class="pl">&#9654;</span>`;
     b.onclick = ()=>play(it, season, num);
@@ -649,8 +660,6 @@ function renderEps(it, season){
 }
 
 /* ---------- player ---------- */
-function langServers(){ return SERVERS.map((s,i)=>({s,i})).filter(x=>x.s.lang).map(x=>x.i) }
-
 function safeServer(it, idx){
   const srv = SERVERS[idx] || SERVERS[0];
   if(srv.tmdb && !it.tmdb){
@@ -659,14 +668,12 @@ function safeServer(it, idx){
   }
   return idx;
 }
-
 function buildURL(it, si, s, e){
   const idx = safeServer(it, si);
   const srv = SERVERS[idx] || SERVERS[0];
   return srv.u(it, s, e, {
-    q: S.quality, numeric: !!srv.tmdb, qp: !!srv.qp,
-    a: state.audio, s: state.sub === "off" ? "" : state.sub,
-    sp: S.speed
+    q: S.quality, qp: !!srv.qp, numeric: !!srv.tmdb,
+    a: state.audio, s: state.sub === "off" ? "" : state.sub, sp: S.speed
   });
 }
 
@@ -678,13 +685,11 @@ async function play(it, s=1, e=1){
       if(m){ const n = norm(m, item.t); n.tmdb = n.tmdb || item.tmdb; item = n }
     }catch{}
   }
-  state.item = item; state.season = s; state.episode = e; state.local = false;
-
+  state.item = item; state.season = s; state.episode = e; state.local = false; state.tries = 0;
   const active = safeServer(item, S.server);
   if(active !== S.server){ S.server = active; save("set", S) }
 
-  $("#pVid").classList.add("hidden");
-  $("#pFrame").classList.remove("hidden");
+  $("#pVid").classList.add("hidden"); $("#pFrame").classList.remove("hidden");
   $("#pTitleTxt").textContent = item.n + (item.t==="tv" ? ` · S${s}E${e}` : "");
   $("#pServer").innerHTML = SERVERS.map((x,i)=>`<option value="${i}" ${i===S.server?"selected":""}>${esc(x.n)}</option>`).join("");
   $("#pQuality").innerHTML = QUALS.map(q=>`<option value="${q}" ${q===S.quality?"selected":""}>${q==="auto"?"Auto quality":q==="2160p"?"4K 2160p":q==="1440p"?"2K 1440p":q}</option>`).join("");
@@ -697,25 +702,22 @@ async function play(it, s=1, e=1){
   loadFrame(); addProg(item, s, e);
 }
 
-/* FIX: generation token — duplicate/race loads band, timeout par khud next server */
+/* FIX 4: gen token — duplicate load band, 7s par khud next server, max 4 */
 function loadFrame(){
   const g = ++state.gen;
   $("#pLoad").style.display = "grid";
-  const url = buildURL(state.item, S.server, state.season, state.episode);
-  $("#pFrame").src = url;
+  $("#pFrame").src = buildURL(state.item, S.server, state.season, state.episode);
   clearTimeout(state._t);
   state._t = setTimeout(()=>{
     if(g !== state.gen || !$("#player").classList.contains("on")) return;
     $("#pLoad").style.display = "none";
-    if(state.tries < 3){ state.tries++; nextServerSilent() } else toast("Server nahi chal raha — doosra try karo");
-  }, 8000);
+    if(state.tries < 4){ state.tries++; nextSrv() } else toast("Server nahi chal raha — doosra try karo");
+  }, 7000);
 }
-function nextServerSilent(){
+function nextSrv(){
   const idx = safeServer(state.item, (S.server + 1) % SERVERS.length);
   if(idx === S.server) return;
-  S.server = idx; save("set", S);
-  $("#pServer").value = idx;
-  loadFrame();
+  S.server = idx; save("set", S); $("#pServer").value = idx; loadFrame();
 }
 function addProg(it, s, e){
   prog = prog.filter(p=>p.id !== it.id);
@@ -725,11 +727,10 @@ function addProg(it, s, e){
 function forceLangServer(){
   const cur = SERVERS[S.server];
   if(cur && cur.lang) return;
-  const idx = langServers()[0];
-  if(idx !== undefined){ S.server = idx; save("set", S); $("#pServer").value = idx; toast("Audio server pe switch kiya") }
+  const idx = SERVERS.findIndex(x=>x.lang);
+  if(idx > -1){ S.server = idx; save("set", S); $("#pServer").value = idx; toast("Audio server pe switch kiya") }
 }
 
-/* ---------- list ---------- */
 function toggleList(it){
   const i = list.findIndex(w=>w.id === it.id);
   if(i > -1){ list.splice(i,1); toast("List se hataya") }
@@ -739,7 +740,6 @@ function toggleList(it){
   if(hb && state.heroItem?.id === it.id) hb.textContent = isSaved(it.id) ? "✓ My List" : "+ My List";
 }
 
-/* ---------- search ---------- */
 let timer = null;
 async function doSearch(q){
   q = q.trim();
@@ -764,7 +764,7 @@ async function doSearch(q){
 
   g.innerHTML = "";
   if(!items.length){
-    g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>Kuch nahi mila</b>"${esc(q)}" ke liye koi title nahi. Spelling check karo.</div>`;
+    g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>Kuch nahi mila</b>"${esc(q)}" ke liye koi title nahi.</div>`;
     return;
   }
   items.forEach(i=>g.appendChild(card(i)));
@@ -785,10 +785,10 @@ function openLive(){
 function loadSports(){
   fetch(LIVEAPI+"/categories").then(r=>r.json()).then(d=>{
     if(!d.ok) return;
-    const list2 = [{slug:"",name:"All"}].concat(d.categories||[]);
+    const l2 = [{slug:"",name:"All"}].concat(d.categories||[]);
     const box = document.createElement("div");
     box.className = "chips"; box.style.gridColumn = "1/-1"; box.id = "lSp";
-    box.innerHTML = list2.map(c=>`<button data-s="${esc(c.slug)}" class="${liveSport===c.slug?"on":""}">${esc(c.name)}</button>`).join("");
+    box.innerHTML = l2.map(c=>`<button data-s="${esc(c.slug)}" class="${liveSport===c.slug?"on":""}">${esc(c.name)}</button>`).join("");
     box.onclick = e=>{ const b=e.target.closest("[data-s]"); if(!b) return; liveSport=b.dataset.s; loadSports(); loadLive() };
     $("#pGrid").prepend(box);
   }).catch(()=>{});
@@ -853,7 +853,6 @@ function dbAll(){ return openDB().then(db=>new Promise((res,rej)=>{
   st.openCursor().onsuccess = e=>{ const c=e.target.result; if(c){ out.push(c.value); c.continue() } else res(out) };
   tx.onerror = rej;
 })) }
-
 function openUploads(){
   $("#hero").style.display="none"; $("#main").style.display="none";
   $("#page").classList.add("on");
@@ -862,8 +861,7 @@ function openUploads(){
   $("#pGrid").className = "grid";
   $("#pGrid").innerHTML = '<div class="empty">Loading…</div>';
   dbAll().then(items=>{
-    const g = $("#pGrid");
-    g.innerHTML = "";
+    const g = $("#pGrid"); g.innerHTML = "";
     const add = document.createElement("button");
     add.className = "card";
     add.innerHTML = '<div class="poster"><div class="ph" style="--h:200"><b>+ Add video</b></div></div><div class="card-body"><h3>Naya upload</h3></div>';
@@ -937,7 +935,7 @@ function doAuth(){
     state.user = users[key]; localStorage.setItem("nfx_session", key);
     $("#authModal").classList.remove("on"); paintUser(); toast("Account ban gaya");
   }else{
-    if(!users[key]){ e.textContent = "Is email/naumber ka account nahi"; return }
+    if(!users[key]){ e.textContent = "Is email/number ka account nahi"; return }
     if(users[key].pass !== pass){ e.textContent = "Galat password"; return }
     state.user = users[key]; localStorage.setItem("nfx_session", key);
     $("#authModal").classList.remove("on"); paintUser(); toast("Signed in");
@@ -945,7 +943,6 @@ function doAuth(){
 }
 function signOut(){ localStorage.removeItem("nfx_session"); state.user = null; paintUser(); toast("Signed out") }
 
-/* ---------- settings ---------- */
 function openSettings(){
   $("#sAudio").innerHTML = `<option value="" ${S.audio===""?"selected":""}>Original</option>` +
     LANGS.map(([c,n])=>`<option value="${c}" ${c===S.audio?"selected":""}>${n}</option>`).join("");
@@ -956,7 +953,6 @@ function openSettings(){
   $("#settings").classList.add("on");
 }
 
-/* ---------- nav ---------- */
 function buildNav(){
   const nav = $("#nav");
   const items = ["Home","Movies","Web Series","Anime","My List","Live","Upload"];
@@ -964,8 +960,7 @@ function buildNav(){
   nav.onclick = e=>{
     const b = e.target.closest("[data-k]"); if(!b) return;
     const k = b.dataset.k;
-    $("#q").value = ""; doSearch("");
-    clearInterval(liveT);
+    $("#q").value = ""; doSearch(""); clearInterval(liveT);
     if(k === "Home"){ $("#page").classList.remove("on"); $("#main").style.display=""; $("#hero").style.display=S.hero?"":"none"; window.scrollTo({top:0,behavior:"smooth"}); return }
     if(k === "My List"){ showList(); return }
     if(k === "Live"){ openLive(); return }
@@ -978,7 +973,7 @@ function showList(){
   $("#hero").style.display="none"; $("#main").style.display="none";
   $("#page").classList.add("on");
   $("#pTitle").textContent = "My List"; $("#pSub").textContent = list.length ? `${list.length} titles` : "Khaali hai — card pe + dabao.";
-  const g = $("#pGrid"); g.innerHTML = "";
+  const g = $("#pGrid"); g.className = "grid"; g.innerHTML = "";
   if(!list.length) g.innerHTML = `<div class="empty" style="grid-column:1/-1"><b>List khaali hai</b>Kisi bhi card pe + dabao.</div>`;
   list.forEach(i=>g.appendChild(card(i)));
 }
@@ -1024,8 +1019,7 @@ $("#sAuto").onclick = e=>{ S.auto=!S.auto; e.currentTarget.classList.toggle("on"
 $("#sHero").onclick = e=>{ S.hero=!S.hero; e.currentTarget.classList.toggle("on", S.hero); save("set",S) };
 
 function closePlayer(){
-  clearTimeout(state._t);
-  state.gen++;
+  clearTimeout(state._t); state.gen++;
   $("#player").classList.remove("on");
   $("#pFrame").src = "about:blank";
   const el = $("#pVid"); try{ el.pause() }catch{}; el.removeAttribute("src");
@@ -1039,7 +1033,7 @@ $("#pAudio").onchange = e=>{ state.audio=e.target.value; forceLangServer(); stat
 $("#pSub").onchange = e=>{ state.sub=e.target.value; forceLangServer(); state.tries=0; loadFrame() };
 $("#pSpeed").onchange = e=>{ S.speed=e.target.value; save("set",S); state.tries=0; loadFrame() };
 $("#pReload").onclick = ()=>{ state.tries=0; loadFrame() };
-$("#pSrvNext").onclick = ()=>{ state.tries=0; nextServerSilent() };
+$("#pSrvNext").onclick = ()=>{ state.tries=0; nextSrv() };
 $("#pOpen").onclick = ()=> window.open(buildURL(state.item, S.server, state.season, state.episode), "_blank", "noopener");
 $("#pNext").onclick = ()=>{ state.episode++; play(state.item, state.season, state.episode) };
 $("#detail").addEventListener("click", e=>{ if(e.target.id === "detail") closeDetail() });
@@ -1048,9 +1042,9 @@ $("#aCancel").onclick = ()=>$("#authModal").classList.remove("on");
 $("#aSwap").onclick = ()=>openAuth(authMode ? 0 : 1);
 $("#uGo").onclick = doUpload;
 $("#uCancel").onclick = ()=>$("#upModal").classList.remove("on");
-$("#pFrame").addEventListener("load", ()=>clearTimeout(state._t));
+$("#pFrame").addEventListener("load", ()=>{ clearTimeout(state._t); $("#pLoad").style.display = "none" });
 
-/* FIX: Android back / browser back player band karta hai, detail page wapas */
+/* FIX 5: Android back — player band, detail page wapas */
 window.addEventListener("popstate", ()=>{
   if($("#player").classList.contains("on")){
     clearTimeout(state._t); state.gen++;
