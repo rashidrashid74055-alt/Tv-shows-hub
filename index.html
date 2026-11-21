@@ -172,9 +172,10 @@ h3.sec{font-size:17px;padding:14px 14px 0;margin:0}
     </div>
     <div class="fld"><label>Default audio</label>
       <select id="setAud">
+        <option value="auto">Auto (title ki original bhasha)</option>
         <option value="hi">&#2361;&#2367;&#2306;&#2342;&#2368; (Hindi)</option>
         <option value="en">English</option>
-        <option value="original">Original</option>
+        <option value="orig">Sirf original</option>
       </select>
     </div>
     <div class="fld"><label>Default server</label><select id="setSrv"></select></div>
@@ -213,26 +214,26 @@ const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 
 const state={
   view:"home", cache:{}, prog:LS.get("nfx_prog",{}), list:LS.get("nfx_list",[]),
-  set:Object.assign({qual:"1080",aud:"hi",srv:"vidfast"},LS.get("nfx_set",{})),
+  set:Object.assign({qual:"1080",aud:"auto",srv:"vidfast"},LS.get("nfx_set",{})),
   item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", qFall:0, touched:false, timer:null,
-  playId:null, playType:"movie"
+  playId:null, playType:"movie", orig:"", origName:"", audioList:[]
 };
 
+/* servers: lang:true = server audio param support karta hai */
 const SRV=[
- {id:"vidfast",name:"VidFast",u:(t,id,s,e,q,l)=>"https://vidfast.pro/"+(t==="movie"?"movie/"+id:"tv/"+id+"/"+s+"/"+e)+"?autoPlay=true&quality="+(q==="auto"?"auto":q)+"&lang="+l},
- {id:"multiembed",name:"MultiEmbed",u:(t,id,s,e,q,l)=>"https://multiembed.mov/?video_id="+id+"&tmdb=0"+(t==="movie"?"":"&s="+s+"&e="+e)+"&lang="+l},
- {id:"vidsrcme",name:"VidSrc",u:(t,id,s,e,q,l)=>"https://vidsrc.me/embed/"+(t==="movie"?"movie?imdb="+id:"tv?imdb="+id+"&season="+s+"&episode="+e)+"&ds_lang="+l+"&quality="+(q==="auto"?"1080":q)},
- {id:"2embed",name:"2Embed",u:(t,id,s,e,q,l)=>"https://www.2embed.cc/"+(t==="movie"?"embed/"+id:"embedtv/"+id+"&s="+s+"&e="+e)}
+ {id:"vidfast",name:"VidFast",lang:true,u:(t,id,s,e,q,l)=>"https://vidfast.pro/"+(t==="movie"?"movie/"+id:"tv/"+id+"/"+s+"/"+e)+"?autoPlay=true&quality="+(q==="auto"?"auto":q)+"&lang="+l},
+ {id:"vidsrcme",name:"VidSrc",lang:true,u:(t,id,s,e,q,l)=>"https://vidsrc.me/embed/"+(t==="movie"?"movie?imdb="+id:"tv?imdb="+id+"&season="+s+"&episode="+e)+"&ds_lang="+l+"&quality="+(q==="auto"?"1080":q)},
+ {id:"multiembed",name:"MultiEmbed",lang:false,u:(t,id,s,e,q,l)=>"https://multiembed.mov/?video_id="+id+"&tmdb=0"+(t==="movie"?"":"&s="+s+"&e="+e)},
+ {id:"2embed",name:"2Embed",lang:false,u:(t,id,s,e,q,l)=>"https://www.2embed.cc/"+(t==="movie"?"embed/"+id:"embedtv/"+id+"&s="+s+"&e="+e)}
 ];
 const QL=[["2160","4K"],["1440","2K"],["1080","1080p"],["720","720p"],["auto","Auto"]];
-const AUD=[["hi","\u0939\u093f\u0928\u094d\u0926\u0940"],["en","English"],["original","Original"]];
+const LNAME={hi:"\u0939\u093f\u0928\u094d\u0926\u0940",en:"English",es:"Espa\u00f1ol",fr:"Fran\u00e7ais",de:"Deutsch",it:"Italiano",pt:"Portugu\u00eas",ru:"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",ja:"\u65e5\u672c\u8a9e",ko:"\ud55c\uad6d\uc5b4",zh:"\u4e2d\u6587",ar:"\u0627\u0644\u0639\u0631\u0628\u064a\u0629",tr:"T\u00fcrk\u00e7e",ta:"\u0ba4\u0bae\u0bbf\u0bb4\u0bcd",te:"\u0c24\u0c46\u0c32\u0c41\u0c17\u0c41",ml:"\u0d2e\u0d32\u0d2f\u0d3e\u0d32\u0d02",kn:"\u0c95\u0ca8\u0ccd\u0ca8\u0ca1",bn:"\u09ac\u09be\u0982\u09b2\u09be",mr:"\u092e\u0930\u093e\u0920\u0940",pa:"\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40",nl:"Nederlands",pl:"Polski",sv:"Svenska",id:"Bahasa",th:"\u0e44\u0e17\u0e22",fa:"\u0641\u0627\u0631\u0633\u06cc",he:"\u05e2\u05d1\u05e8\u05d9\u05ea",el:"\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac",uk:"\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430",ro:"Rom\u00e2n\u0103",cs:"\u010ce\u0161tina",hu:"Magyar",da:"Dansk",fi:"Suomi",no:"Norsk"};
 
 const $=(s,r)=>(r||document).querySelector(s);
 const el=(t,c,h)=>{const n=document.createElement(t);if(c)n.className=c;if(h!=null)n.innerHTML=h;return n};
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const img=(u)=>u||"data:image/svg+xml;utf8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="112" height="164"><rect width="100%" height="100%" fill="#171a22"/></svg>');
 
-/* ---- FIX 1: correct catalog URL (no trailing slash before .json) ---- */
 async function jget(url){
   if(state.cache[url])return state.cache[url];
   let r;
@@ -249,6 +250,42 @@ async function catalog(type,cat,extra){
   return (d.metas||[]).filter(m=>m&&m.id&&m.poster);
 }
 const meta=(t,id)=>jget(API+"/meta/"+(t||"movie")+"/"+id+".json").then(d=>d.meta||null);
+
+/* ---------- ORIGINAL LANGUAGE (real data, IMDb id se, cached) ---------- */
+const LANG_CACHE=LS.get("nfx_lang",{});
+async function loadLang(id){
+  if(LANG_CACHE[id])return LANG_CACHE[id];
+  const q='SELECT ?code WHERE { ?f wdt:P345 "'+id+'". ?f wdt:P364 ?l. OPTIONAL { ?l wdt:P218 ?code. } } LIMIT 1';
+  try{
+    const r=await fetch("https://query.wikidata.org/sparql?format=json&query="+encodeURIComponent(q),{headers:{Accept:"application/sparql-results+json"}});
+    if(!r.ok)return null;
+    const d=await r.json();
+    const b=d.results&&d.results.bindings&&d.results.bindings[0];
+    const code=b&&b.code?b.code.value.toLowerCase():"";
+    const out=code?{code}:{code:"",name:""};
+    LANG_CACHE[id]=out;LS.set("nfx_lang",LANG_CACHE);
+    return out;
+  }catch(e){return null}
+}
+
+/* audio list sirf wahi jo title ke saath sense banaaye */
+function buildAudio(orig){
+  const L=[];
+  if(orig)L.push({v:orig,label:(LNAME[orig]||orig.toUpperCase()),orig:true});
+  else L.push({v:"original",label:"Original",orig:true});
+  if(orig!=="hi")L.push({v:"hi",label:"\u0939\u093f\u0928\u094d\u0926\u0940"});
+  if(orig!=="en")L.push({v:"en",label:"English"});
+  return L;
+}
+function defaultAudio(orig){
+  const s=state.set.aud;
+  if(s==="hi")return "hi";
+  if(s==="en")return "en";
+  if(s==="orig")return orig||"original";
+  if(orig==="hi")return "hi";
+  if(orig==="en")return "en";
+  return orig||"original";
+}
 
 function go(v){
   state.view=v;window.onscroll=null;
@@ -291,7 +328,6 @@ const ROWS=[
  ["Sci-Fi","movie","top","Sci-Fi"]
 ];
 
-/* ---- FIX 2: home never dies because of one failed request ---- */
 async function renderHome(){
   const m=$("#main");m.innerHTML="";
   const cw=Object.entries(state.prog).sort((a,b)=>b[1].t-a[1].t).slice(0,12);
@@ -306,9 +342,7 @@ async function renderHome(){
     });
     r.appendChild(st);m.appendChild(r);
   }
-
-  const rowsHost=el("div");
-  const heroHost=el("div");
+  const rowsHost=el("div"),heroHost=el("div");
   m.appendChild(heroHost);m.appendChild(rowsHost);
 
   ROWS.forEach(([title,type,cat,genre])=>{
@@ -328,7 +362,7 @@ async function renderHome(){
     }).catch(()=>{
       st.innerHTML='<div class="card"><div class="ph"></div></div>';
       if(!rowsHost.querySelector(".errbar")){
-        const b=el("div","empty",'Catalog slow or blocked.<br><button class="retry" id="catRetry">Retry</button>');
+        const b=el("div","empty errbar",'Catalog slow or blocked.<br><button class="retry" id="catRetry">Retry</button>');
         rowsHost.appendChild(b);
         $("#catRetry",b).onclick=()=>{rowsHost.innerHTML="";renderHome()};
       }
@@ -423,11 +457,17 @@ async function openDetail(type,id,startS,startE){
     return;
   }
   state.item=d;
+  const lg=await loadLang(id);
+  state.orig=lg&&lg.code?lg.code:"";
+  state.origName=state.orig?(LNAME[state.orig]||state.orig.toUpperCase()):"";
+  state.audioList=buildAudio(state.orig);
+
   m.innerHTML="";
   const wrap=el("div");wrap.id="det";
+  const audBadge=state.origName?'<span>&#128266; '+esc(state.origName)+'</span>':'';
   wrap.innerHTML='<div class="top"><img src="'+esc(img(d.background||d.poster))+'"><div class="shade"></div></div>'+
     '<div class="body"><h1>'+esc(d.name)+'</h1>'+
-    '<div class="m"><span>'+(d.releaseInfo||"")+'</span><span>&#9733; '+(d.imdbRating||"-")+'</span><span>'+esc((d.genres||[]).join(" &middot; "))+'</span>'+(d.runtime?('<span>'+esc(d.runtime)+'</span>'):'')+'</div>'+
+    '<div class="m"><span>'+(d.releaseInfo||"")+'</span><span>&#9733; '+(d.imdbRating||"-")+'</span>'+audBadge+'<span>'+esc((d.genres||[]).join(" &middot; "))+'</span>'+(d.runtime?('<span>'+esc(d.runtime)+'</span>'):'')+'</div>'+
     '<div class="btns" style="display:flex;gap:10px;margin-bottom:14px"><button class="btn play" id="dPlay">&#9654; Play</button><button class="btn ghost" id="dList">+ My List</button></div>'+
     '<p class="desc">'+esc(d.description)+'</p></div>';
   m.appendChild(wrap);
@@ -486,7 +526,8 @@ function play(type,id,s,e){
   state.item=it||{id,name,poster:(state.prog[id]||{}).poster};
   state.s=s;state.e=e;state.touched=false;state.qFall=0;
   state.srv=Math.max(0,SRV.findIndex(x=>x.id===state.set.srv));
-  state.qual=state.set.qual;state.aud=state.set.aud;
+  state.qual=state.set.qual;
+  state.aud=defaultAudio(state.orig);
   state.playId=id;state.playType=type;
 
   $("#pl").classList.remove("hidden");
@@ -509,9 +550,17 @@ function fillSelects(){
   q.onchange=()=>{state.qual=q.value;state.qFall=0;state.touched=true;mount()};
 
   const a=$("#plAud");a.innerHTML="";
-  AUD.forEach(([v,l])=>a.add(new Option(l,v)));
+  (state.audioList.length?state.audioList:buildAudio(state.orig)).forEach(o=>a.add(new Option(o.label+(o.orig?" (original)":""),o.v)));
   a.value=state.aud;
-  a.onchange=()=>{state.aud=a.value;state.touched=true;mount()};
+  a.onchange=()=>{
+    state.aud=a.value;state.touched=true;state.qFall=0;
+    const isOrig=state.aud===state.orig||state.aud==="original";
+    if(!isOrig&&!SRV[state.srv].lang){
+      const i=SRV.findIndex(x=>x.lang);
+      if(i>=0){state.srv=i;sv.value=i;$("#plHint").textContent=SRV[i].name+" audio track ke liye" }
+    }
+    mount();
+  };
 
   $("#plNext").onclick=()=>{state.touched=true;next()};
   $("#plNew").onclick=()=>window.open(curUrl(),"_blank");
@@ -527,7 +576,8 @@ function fillSelects(){
 function curUrl(){
   const s=SRV[state.srv];
   const q=state.qFall>0?QL[Math.min(state.qFall,3)][0]:state.qual;
-  return s.u(state.playType,state.playId,state.s,state.e,q,state.aud);
+  const l=state.aud||state.orig||"original";
+  return s.u(state.playType,state.playId,state.s,state.e,q,l);
 }
 
 function mount(){
